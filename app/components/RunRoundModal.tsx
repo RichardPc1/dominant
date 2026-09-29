@@ -14,19 +14,17 @@ const CIDADES_SUGERIDAS = [
 
 interface Props {
   onClose: () => void;
-  onDone: (count: number, summary: string) => void;
+  onRefresh: () => void;
 }
 
 const QUANTIDADES = [5, 10, 15, 20];
 
-export default function RunRoundModal({ onClose, onDone }: Props) {
+export default function RunRoundModal({ onClose, onRefresh }: Props) {
   const [regiao, setRegiao] = useState('Sudeste');
   const [cidades, setCidades] = useState('São Paulo, Guarulhos, Mogi das Cruzes');
   const [selectedSegs, setSelectedSegs] = useState<string[]>(['ERP / PCP', 'Integrador de automação', 'Cliente direto']);
   const [quantidade, setQuantidade] = useState(10);
-  const [loading, setLoading] = useState(false);
-  const [log, setLog] = useState('');
-  const [error, setError] = useState('');
+  const [copied, setCopied] = useState(false);
 
   function toggleSeg(seg: string) {
     setSelectedSegs(prev =>
@@ -34,22 +32,16 @@ export default function RunRoundModal({ onClose, onDone }: Props) {
     );
   }
 
-  async function runRound() {
-    setLoading(true);
-    setLog('Iniciando pesquisa na web... isso pode levar 1–3 minutos.');
-    setError('');
+  const local = cidades.trim() || regiao;
+  const comando = `/rodada cidades="${local}" segmentos="${selectedSegs.join(', ')}" qtd=${quantidade}`;
+
+  async function copiar() {
     try {
-      const res = await fetch('/api/rounds', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ regiao, cidades: cidades.trim() || undefined, segmentos: selectedSegs.join(', '), quantidade }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Erro desconhecido');
-      onDone(data.newLeadsCount, data.fullText);
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Erro ao rodar a rodada.');
-      setLoading(false);
+      await navigator.clipboard.writeText(comando);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      setCopied(false);
     }
   }
 
@@ -59,9 +51,9 @@ export default function RunRoundModal({ onClose, onDone }: Props) {
         className="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-6"
         onClick={e => e.stopPropagation()}
       >
-        <h2 className="text-lg font-bold text-gray-900 mb-4">Rodar nova rodada de prospecção</h2>
+        <h2 className="text-lg font-bold text-gray-900 mb-4">Pedir nova rodada de prospecção</h2>
 
-        {!loading && (
+        {(
           <>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -151,30 +143,34 @@ export default function RunRoundModal({ onClose, onDone }: Props) {
               </div>
             </div>
 
-            {error && <p className="text-sm text-red-600 mb-4">{error}</p>}
+            <div className="mb-6 bg-gray-50 border border-gray-200 rounded-lg p-3">
+              <p className="text-xs text-gray-500 mb-1.5">
+                A pesquisa agora é feita pelo Claude Code (sem custo de API). Copie o comando abaixo, cole no Claude Code aberto nesta pasta e, quando ele terminar, clique em &quot;Atualizar lista&quot;.
+              </p>
+              <code className="block text-xs text-gray-800 break-words">{comando}</code>
+            </div>
 
             <div className="flex gap-3 justify-end">
               <button onClick={onClose} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900">
-                Cancelar
+                Fechar
               </button>
               <button
-                onClick={runRound}
+                onClick={() => { onRefresh(); onClose(); }}
+                className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                Atualizar lista
+              </button>
+              <button
+                onClick={copiar}
                 disabled={selectedSegs.length === 0}
                 className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg disabled:opacity-50 transition-colors"
               >
-                Iniciar rodada
+                {copied ? 'Copiado!' : 'Copiar comando'}
               </button>
             </div>
           </>
         )}
 
-        {loading && (
-          <div className="flex flex-col items-center py-8 gap-4">
-            <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-            <p className="text-sm text-gray-600 text-center">{log}</p>
-            <p className="text-xs text-gray-400">O agente está pesquisando empresas na web. Aguarde...</p>
-          </div>
-        )}
       </div>
     </div>
   );

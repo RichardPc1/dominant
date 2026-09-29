@@ -64,11 +64,9 @@ export default function Home() {
     setTimeout(() => setToast(''), 4000);
   }
 
-  function handleRoundDone(count: number, summary: string) {
-    setShowModal(false);
+  function handleRefresh() {
     fetchLeads();
-    showToast(`${count} leads adicionados!`);
-    console.log('Resumo da rodada:\n', summary);
+    showToast('Lista atualizada.');
   }
 
   async function clearLeads() {
@@ -172,7 +170,7 @@ export default function Home() {
               onClick={() => setShowModal(true)}
               className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors"
             >
-              + Rodar rodada
+              + Pedir rodada
             </button>
           </div>
         </div>
@@ -266,7 +264,7 @@ export default function Home() {
               <p className="text-gray-400 mb-3">{leads.length === 0 ? 'Nenhum lead ainda.' : 'Nenhum resultado para os filtros.'}</p>
               {leads.length === 0 && (
                 <button onClick={() => setShowModal(true)} className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700">
-                  Rodar primeira rodada
+                  Pedir primeira rodada
                 </button>
               )}
             </div>
@@ -329,7 +327,7 @@ export default function Home() {
         </div>
       </main>
 
-      {showModal && <RunRoundModal onClose={() => setShowModal(false)} onDone={handleRoundDone} />}
+      {showModal && <RunRoundModal onClose={() => setShowModal(false)} onRefresh={handleRefresh} />}
 
       {toast && (
         <div className="fixed bottom-6 right-6 bg-gray-900 text-white text-sm px-5 py-3 rounded-xl shadow-lg animate-in fade-in slide-in-from-bottom-2">

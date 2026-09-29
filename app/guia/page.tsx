@@ -299,7 +299,7 @@ export default function GuiaPage() {
           <Section id="fluxo" title="Fluxo completo — do zero ao fechamento">
             <div className="space-y-3">
               {[
-                { step: '1', title: 'Rodar rodada', desc: 'Você clica em "+ Rodar rodada", escolhe a região e os segmentos. O agente pesquisa na web por ~2 minutos e adiciona automaticamente os novos leads à tabela.' },
+                { step: '1', title: 'Pedir rodada', desc: 'Você clica em "+ Pedir rodada", escolhe cidades e segmentos e copia o comando. Cola no Claude Code aberto nesta pasta: ele pesquisa na web e adiciona os leads ao arquivo. Depois clique em "Atualizar lista".' },
                 { step: '2', title: 'Revisar leads novos', desc: 'Filtre por "Data de inclusão" ou prioridade para ver o que chegou. Leia o campo "Por que faz sentido" e a fonte. Ajuste o responsável e a data do próximo passo.' },
                 { step: '3', title: 'Trabalhar os P1 primeiro', desc: 'Filtre por Prioridade 1 + Status "A contatar". Clique em "Ligar" para abrir a tela de chamada com tudo que você precisa para a abordagem.' },
                 { step: '4', title: 'Fazer o contato', desc: 'Use o canal sugerido (LinkedIn, e-mail, telefone). Durante ou depois da conversa, abra a tela de chamada e anote o resultado no campo "Notas da ligação".' },
