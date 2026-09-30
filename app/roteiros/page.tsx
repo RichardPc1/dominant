@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ROTEIROS, ScriptItem, ScriptSection } from '@/lib/roteiros-data';
 
 const CAT_COLORS: Record<string, string> = {
+  'Passar pelo Gatekeeper': 'bg-rose-50 text-rose-700 border-rose-200',
   'ERP / PCP': 'bg-blue-50 text-blue-700 border-blue-200',
   'Cliente direto': 'bg-green-50 text-green-700 border-green-200',
   'Automação RPA': 'bg-violet-50 text-violet-700 border-violet-200',
