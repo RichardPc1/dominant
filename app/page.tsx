@@ -139,6 +139,12 @@ export default function Home() {
             <p className="text-sm text-gray-500">Funil de Prospecção – Coletor</p>
           </div>
           <div className="flex gap-3 flex-wrap">
+            <Link href="/kanban" className="px-4 py-2 text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors">
+              Kanban
+            </Link>
+            <Link href="/config" className="px-4 py-2 text-sm text-gray-500 hover:text-gray-900 transition-colors">
+              Classificação
+            </Link>
             <Link href="/roteiros" className="px-4 py-2 text-sm text-gray-500 hover:text-gray-900 transition-colors">
               Roteiros
             </Link>

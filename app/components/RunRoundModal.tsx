@@ -19,11 +19,14 @@ interface Props {
 
 const QUANTIDADES = [5, 10, 15, 20];
 
+const NICHOS_SUGERIDOS = ['Contabilidade', 'Advocacia', 'Escritórios em geral', 'Clínicas', 'Imobiliárias', 'Transportadoras'];
+
 export default function RunRoundModal({ onClose, onRefresh }: Props) {
   const [regiao, setRegiao] = useState('Sudeste');
   const [cidades, setCidades] = useState('São Paulo, Guarulhos, Mogi das Cruzes');
   const [selectedSegs, setSelectedSegs] = useState<string[]>(['ERP / PCP', 'Integrador de automação', 'Cliente direto']);
   const [quantidade, setQuantidade] = useState(10);
+  const [nichos, setNichos] = useState('');
   const [copied, setCopied] = useState(false);
 
   function toggleSeg(seg: string) {
@@ -33,7 +36,13 @@ export default function RunRoundModal({ onClose, onRefresh }: Props) {
   }
 
   const local = cidades.trim() || regiao;
-  const comando = `/rodada cidades="${local}" segmentos="${selectedSegs.join(', ')}" qtd=${quantidade}`;
+  const nichosLimpos = nichos.trim();
+  const comando = `/rodada cidades="${local}" segmentos="${selectedSegs.join(', ')}"${nichosLimpos ? ` nichos="${nichosLimpos}"` : ''} qtd=${quantidade}`;
+
+  function addNicho(n: string) {
+    const lista = nichos.split(',').map(x => x.trim()).filter(Boolean);
+    if (!lista.some(x => x.toLowerCase() === n.toLowerCase())) setNichos([...lista, n].join(', '));
+  }
 
   async function copiar() {
     try {
@@ -141,6 +150,32 @@ export default function RunRoundModal({ onClose, onRefresh }: Props) {
                   </button>
                 ))}
               </div>
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Nichos (para Automação RPA)
+                <span className="ml-1 text-gray-400 font-normal">(opcional, separe por vírgula)</span>
+              </label>
+              <input
+                type="text"
+                value={nichos}
+                onChange={e => setNichos(e.target.value)}
+                placeholder="Ex: contabilidade, advocacia, escritórios em geral"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <div className="flex flex-wrap gap-1 mt-1.5">
+                {NICHOS_SUGERIDOS.map(n => (
+                  <button
+                    key={n}
+                    onClick={() => addNicho(n)}
+                    className="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-600 hover:bg-violet-50 hover:text-violet-700 border border-gray-200 transition-colors"
+                  >
+                    + {n}
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-gray-500 mt-1.5">Em branco, a busca usa a lista padrão de setores.</p>
             </div>
 
             <div className="mb-6 bg-gray-50 border border-gray-200 rounded-lg p-3">

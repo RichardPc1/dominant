@@ -4,7 +4,7 @@ import { Lead } from '@/lib/types';
 import { randomUUID } from 'crypto';
 
 export async function GET() {
-  const leads = getLeads();
+  const leads = await getLeads();
   return NextResponse.json(leads);
 }
 
@@ -42,11 +42,11 @@ export async function POST(req: NextRequest) {
     updatedAt: l.updatedAt || now,
   }));
 
-  const added = addLeads(leads);
+  const added = await addLeads(leads);
   return NextResponse.json({ added: added.length, leads: added });
 }
 
 export async function DELETE() {
-  saveLeads([]);
+  await saveLeads([]);
   return NextResponse.json({ ok: true });
 }

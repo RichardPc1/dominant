@@ -3,6 +3,10 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Lead, Status, Chamada, ResultadoChamada, Categoria } from '@/lib/types';
+import { colunaPorChamada } from '@/lib/kanban';
+import { DEFAULT_CONFIG, OutcomesConfig } from '@/lib/outcomes';
+import LiveCall from '@/app/components/LiveCall';
+import EmailPanel from '@/app/components/EmailPanel';
 import { ROTEIROS } from '@/lib/roteiros-data';
 import { PriorityBadge, StatusBadge, CategoriaBadge } from '@/app/components/Badges';
 
@@ -89,6 +93,7 @@ export default function CallPage() {
   const router = useRouter();
   const [lead, setLead] = useState<Lead | null>(null);
   const [leads, setLeads] = useState<Lead[]>([]);
+  const [config, setConfig] = useState<OutcomesConfig>(DEFAULT_CONFIG);
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -102,6 +107,10 @@ export default function CallPage() {
   const [editOpen, setEditOpen] = useState(false);
   const [editFields, setEditFields] = useState<Partial<Lead>>({});
   const [editSaving, setEditSaving] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/outcomes').then(r => r.json()).then(setConfig).catch(() => {});
+  }, []);
 
   useEffect(() => {
     fetch('/api/leads').then(r => r.json()).then((data: Lead[]) => {
@@ -166,7 +175,12 @@ export default function CallPage() {
       notas: callNota,
     };
     const novasChamadas = [...(lead.chamadas ?? []), chamada];
-    const autoStatus: Partial<Lead> = {};
+    // Cada ligação nova reposiciona o lead no kanban e limpa o agendamento antigo.
+    const autoStatus: Partial<Lead> = {
+      coluna: colunaPorChamada(callResultado, callNota),
+      agendaData: '',
+      agendaHora: '',
+    };
     if (callResultado === 'Atendeu' && lead.status === 'A contatar') {
       autoStatus.status = 'Contatado';
     }
@@ -242,6 +256,9 @@ export default function CallPage() {
           {lead.cnpj && <p className="text-xs text-gray-400 mt-2">CNPJ: {lead.cnpj}</p>}
         </div>
 
+        <LiveCall lead={lead} config={config} onSaved={u => setLead(prev => prev ? { ...prev, ...u } : prev)} />
+        <EmailPanel key={lead.emailRascunho?.atualizadoEm ?? 'sem'} lead={lead} followUpDias={config.followUpDias} onChange={u => setLead(prev => prev ? { ...prev, ...u } : prev)} />
+
         {/* CALL LOG */}
         <div className="bg-white rounded-2xl border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
@@ -278,7 +295,14 @@ export default function CallPage() {
                       </span>
                       <span className="text-xs text-gray-400">{c.data} às {c.hora}</span>
                     </div>
+                    {c.classificacao && (() => { const o = config.outcomes.find(x => x.id === c.classificacao); return o ? <span className="text-xs text-gray-500">{o.emoji} {o.label} → {o.proximaAcao}</span> : null; })()}
                     {c.notas && <p className="text-sm text-gray-700 mt-1">{c.notas}</p>}
+                    {c.transcricao && (
+                      <details className="mt-1">
+                        <summary className="text-xs text-blue-600 cursor-pointer">ver transcrição</summary>
+                        <p className="text-xs text-gray-600 mt-1 whitespace-pre-line">{c.transcricao}</p>
+                      </details>
+                    )}
                   </div>
                 </div>
               ))}

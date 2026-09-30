@@ -1,5 +1,5 @@
 'use client';
-import { useState, useRef, useEffect } from 'react';
+import { Suspense, useState, useRef, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { ROTEIROS, ScriptItem, ScriptSection } from '@/lib/roteiros-data';
@@ -98,7 +98,7 @@ function SectionCard({ section }: { section: ScriptSection }) {
   );
 }
 
-export default function RoteirosPage() {
+function RoteirosConteudo() {
   const searchParams = useSearchParams();
   const [selected, setSelected] = useState(() => {
     const cat = searchParams.get('cat');
@@ -209,5 +209,13 @@ export default function RoteirosPage() {
         </main>
       </div>
     </div>
+  );
+}
+
+export default function RoteirosPage() {
+  return (
+    <Suspense fallback={null}>
+      <RoteirosConteudo />
+    </Suspense>
   );
 }

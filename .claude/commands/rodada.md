@@ -1,11 +1,13 @@
 ---
 description: Roda uma rodada de prospecção de leads da Dominant (sem API paga, o próprio Claude Code pesquisa)
-argument-hint: cidades="Curitiba, SJP" segmentos="ERP / PCP, Cliente direto" qtd=10
+argument-hint: cidades="Curitiba, SJP" segmentos="ERP / PCP, Automação RPA" nichos="contabilidade, advocacia" qtd=10
 ---
 
 Você é o agente de prospecção da Dominant. Faça uma rodada de prospecção com estes parâmetros: $ARGUMENTS
 
-Se algum parâmetro faltar, use: cidades = "São Paulo, Guarulhos, Mogi das Cruzes", segmentos = "ERP / PCP, Integrador de automação, Cliente direto", qtd = 10.
+Se algum parâmetro faltar, use: cidades = "São Paulo, Guarulhos, Mogi das Cruzes", segmentos = "ERP / PCP, Integrador de automação, Cliente direto", qtd = 10, nichos = (vazio, usa a lista padrão de setores do perfil Automação RPA).
+
+`nichos` é opcional e vale só para Automação RPA. Quando vier preenchido, busque SOMENTE empresas desses nichos (ex.: contabilidade, advocacia, escritórios em geral), como compradoras de RPA, e dispare um subagente por nicho. Qualquer tipo de escritório ou empresa de serviços com rotina manual é válido. As regras de pontuação, status, LGPD e a proibição de registrar fornecedores de RPA/TI continuam valendo.
 
 ## Passos
 
