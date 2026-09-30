@@ -132,7 +132,13 @@
     "updatedAt": "2026-09-30T13:38:29.003Z",
     "coluna": "email",
     "agendaData": "",
-    "agendaHora": ""
+    "agendaHora": "",
+    "emails": [
+      {
+        "endereco": "contato@goncalvescontabil.com.br",
+        "classificacao": "Dono"
+      }
+    ]
   },
   {
     "id": "56fba17e-e401-40d4-bc2b-1ea76c09f346",
@@ -288,7 +294,13 @@
       "corpo": "",
       "contexto": "Ligação de 29/09/2026 13:13: Mandar email para Gilmara ou Jilmara gilmara@efsolucoes.com",
       "atualizadoEm": "2026-09-29T23:04:13.340Z"
-    }
+    },
+    "emails": [
+      {
+        "endereco": "gilmara@efsolucoes.com",
+        "classificacao": "Outro"
+      }
+    ]
   },
   {
     "id": "94c95690-f555-4aa1-aa4b-9e7113f62e32",
@@ -488,7 +500,13 @@
       "corpo": "",
       "contexto": "Ligação de 29/09/2026 12:34: enviar email para diretoria@potencialexpress.com.br falar com Roberto ou Liliana - falamos com Nataly",
       "atualizadoEm": "2026-09-29T23:04:13.341Z"
-    }
+    },
+    "emails": [
+      {
+        "endereco": "diretoria@potencialexpress.com.br",
+        "classificacao": "Diretor"
+      }
+    ]
   },
   {
     "id": "31146b5c-4e25-4d55-aa11-fa1245084ae3",
@@ -606,7 +624,13 @@
       "corpo": "",
       "contexto": "Ligação de 29/09/2026 12:19: Falou que é só por email, mandar email para contato@expansioncontabilidade.com.br",
       "atualizadoEm": "2026-09-29T23:04:13.341Z"
-    }
+    },
+    "emails": [
+      {
+        "endereco": "contato@expansioncontabilidade.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "7b9dc70d-6779-4031-8e5b-8ae5f5bd7355",
@@ -840,7 +864,13 @@
     "updatedAt": "2026-09-30T13:25:47.843Z",
     "coluna": "email",
     "agendaData": "",
-    "agendaHora": ""
+    "agendaHora": "",
+    "emails": [
+      {
+        "endereco": "contato@acadiacontabilidade.com.br",
+        "classificacao": "Proprietário"
+      }
+    ]
   },
   {
     "id": "96b08c4e-db6c-4002-8420-b0a42e495dfc",
@@ -972,7 +1002,13 @@
     "updatedAt": "2026-09-30T13:49:28.275Z",
     "coluna": "email",
     "agendaData": "",
-    "agendaHora": ""
+    "agendaHora": "",
+    "emails": [
+      {
+        "endereco": "rodrigo.mistro@mtautomacao.com.br",
+        "classificacao": "Outro"
+      }
+    ]
   },
   {
     "id": "9f5b6f17-e475-45ad-a315-33b3d4958dc9",
@@ -1296,7 +1332,13 @@
       "corpo": "",
       "contexto": "Ligação de 29/09/2026 13:47: Mandar email para fornecedores@lello.com.br",
       "atualizadoEm": "2026-09-29T23:04:13.341Z"
-    }
+    },
+    "emails": [
+      {
+        "endereco": "fornecedores@lello.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "f6543e20-1c7d-465a-b7ee-95a9ed137574",
@@ -1340,7 +1382,13 @@
       "corpo": "",
       "contexto": "Ligação de 29/09/2026 13:52: Mandar email para Fabio do TI - fabio.marco@irko.com.br",
       "atualizadoEm": "2026-09-29T23:04:13.341Z"
-    }
+    },
+    "emails": [
+      {
+        "endereco": "fabio.marco@irko.com.br",
+        "classificacao": "Responsável TI"
+      }
+    ]
   },
   {
     "id": "dc7a4655-86c8-4fdf-bc72-2a5a7d1fe7fe",
@@ -1476,7 +1524,13 @@
       "corpo": "",
       "contexto": "Ligação de 29/09/2026 14:14: Mandar email para orcamento@graiche.com.br",
       "atualizadoEm": "2026-09-29T23:04:13.341Z"
-    }
+    },
+    "emails": [
+      {
+        "endereco": "orcamento@graiche.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "a679e831-0575-4669-8854-46e38640b02c",
@@ -1520,7 +1574,13 @@
       "corpo": "",
       "contexto": "Ligação de 29/09/2026 14:17: Mandar e-mail para: marcketing@aliancaimoveis.net",
       "atualizadoEm": "2026-09-29T23:04:13.341Z"
-    }
+    },
+    "emails": [
+      {
+        "endereco": "marcketing@aliancaimoveis.net",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "156eec63-778a-4a84-8685-e3b3d94612a3",
@@ -1649,7 +1709,13 @@
       "corpo": "",
       "contexto": "Ligação de 29/09/2026 14:31: Mandar email para caique.paiva@paulistaexpress.com.br responsavel por sistemas ramal 636 - Se interessou, mandar mensagem para verificar agenda para reuniao",
       "atualizadoEm": "2026-09-29T23:04:13.341Z"
-    }
+    },
+    "emails": [
+      {
+        "endereco": "caique.paiva@paulistaexpress.com.br",
+        "classificacao": "Responsável TI"
+      }
+    ]
   },
   {
     "id": "cabd7869-190c-4983-9b55-7231485ada14",
@@ -1821,7 +1887,13 @@
       "corpo": "",
       "contexto": "Ligação de 29/09/2026 14:44: Falou que pode mandar por email que responde: compras@dematteo.ind.br",
       "atualizadoEm": "2026-09-29T23:04:13.341Z"
-    }
+    },
+    "emails": [
+      {
+        "endereco": "compras@dematteo.ind.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "1de7e754-ddde-4af3-99a2-65cf553e512c",
@@ -1867,7 +1939,13 @@
     "updatedAt": "2026-09-30T13:29:00.317Z",
     "coluna": "email",
     "agendaData": "",
-    "agendaHora": ""
+    "agendaHora": "",
+    "emails": [
+      {
+        "endereco": "comercial1@transvoar.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "b003e287-bb77-44a9-bf46-364e3d1aa34d",
@@ -2095,7 +2173,13 @@
       "corpo": "",
       "contexto": "Ligação de 29/09/2026 15:59: Enviar e-mail para contato@prone.com.br",
       "atualizadoEm": "2026-09-29T23:04:13.341Z"
-    }
+    },
+    "emails": [
+      {
+        "endereco": "contato@prone.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "c732f1bf-8262-41fe-9fcc-6870d159d99b",
@@ -2353,7 +2437,13 @@
       "corpo": "",
       "contexto": "Ligação de 29/09/2026 15:13: Enviar email para marcketing@contabilidadeclassea.com.br",
       "atualizadoEm": "2026-09-29T23:04:13.341Z"
-    }
+    },
+    "emails": [
+      {
+        "endereco": "marcketing@contabilidadeclassea.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "9206f71a-5c3d-46bb-bfed-657b815638e2",
@@ -2435,7 +2525,13 @@
       "corpo": "",
       "contexto": "Ligação de 29/09/2026 15:17: Mandar email para o Bruno do RH - brunonathan@falavinhacontabil.com.br",
       "atualizadoEm": "2026-09-29T23:04:13.341Z"
-    }
+    },
+    "emails": [
+      {
+        "endereco": "brunonathan@falavinhacontabil.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "9d96f1bc-6d6d-4422-bbaf-34b621a44d34",
@@ -2481,7 +2577,13 @@
     "updatedAt": "2026-09-30T13:21:10.550Z",
     "coluna": "email",
     "agendaData": "",
-    "agendaHora": ""
+    "agendaHora": "",
+    "emails": [
+      {
+        "endereco": "gdgerente@escrilex.com.br",
+        "classificacao": "Gerente"
+      }
+    ]
   },
   {
     "id": "d45de7fa-00fa-4120-b826-e3d008fe9e21",
@@ -2561,7 +2663,13 @@
       "corpo": "",
       "contexto": "Ligação de 29/09/2026 15:23: Enviar email para walter.neto@colacocontadores.com.br",
       "atualizadoEm": "2026-09-29T23:04:13.341Z"
-    }
+    },
+    "emails": [
+      {
+        "endereco": "walter.neto@colacocontadores.com.br",
+        "classificacao": "Outro"
+      }
+    ]
   },
   {
     "id": "e4fad44d-e2d2-483a-b005-b3e85d1ebc36",
@@ -2607,7 +2715,13 @@
     "updatedAt": "2026-09-30T12:56:06.731Z",
     "coluna": "aguardando",
     "agendaData": "",
-    "agendaHora": ""
+    "agendaHora": "",
+    "emails": [
+      {
+        "endereco": "divaldo@contaxcontabilidade.com.br",
+        "classificacao": "Outro"
+      }
+    ]
   },
   {
     "id": "354499a9-4797-41d5-8409-e3cb26c1e0dd",
@@ -2651,7 +2765,13 @@
       "corpo": "",
       "contexto": "Ligação de 29/09/2026 15:29: Mandar e-mail para processos@contabilidadecuritiba.com - Luciano",
       "atualizadoEm": "2026-09-29T23:04:13.341Z"
-    }
+    },
+    "emails": [
+      {
+        "endereco": "processos@contabilidadecuritiba.com",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "463c5794-80a5-4fd7-9d17-2147a973158c",
@@ -2787,7 +2907,13 @@
       "corpo": "",
       "contexto": "Ligação de 29/09/2026 15:34: Enviar e-mail para sac@tnp.adv.br",
       "atualizadoEm": "2026-09-29T23:04:13.341Z"
-    }
+    },
+    "emails": [
+      {
+        "endereco": "sac@tnp.adv.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "62d199c7-7f33-49f2-a850-69bc9bb367ee",
@@ -2867,7 +2993,13 @@
       "corpo": "",
       "contexto": "Ligação de 29/09/2026 15:39: mandar e-mail para contato@vp.adv.br",
       "atualizadoEm": "2026-09-29T23:04:13.341Z"
-    }
+    },
+    "emails": [
+      {
+        "endereco": "contato@vp.adv.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "a5ed9325-1c46-4656-aca2-45cf7cd66c87",
@@ -2911,7 +3043,13 @@
       "corpo": "",
       "contexto": "Ligação de 29/09/2026 15:44: 19 9 81680474 - Bruno falei com joyce\nMandar email para bruno.rocha@claudiozalaf.com.br",
       "atualizadoEm": "2026-09-29T23:04:13.341Z"
-    }
+    },
+    "emails": [
+      {
+        "endereco": "bruno.rocha@claudiozalaf.com.br",
+        "classificacao": "Outro"
+      }
+    ]
   },
   {
     "id": "9cadf511-5bc5-49f1-a3c9-00c0a6a8450d",
@@ -3001,7 +3139,13 @@
       "corpo": "",
       "contexto": "Ligação de 29/09/2026 15:54: Enviar email para secretaria@rbarreto.adv.br",
       "atualizadoEm": "2026-09-29T23:04:13.341Z"
-    }
+    },
+    "emails": [
+      {
+        "endereco": "secretaria@rbarreto.adv.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "bdb51acf-241c-4ff1-907a-e7ad546bc245",
@@ -3039,7 +3183,13 @@
     "createdAt": "2026-09-29T18:11:24.952Z",
     "updatedAt": "2026-09-29T18:57:20.846Z",
     "coluna": "ligar",
-    "agendaData": "2026-10-05"
+    "agendaData": "2026-10-05",
+    "emails": [
+      {
+        "endereco": "squeiroga@zveiter.com.br",
+        "classificacao": "Outro"
+      }
+    ]
   },
   {
     "id": "5f0f8928-d9c8-4c02-8eb1-473cf84e3642",
@@ -3543,7 +3693,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-29T19:23:14.615Z",
-    "updatedAt": "2026-09-29T19:23:14.615Z"
+    "updatedAt": "2026-09-29T19:23:14.615Z",
+    "emails": [
+      {
+        "endereco": "fiscal@fiorde.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "6b595c1e-d497-47d8-954d-d0fa6ca8921f",
@@ -3655,7 +3811,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-29T19:23:14.617Z",
-    "updatedAt": "2026-09-29T19:23:14.617Z"
+    "updatedAt": "2026-09-29T19:23:14.617Z",
+    "emails": [
+      {
+        "endereco": "contato@renovacaologistica.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "ed3b2552-0b0e-47d5-b771-99ad5d4d7091",
@@ -3683,7 +3845,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-29T19:23:14.617Z",
-    "updatedAt": "2026-09-29T19:23:14.617Z"
+    "updatedAt": "2026-09-29T19:23:14.617Z",
+    "emails": [
+      {
+        "endereco": "fiscal@rodobrotto.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "03653df3-2bd5-430d-9ff8-56e80da4499d",
@@ -3711,7 +3879,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-29T19:23:14.617Z",
-    "updatedAt": "2026-09-29T19:23:14.617Z"
+    "updatedAt": "2026-09-29T19:23:14.617Z",
+    "emails": [
+      {
+        "endereco": "comercial@trb.log.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "4289fcf3-1398-4678-9970-925cbfbb33e4",
@@ -3739,7 +3913,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-29T19:23:14.618Z",
-    "updatedAt": "2026-09-29T19:23:14.618Z"
+    "updatedAt": "2026-09-29T19:23:14.618Z",
+    "emails": [
+      {
+        "endereco": "financeiro@rodoimport.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "8f54e99f-8897-45ea-a615-6be83d6e46e6",
@@ -3932,7 +4112,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-29T19:23:14.618Z",
-    "updatedAt": "2026-09-29T19:23:14.618Z"
+    "updatedAt": "2026-09-29T19:23:14.618Z",
+    "emails": [
+      {
+        "endereco": "logistica@campress.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "911ec9a0-c0e8-45a8-830a-8613b1d3c629",
@@ -3960,7 +4146,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-29T19:23:14.618Z",
-    "updatedAt": "2026-09-29T19:23:14.618Z"
+    "updatedAt": "2026-09-29T19:23:14.618Z",
+    "emails": [
+      {
+        "endereco": "contatocps@rodoviariocampinas.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "5008bb9f-3bae-43c5-96ad-916413c285fe",
@@ -3988,7 +4180,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-29T19:23:14.619Z",
-    "updatedAt": "2026-09-29T19:23:14.619Z"
+    "updatedAt": "2026-09-29T19:23:14.619Z",
+    "emails": [
+      {
+        "endereco": "atendimento@transportadorasaocristovao.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "6157753d-0e6b-45a3-8d7c-adce70bc47ed",
@@ -4072,7 +4270,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-29T19:23:14.619Z",
-    "updatedAt": "2026-09-29T19:23:14.619Z"
+    "updatedAt": "2026-09-29T19:23:14.619Z",
+    "emails": [
+      {
+        "endereco": "sac@outlet4u.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "9409d802-9b6e-41bf-87ee-3ec241a9f6ff",
@@ -4268,7 +4472,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-29T19:23:14.619Z",
-    "updatedAt": "2026-09-29T19:23:14.619Z"
+    "updatedAt": "2026-09-29T19:23:14.619Z",
+    "emails": [
+      {
+        "endereco": "contato@outsideautomation.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "0110a4ae-dd82-41bf-9ee1-308b29e115e7",
@@ -4296,7 +4506,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-29T19:23:14.619Z",
-    "updatedAt": "2026-09-29T19:23:14.619Z"
+    "updatedAt": "2026-09-29T19:23:14.619Z",
+    "emails": [
+      {
+        "endereco": "comercial@dcautomacao.ind.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "2c15029e-9122-4722-aab4-2d5e1ccf8f77",
@@ -4324,7 +4540,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-29T19:23:14.619Z",
-    "updatedAt": "2026-09-29T19:23:14.619Z"
+    "updatedAt": "2026-09-29T19:23:14.619Z",
+    "emails": [
+      {
+        "endereco": "contato@autimperio.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "cc3b9901-0439-4955-8644-fe58694c63ee",
@@ -4352,7 +4574,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-29T19:23:14.619Z",
-    "updatedAt": "2026-09-29T19:23:14.619Z"
+    "updatedAt": "2026-09-29T19:23:14.619Z",
+    "emails": [
+      {
+        "endereco": "vendas@prosolution.ind.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "f38469f4-78fd-47c2-a11d-025f4ee3a9e3",
@@ -4436,7 +4664,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-29T19:23:14.620Z",
-    "updatedAt": "2026-09-29T19:23:14.620Z"
+    "updatedAt": "2026-09-29T19:23:14.620Z",
+    "emails": [
+      {
+        "endereco": "comercial@alvtecautomacao.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "68291413-28a2-4344-89f8-c476bb8d1816",
@@ -4464,7 +4698,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.148Z",
-    "updatedAt": "2026-09-30T12:43:47.148Z"
+    "updatedAt": "2026-09-30T12:43:47.148Z",
+    "emails": [
+      {
+        "endereco": "contato@modolo.adv.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "f60b6582-b2f2-4623-9abf-5863ee987308",
@@ -4492,7 +4732,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.152Z",
-    "updatedAt": "2026-09-30T12:43:47.152Z"
+    "updatedAt": "2026-09-30T12:43:47.152Z",
+    "emails": [
+      {
+        "endereco": "atendimento@smtadvocacia.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "714b767d-081a-4fab-84d6-501503fbcc98",
@@ -4520,7 +4766,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.152Z",
-    "updatedAt": "2026-09-30T12:43:47.152Z"
+    "updatedAt": "2026-09-30T12:43:47.152Z",
+    "emails": [
+      {
+        "endereco": "contato@lbradvogados.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "04118d13-7b6c-4c46-8b08-2cfa072542fd",
@@ -4576,7 +4828,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.152Z",
-    "updatedAt": "2026-09-30T12:43:47.152Z"
+    "updatedAt": "2026-09-30T12:43:47.152Z",
+    "emails": [
+      {
+        "endereco": "contato@ferreiraelocateliadv.com",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "284bb916-c94c-4081-9591-f39519567abb",
@@ -4671,7 +4929,13 @@
     "updatedAt": "2026-09-30T13:44:07.524Z",
     "coluna": "whatsapp",
     "agendaData": "",
-    "agendaHora": ""
+    "agendaHora": "",
+    "emails": [
+      {
+        "endereco": "contato@azevedoelourencoadvogados.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "c3a48d3e-d4f7-4ed5-98c1-8c9f528a374c",
@@ -4794,7 +5058,13 @@
     "updatedAt": "2026-09-30T13:45:49.606Z",
     "coluna": "tentar",
     "agendaData": "",
-    "agendaHora": ""
+    "agendaHora": "",
+    "emails": [
+      {
+        "endereco": "contato@mlradvogados.com",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "32088a7a-b4fa-40a8-b188-9806ad42f4eb",
@@ -4822,7 +5092,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.154Z",
-    "updatedAt": "2026-09-30T12:43:47.154Z"
+    "updatedAt": "2026-09-30T12:43:47.154Z",
+    "emails": [
+      {
+        "endereco": "contato@mtostes.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "37099914-5b72-4b44-bb0f-8fe99bd83611",
@@ -4850,7 +5126,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.154Z",
-    "updatedAt": "2026-09-30T12:43:47.154Z"
+    "updatedAt": "2026-09-30T12:43:47.154Z",
+    "emails": [
+      {
+        "endereco": "contatosp@svadvocacia.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "faaad306-20d5-4e9e-ba3c-26984766af63",
@@ -4990,7 +5272,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.156Z",
-    "updatedAt": "2026-09-30T12:43:47.156Z"
+    "updatedAt": "2026-09-30T12:43:47.156Z",
+    "emails": [
+      {
+        "endereco": "contato@baccellicontabil.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "f21f634c-6715-4677-bd5a-81f0e6c857e8",
@@ -5018,7 +5306,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.156Z",
-    "updatedAt": "2026-09-30T12:43:47.156Z"
+    "updatedAt": "2026-09-30T12:43:47.156Z",
+    "emails": [
+      {
+        "endereco": "contato@contabguarulhos.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "b4976701-b293-4689-8870-9f9dffcf90d9",
@@ -5046,7 +5340,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.156Z",
-    "updatedAt": "2026-09-30T12:43:47.156Z"
+    "updatedAt": "2026-09-30T12:43:47.156Z",
+    "emails": [
+      {
+        "endereco": "vivace@contabilvivace.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "a01ebf53-e86b-4611-b10f-d7e2a4a683bf",
@@ -5074,7 +5374,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.156Z",
-    "updatedAt": "2026-09-30T12:43:47.156Z"
+    "updatedAt": "2026-09-30T12:43:47.156Z",
+    "emails": [
+      {
+        "endereco": "contato@guarulhoscontabilidade.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "c026664c-8794-4912-b32a-e6a909a194d2",
@@ -5242,7 +5548,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.156Z",
-    "updatedAt": "2026-09-30T12:43:47.156Z"
+    "updatedAt": "2026-09-30T12:43:47.156Z",
+    "emails": [
+      {
+        "endereco": "contato@dgncontabilidade.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "3b7b4b51-ec1e-4aaa-944e-fa8f7cc29a04",
@@ -5270,7 +5582,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.156Z",
-    "updatedAt": "2026-09-30T12:43:47.156Z"
+    "updatedAt": "2026-09-30T12:43:47.156Z",
+    "emails": [
+      {
+        "endereco": "atendimento@canutocontabilidade.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "bdee4d30-4a14-429c-bd15-b959bf4ee2dd",
@@ -5354,7 +5672,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.157Z",
-    "updatedAt": "2026-09-30T12:43:47.157Z"
+    "updatedAt": "2026-09-30T12:43:47.157Z",
+    "emails": [
+      {
+        "endereco": "contato@setcon.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "68dee5f1-5420-4dbc-85f3-89f2ac75bc60",
@@ -5466,7 +5790,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.157Z",
-    "updatedAt": "2026-09-30T12:43:47.157Z"
+    "updatedAt": "2026-09-30T12:43:47.157Z",
+    "emails": [
+      {
+        "endereco": "comercial@villagua.com",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "67bcd638-48e5-4bf8-b983-ce7277d49f42",
@@ -5522,7 +5852,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.157Z",
-    "updatedAt": "2026-09-30T12:43:47.157Z"
+    "updatedAt": "2026-09-30T12:43:47.157Z",
+    "emails": [
+      {
+        "endereco": "contato@administradoraimb.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "6fdaaf68-642a-4232-a68d-94f4d78b9621",
@@ -5634,7 +5970,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.157Z",
-    "updatedAt": "2026-09-30T12:43:47.157Z"
+    "updatedAt": "2026-09-30T12:43:47.157Z",
+    "emails": [
+      {
+        "endereco": "contato@patroseguros.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "6562273e-22c8-4484-ae71-51b70cb5160e",
@@ -5746,7 +6088,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.157Z",
-    "updatedAt": "2026-09-30T12:43:47.157Z"
+    "updatedAt": "2026-09-30T12:43:47.157Z",
+    "emails": [
+      {
+        "endereco": "contato@gruposetem.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "248b56a9-59f2-452e-a80e-32cb1180648d",
@@ -5886,7 +6234,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.158Z",
-    "updatedAt": "2026-09-30T12:43:47.158Z"
+    "updatedAt": "2026-09-30T12:43:47.158Z",
+    "emails": [
+      {
+        "endereco": "contato@souzavolpi.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "9bd48cdf-9d1f-47f7-9e1d-26772c641726",
@@ -6026,7 +6380,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.158Z",
-    "updatedAt": "2026-09-30T12:43:47.158Z"
+    "updatedAt": "2026-09-30T12:43:47.158Z",
+    "emails": [
+      {
+        "endereco": "sylmar@sylmar.com.br",
+        "classificacao": "Dono"
+      }
+    ]
   },
   {
     "id": "d228f53c-b3bb-4a3c-bd01-50bbe630785e",
@@ -6082,7 +6442,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.158Z",
-    "updatedAt": "2026-09-30T12:43:47.158Z"
+    "updatedAt": "2026-09-30T12:43:47.158Z",
+    "emails": [
+      {
+        "endereco": "financeiro@wmottaimoveis.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "b48f3d54-0af3-43a1-9220-61cd39555cb7",
@@ -6138,7 +6504,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.158Z",
-    "updatedAt": "2026-09-30T12:43:47.158Z"
+    "updatedAt": "2026-09-30T12:43:47.158Z",
+    "emails": [
+      {
+        "endereco": "sucesso@sucessoimobiliaria.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "9d657f3c-866e-4cbf-a6e4-e963c88b12a0",
@@ -6166,7 +6538,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.158Z",
-    "updatedAt": "2026-09-30T12:43:47.158Z"
+    "updatedAt": "2026-09-30T12:43:47.158Z",
+    "emails": [
+      {
+        "endereco": "limaesilvaimoveis@uol.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "f6080632-1588-4218-b9c0-f404cc518f45",
@@ -6334,7 +6712,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.159Z",
-    "updatedAt": "2026-09-30T12:43:47.159Z"
+    "updatedAt": "2026-09-30T12:43:47.159Z",
+    "emails": [
+      {
+        "endereco": "falecom@arvsystems.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "c36f002d-367b-42d4-9f59-e94a35877ca1",
@@ -6362,7 +6746,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.160Z",
-    "updatedAt": "2026-09-30T12:43:47.160Z"
+    "updatedAt": "2026-09-30T12:43:47.160Z",
+    "emails": [
+      {
+        "endereco": "vendas@csaautomacao.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "69a39849-a301-4927-8d1f-fc7e19fdf485",
@@ -6390,7 +6780,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.160Z",
-    "updatedAt": "2026-09-30T12:43:47.160Z"
+    "updatedAt": "2026-09-30T12:43:47.160Z",
+    "emails": [
+      {
+        "endereco": "contato@temmontagens.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "e7f1b9ca-616f-4949-979d-8dea29298caa",
@@ -6418,7 +6814,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.160Z",
-    "updatedAt": "2026-09-30T12:43:47.160Z"
+    "updatedAt": "2026-09-30T12:43:47.160Z",
+    "emails": [
+      {
+        "endereco": "ic@icautomacao.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "4a338e67-2930-4572-94fc-999078207452",
@@ -6446,7 +6848,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.160Z",
-    "updatedAt": "2026-09-30T12:43:47.160Z"
+    "updatedAt": "2026-09-30T12:43:47.160Z",
+    "emails": [
+      {
+        "endereco": "contato@compactpaineis.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "b2ef9007-ec45-4933-b842-627314718a9f",
@@ -6474,7 +6882,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.160Z",
-    "updatedAt": "2026-09-30T12:43:47.160Z"
+    "updatedAt": "2026-09-30T12:43:47.160Z",
+    "emails": [
+      {
+        "endereco": "vendas@mckautomacao.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "2bb7f0f0-fbc2-4169-9054-1149bc061e27",
@@ -6502,7 +6916,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.160Z",
-    "updatedAt": "2026-09-30T12:43:47.160Z"
+    "updatedAt": "2026-09-30T12:43:47.160Z",
+    "emails": [
+      {
+        "endereco": "megatroniks@megatroniks.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "58760ce2-e68e-4d22-bb74-65a90813353c",
@@ -6530,7 +6950,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.160Z",
-    "updatedAt": "2026-09-30T12:43:47.160Z"
+    "updatedAt": "2026-09-30T12:43:47.160Z",
+    "emails": [
+      {
+        "endereco": "contato@qpe.eng.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "2af7bf67-e221-4682-89be-8c2235d42423",
@@ -6558,7 +6984,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.160Z",
-    "updatedAt": "2026-09-30T12:43:47.160Z"
+    "updatedAt": "2026-09-30T12:43:47.160Z",
+    "emails": [
+      {
+        "endereco": "laudos@ferreirajr.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "0ae220ac-e053-492e-bcc7-f968d8f66067",
@@ -6670,7 +7102,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.160Z",
-    "updatedAt": "2026-09-30T12:43:47.160Z"
+    "updatedAt": "2026-09-30T12:43:47.160Z",
+    "emails": [
+      {
+        "endereco": "expiraltec@expiraltec.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "5ce59e14-946f-444a-ad3c-95b179938b83",
@@ -6698,7 +7136,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.160Z",
-    "updatedAt": "2026-09-30T12:43:47.160Z"
+    "updatedAt": "2026-09-30T12:43:47.160Z",
+    "emails": [
+      {
+        "endereco": "same@sameautomacao.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "34861547-027c-4efe-8c00-2f8bce3eabc3",
@@ -7174,7 +7618,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T15:11:15.822Z",
-    "updatedAt": "2026-09-30T15:11:15.822Z"
+    "updatedAt": "2026-09-30T15:11:15.822Z",
+    "emails": [
+      {
+        "endereco": "contato@interativosistemas.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "e0bb080d-d7b2-445e-be7b-bfdcbbdb61a0",
@@ -7202,7 +7652,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T15:11:15.825Z",
-    "updatedAt": "2026-09-30T15:11:15.825Z"
+    "updatedAt": "2026-09-30T15:11:15.825Z",
+    "emails": [
+      {
+        "endereco": "comercial@methos.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "d14a308c-40fb-4b2c-ba7a-583bef272717",
@@ -7286,7 +7742,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T15:11:15.825Z",
-    "updatedAt": "2026-09-30T15:11:15.825Z"
+    "updatedAt": "2026-09-30T15:11:15.825Z",
+    "emails": [
+      {
+        "endereco": "focco@focco.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "7f181f7a-4c32-4895-ba48-ad814b97e84c",
@@ -7510,7 +7972,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T15:11:15.827Z",
-    "updatedAt": "2026-09-30T15:11:15.827Z"
+    "updatedAt": "2026-09-30T15:11:15.827Z",
+    "emails": [
+      {
+        "endereco": "vendas@bltecsistemas.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "8226f57d-1fdd-4b83-9476-72347856510e",
@@ -7594,7 +8062,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T15:11:15.827Z",
-    "updatedAt": "2026-09-30T15:11:15.827Z"
+    "updatedAt": "2026-09-30T15:11:15.827Z",
+    "emails": [
+      {
+        "endereco": "comercial@amsolucoes.inf.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "55a74f81-e889-42fe-8a85-d62e51c6650d",
@@ -7622,7 +8096,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T15:11:15.828Z",
-    "updatedAt": "2026-09-30T15:11:15.828Z"
+    "updatedAt": "2026-09-30T15:11:15.828Z",
+    "emails": [
+      {
+        "endereco": "vendas@gsisti.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "6de342f8-eb56-44a4-8482-d1cc0addcf57",
@@ -7650,7 +8130,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T15:11:33.522Z",
-    "updatedAt": "2026-09-30T15:11:33.522Z"
+    "updatedAt": "2026-09-30T15:11:33.522Z",
+    "emails": [
+      {
+        "endereco": "comercial@rech.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "a7d9a395-86d6-430d-b8b1-bb7f3fc4b950",
@@ -7706,7 +8192,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.199Z",
-    "updatedAt": "2026-09-30T19:15:31.199Z"
+    "updatedAt": "2026-09-30T19:15:31.199Z",
+    "emails": [
+      {
+        "endereco": "contato@asteccontabilidade.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "59681c94-5640-422f-91ff-d886afbd7cdd",
@@ -7734,7 +8226,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.202Z",
-    "updatedAt": "2026-09-30T19:15:31.202Z"
+    "updatedAt": "2026-09-30T19:15:31.202Z",
+    "emails": [
+      {
+        "endereco": "contabil@sertec.cnt.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "06b9b313-11e1-4a8a-a4a0-12568bace09c",
@@ -7762,7 +8260,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.202Z",
-    "updatedAt": "2026-09-30T19:15:31.202Z"
+    "updatedAt": "2026-09-30T19:15:31.202Z",
+    "emails": [
+      {
+        "endereco": "contabil3@campinascontabil.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "4ca00647-262a-4177-b9cc-3aad7168a62b",
@@ -7818,7 +8322,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.203Z",
-    "updatedAt": "2026-09-30T19:15:31.203Z"
+    "updatedAt": "2026-09-30T19:15:31.203Z",
+    "emails": [
+      {
+        "endereco": "contato@contabilidadescalabrini.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "6d07fc3c-fbce-4a17-9052-e40d70148e5a",
@@ -7874,7 +8384,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.203Z",
-    "updatedAt": "2026-09-30T19:15:31.203Z"
+    "updatedAt": "2026-09-30T19:15:31.203Z",
+    "emails": [
+      {
+        "endereco": "contato@gigacon.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "7875d1b5-62b8-437a-af51-2c101ccb0228",
@@ -7902,7 +8418,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.205Z",
-    "updatedAt": "2026-09-30T19:15:31.205Z"
+    "updatedAt": "2026-09-30T19:15:31.205Z",
+    "emails": [
+      {
+        "endereco": "nunes@nunescont.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "6605aacd-12cd-4774-9997-5c1519c1c8d9",
@@ -7930,7 +8452,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.205Z",
-    "updatedAt": "2026-09-30T19:15:31.205Z"
+    "updatedAt": "2026-09-30T19:15:31.205Z",
+    "emails": [
+      {
+        "endereco": "contato@hvcon.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "43135a7d-aef1-4c8e-a9ac-014dd03327a6",
@@ -7958,7 +8486,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.206Z",
-    "updatedAt": "2026-09-30T19:15:31.206Z"
+    "updatedAt": "2026-09-30T19:15:31.206Z",
+    "emails": [
+      {
+        "endereco": "contabilrio@contabilrio.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "2afd6671-dd75-447c-bff3-a9a5d01a3c99",
@@ -8014,7 +8548,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.206Z",
-    "updatedAt": "2026-09-30T19:15:31.206Z"
+    "updatedAt": "2026-09-30T19:15:31.206Z",
+    "emails": [
+      {
+        "endereco": "tononi@tononicontabilidade.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "ae1b66df-9a37-4041-8c20-17a6c61f8f01",
@@ -8070,7 +8610,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.206Z",
-    "updatedAt": "2026-09-30T19:15:31.206Z"
+    "updatedAt": "2026-09-30T19:15:31.206Z",
+    "emails": [
+      {
+        "endereco": "contato@damiaocontabilidade.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "6bef3e53-c78b-433b-86ee-af7dc7b69580",
@@ -8098,7 +8644,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.206Z",
-    "updatedAt": "2026-09-30T19:15:31.206Z"
+    "updatedAt": "2026-09-30T19:15:31.206Z",
+    "emails": [
+      {
+        "endereco": "contato@pariscontabilidade.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "5474afb5-65b1-46f5-8224-cd4398022c93",
@@ -8154,7 +8706,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.206Z",
-    "updatedAt": "2026-09-30T19:15:31.206Z"
+    "updatedAt": "2026-09-30T19:15:31.206Z",
+    "emails": [
+      {
+        "endereco": "comercial@ubercentral.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "e7d98ee3-04f2-4ad3-a573-4dfec3b3042d",
@@ -8210,7 +8768,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.207Z",
-    "updatedAt": "2026-09-30T19:15:31.207Z"
+    "updatedAt": "2026-09-30T19:15:31.207Z",
+    "emails": [
+      {
+        "endereco": "contato@emecinco.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "500facce-2bfb-4f76-92f4-ab476ce61509",
@@ -8238,7 +8802,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.207Z",
-    "updatedAt": "2026-09-30T19:15:31.207Z"
+    "updatedAt": "2026-09-30T19:15:31.207Z",
+    "emails": [
+      {
+        "endereco": "contato@gomidecontabilidade.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "80fdced6-091b-4fb8-a750-76b7fccafde8",
@@ -8266,7 +8836,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.207Z",
-    "updatedAt": "2026-09-30T19:15:31.207Z"
+    "updatedAt": "2026-09-30T19:15:31.207Z",
+    "emails": [
+      {
+        "endereco": "contabilidade@marpecontabilidade.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "c7cf3c10-50f1-4b51-a87c-b62ffa008f62",
@@ -8294,7 +8870,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.207Z",
-    "updatedAt": "2026-09-30T19:15:31.207Z"
+    "updatedAt": "2026-09-30T19:15:31.207Z",
+    "emails": [
+      {
+        "endereco": "contato@lealcontabilidade.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "7742efb1-20a4-442f-b087-06075ec615b2",
@@ -8322,7 +8904,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.207Z",
-    "updatedAt": "2026-09-30T19:15:31.207Z"
+    "updatedAt": "2026-09-30T19:15:31.207Z",
+    "emails": [
+      {
+        "endereco": "contato@oriteccontabilidade.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "3f5bb6e4-0d00-4d08-b129-6418d6982351",
@@ -8406,7 +8994,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.208Z",
-    "updatedAt": "2026-09-30T19:15:31.208Z"
+    "updatedAt": "2026-09-30T19:15:31.208Z",
+    "emails": [
+      {
+        "endereco": "contato@agilitecontabil.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "a509e0d2-3bf2-4de4-9969-563c51e0f5e2",
@@ -8462,7 +9056,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.208Z",
-    "updatedAt": "2026-09-30T19:15:31.208Z"
+    "updatedAt": "2026-09-30T19:15:31.208Z",
+    "emails": [
+      {
+        "endereco": "admin@antonycontabilidade.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "27fe666a-ee74-40d1-a062-b84f946b1c90",
@@ -8518,7 +9118,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.208Z",
-    "updatedAt": "2026-09-30T19:15:31.208Z"
+    "updatedAt": "2026-09-30T19:15:31.208Z",
+    "emails": [
+      {
+        "endereco": "contato@smcontabilempresarial.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "487f4850-82a5-46c5-85fa-a761459ae859",
@@ -8546,7 +9152,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.208Z",
-    "updatedAt": "2026-09-30T19:15:31.208Z"
+    "updatedAt": "2026-09-30T19:15:31.208Z",
+    "emails": [
+      {
+        "endereco": "contato@mtcont.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "5fb8013d-5be6-4bfd-b219-a36b1dc1e3f7",
@@ -8574,7 +9186,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.208Z",
-    "updatedAt": "2026-09-30T19:15:31.208Z"
+    "updatedAt": "2026-09-30T19:15:31.208Z",
+    "emails": [
+      {
+        "endereco": "contato@masterassessoriacontabilmt.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "abb4aadc-ffd5-4e68-a502-cb89616051fb",
@@ -8602,7 +9220,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.208Z",
-    "updatedAt": "2026-09-30T19:15:31.208Z"
+    "updatedAt": "2026-09-30T19:15:31.208Z",
+    "emails": [
+      {
+        "endereco": "metropole@metropolecontabilidadems.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "a27e15f9-3415-47af-95e1-9738827c0f43",
@@ -8630,7 +9254,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.208Z",
-    "updatedAt": "2026-09-30T19:15:31.208Z"
+    "updatedAt": "2026-09-30T19:15:31.208Z",
+    "emails": [
+      {
+        "endereco": "contato@contems.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "0af4523d-7712-4cfe-b6ca-3311b5fd2fe5",
@@ -8658,7 +9288,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.208Z",
-    "updatedAt": "2026-09-30T19:15:31.208Z"
+    "updatedAt": "2026-09-30T19:15:31.208Z",
+    "emails": [
+      {
+        "endereco": "asteconms@terra.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "3f723859-2cde-481a-af14-a971c048a605",
@@ -8686,7 +9322,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.209Z",
-    "updatedAt": "2026-09-30T19:15:31.209Z"
+    "updatedAt": "2026-09-30T19:15:31.209Z",
+    "emails": [
+      {
+        "endereco": "contato@alkmimramos.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "b94d438f-1838-4ec6-abeb-c68a41228b75",
@@ -8742,7 +9384,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.209Z",
-    "updatedAt": "2026-09-30T19:15:31.209Z"
+    "updatedAt": "2026-09-30T19:15:31.209Z",
+    "emails": [
+      {
+        "endereco": "sac@witt.adv.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "a15923d9-89d9-4e96-be59-a5fe5d043536",
@@ -8798,7 +9446,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.209Z",
-    "updatedAt": "2026-09-30T19:15:31.209Z"
+    "updatedAt": "2026-09-30T19:15:31.209Z",
+    "emails": [
+      {
+        "endereco": "contato@guedesecruzadvocacia.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "afa42a88-a546-42bb-8d90-e0c1f1d65d55",
@@ -8826,7 +9480,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.209Z",
-    "updatedAt": "2026-09-30T19:15:31.209Z"
+    "updatedAt": "2026-09-30T19:15:31.209Z",
+    "emails": [
+      {
+        "endereco": "advocacia@fiorot.adv.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "42db60d1-faa0-4a1c-982f-3e2be269465f",
@@ -8882,7 +9542,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.209Z",
-    "updatedAt": "2026-09-30T19:15:31.209Z"
+    "updatedAt": "2026-09-30T19:15:31.209Z",
+    "emails": [
+      {
+        "endereco": "contato@peresabreuadv.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "f330cbec-4551-4b7a-b833-f25007073271",
@@ -8910,7 +9576,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.209Z",
-    "updatedAt": "2026-09-30T19:15:31.209Z"
+    "updatedAt": "2026-09-30T19:15:31.209Z",
+    "emails": [
+      {
+        "endereco": "vwsadvogados@vwsadvogados.adv.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "1d4f251f-5f0f-4372-8a1f-edba07df523a",
@@ -8938,7 +9610,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.209Z",
-    "updatedAt": "2026-09-30T19:15:31.209Z"
+    "updatedAt": "2026-09-30T19:15:31.209Z",
+    "emails": [
+      {
+        "endereco": "advocacia@bks.adv.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "914a1f1b-22bf-4ea4-885b-78ffdd3859a6",
@@ -8994,7 +9672,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.209Z",
-    "updatedAt": "2026-09-30T19:15:31.209Z"
+    "updatedAt": "2026-09-30T19:15:31.209Z",
+    "emails": [
+      {
+        "endereco": "sergio@julioadvocacia.com.br",
+        "classificacao": "Outro"
+      }
+    ]
   },
   {
     "id": "d3136068-e4ff-4f45-9810-e6ad0e735dba",
@@ -9022,7 +9706,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.209Z",
-    "updatedAt": "2026-09-30T19:15:31.209Z"
+    "updatedAt": "2026-09-30T19:15:31.209Z",
+    "emails": [
+      {
+        "endereco": "advogados@telini.adv.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "9168d9e4-a9d4-4bbd-b1c0-60efad4c4343",
@@ -9050,7 +9740,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.210Z",
-    "updatedAt": "2026-09-30T19:15:31.210Z"
+    "updatedAt": "2026-09-30T19:15:31.210Z",
+    "emails": [
+      {
+        "endereco": "contato@massoteguglielmelli.adv.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "79ef0661-6d60-48d6-b703-3f80d52bf72d",
@@ -9078,7 +9774,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.210Z",
-    "updatedAt": "2026-09-30T19:15:31.210Z"
+    "updatedAt": "2026-09-30T19:15:31.210Z",
+    "emails": [
+      {
+        "endereco": "juridico@rvermelho.adv.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "df2fbeca-880d-47e3-a89c-8b38765d0f93",
@@ -9134,7 +9836,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.210Z",
-    "updatedAt": "2026-09-30T19:15:31.210Z"
+    "updatedAt": "2026-09-30T19:15:31.210Z",
+    "emails": [
+      {
+        "endereco": "juridico@torresramon.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "6188cbf7-0d4b-4f55-befe-849615b18d6a",
@@ -9190,7 +9898,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.210Z",
-    "updatedAt": "2026-09-30T19:15:31.210Z"
+    "updatedAt": "2026-09-30T19:15:31.210Z",
+    "emails": [
+      {
+        "endereco": "natalie@apf.adv.br",
+        "classificacao": "Outro"
+      }
+    ]
   },
   {
     "id": "c67a2548-9553-4750-9430-fc5f5888ccbb",
@@ -9218,7 +9932,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.210Z",
-    "updatedAt": "2026-09-30T19:15:31.210Z"
+    "updatedAt": "2026-09-30T19:15:31.210Z",
+    "emails": [
+      {
+        "endereco": "contato@magalhaesbahia.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "7f352d11-1c0a-4359-9e22-00653dec8987",
@@ -9246,7 +9966,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.210Z",
-    "updatedAt": "2026-09-30T19:15:31.210Z"
+    "updatedAt": "2026-09-30T19:15:31.210Z",
+    "emails": [
+      {
+        "endereco": "contato@macedomattos.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "1bb18fb5-dba7-4894-a46e-37cd93f63649",
@@ -9274,7 +10000,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.210Z",
-    "updatedAt": "2026-09-30T19:15:31.210Z"
+    "updatedAt": "2026-09-30T19:15:31.210Z",
+    "emails": [
+      {
+        "endereco": "contato@cletogomes.adv.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "b3a44315-a595-4856-b9f6-74d0c7346fbb",
@@ -9330,7 +10062,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.210Z",
-    "updatedAt": "2026-09-30T19:15:31.210Z"
+    "updatedAt": "2026-09-30T19:15:31.210Z",
+    "emails": [
+      {
+        "endereco": "contato@raa.adv.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "675744fe-678e-49cf-8ff8-c03c9aa770d0",
@@ -9358,7 +10096,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.211Z",
-    "updatedAt": "2026-09-30T19:15:31.211Z"
+    "updatedAt": "2026-09-30T19:15:31.211Z",
+    "emails": [
+      {
+        "endereco": "ouvidoria@galvaoesilva.com",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "3b0ffe8c-80a4-430b-b227-e637393cd32d",
@@ -9386,7 +10130,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.211Z",
-    "updatedAt": "2026-09-30T19:15:31.211Z"
+    "updatedAt": "2026-09-30T19:15:31.211Z",
+    "emails": [
+      {
+        "endereco": "dmortoza@mortoza.com.br",
+        "classificacao": "Outro"
+      }
+    ]
   },
   {
     "id": "a4060814-d17d-4d43-8bbe-05195f5047bd",
@@ -9442,7 +10192,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.211Z",
-    "updatedAt": "2026-09-30T19:15:31.211Z"
+    "updatedAt": "2026-09-30T19:15:31.211Z",
+    "emails": [
+      {
+        "endereco": "advocacia@paixaocortes.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "62e12f8e-093e-4178-b1a3-5a052e5a6eed",
@@ -9526,7 +10282,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.211Z",
-    "updatedAt": "2026-09-30T19:15:31.211Z"
+    "updatedAt": "2026-09-30T19:15:31.211Z",
+    "emails": [
+      {
+        "endereco": "azevedoepedrosa@azevedoepedrosa.adv.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "d943b8cb-92b4-4dfa-9689-37aeeba03cf9",
@@ -9554,7 +10316,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.211Z",
-    "updatedAt": "2026-09-30T19:15:31.211Z"
+    "updatedAt": "2026-09-30T19:15:31.211Z",
+    "emails": [
+      {
+        "endereco": "contato@cruzequaresma.adv.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "8fc4ad64-c2fd-4662-87ae-ca5ea492bc4b",
@@ -9610,7 +10378,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.211Z",
-    "updatedAt": "2026-09-30T19:15:31.211Z"
+    "updatedAt": "2026-09-30T19:15:31.211Z",
+    "emails": [
+      {
+        "endereco": "spsadvocacia@spsadvocacia.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "9347339b-483a-48a9-a6b7-dabb8b8af685",
@@ -9638,7 +10412,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.212Z",
-    "updatedAt": "2026-09-30T19:15:31.212Z"
+    "updatedAt": "2026-09-30T19:15:31.212Z",
+    "emails": [
+      {
+        "endereco": "adm@nestorfidelis.adv.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "760ff32b-6bdc-496b-818f-efb3c431cf5a",
@@ -9666,7 +10446,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.212Z",
-    "updatedAt": "2026-09-30T19:15:31.212Z"
+    "updatedAt": "2026-09-30T19:15:31.212Z",
+    "emails": [
+      {
+        "endereco": "comercial@seabraautomacao.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "04ca2b82-624c-4c7a-adb1-53015016b16d",
@@ -9694,7 +10480,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.212Z",
-    "updatedAt": "2026-09-30T19:15:31.212Z"
+    "updatedAt": "2026-09-30T19:15:31.212Z",
+    "emails": [
+      {
+        "endereco": "comercial@msprojetosindustriais.com",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "a700a0ad-30d1-4408-837b-9edc0ffb890f",
@@ -9750,7 +10542,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.212Z",
-    "updatedAt": "2026-09-30T19:15:31.212Z"
+    "updatedAt": "2026-09-30T19:15:31.212Z",
+    "emails": [
+      {
+        "endereco": "contato@tjautomacao.com",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "fdd33736-0b2f-4993-8dc9-d09a49269452",
@@ -9778,7 +10576,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.212Z",
-    "updatedAt": "2026-09-30T19:15:31.212Z"
+    "updatedAt": "2026-09-30T19:15:31.212Z",
+    "emails": [
+      {
+        "endereco": "adm@vitoriaautomacao.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "9cb9c907-6c85-42c6-926f-e6cf4511e4aa",
@@ -9806,7 +10610,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.212Z",
-    "updatedAt": "2026-09-30T19:15:31.212Z"
+    "updatedAt": "2026-09-30T19:15:31.212Z",
+    "emails": [
+      {
+        "endereco": "comercial@mecavix.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "f5d36a80-0d4a-4cf5-8fda-341c690643ea",
@@ -9834,7 +10644,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.212Z",
-    "updatedAt": "2026-09-30T19:15:31.212Z"
+    "updatedAt": "2026-09-30T19:15:31.212Z",
+    "emails": [
+      {
+        "endereco": "contato@alphasolucoesindustriais.com",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "1597c17f-58ad-48a8-b942-e63b3ada51f6",
@@ -9862,7 +10678,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.212Z",
-    "updatedAt": "2026-09-30T19:15:31.212Z"
+    "updatedAt": "2026-09-30T19:15:31.212Z",
+    "emails": [
+      {
+        "endereco": "sat@satautomacao.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "8fd8887b-2d25-4e56-838e-354f4990b867",
@@ -9918,7 +10740,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.212Z",
-    "updatedAt": "2026-09-30T19:15:31.212Z"
+    "updatedAt": "2026-09-30T19:15:31.212Z",
+    "emails": [
+      {
+        "endereco": "contato@automacaoenergy.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "16990529-b520-4748-b443-294ce60336cc",
@@ -9946,7 +10774,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.213Z",
-    "updatedAt": "2026-09-30T19:15:31.213Z"
+    "updatedAt": "2026-09-30T19:15:31.213Z",
+    "emails": [
+      {
+        "endereco": "contato@elexian.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "807e75b6-b620-408c-b2ee-11f6cb9b4b7a",
@@ -9974,7 +10808,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.213Z",
-    "updatedAt": "2026-09-30T19:15:31.213Z"
+    "updatedAt": "2026-09-30T19:15:31.213Z",
+    "emails": [
+      {
+        "endereco": "contato@mreletricidade.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "93861192-b222-425a-88c1-7412b589a2f6",
@@ -10030,7 +10870,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.213Z",
-    "updatedAt": "2026-09-30T19:15:31.213Z"
+    "updatedAt": "2026-09-30T19:15:31.213Z",
+    "emails": [
+      {
+        "endereco": "contato@wengaut.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "20604edf-5ef0-40ed-9234-a43a326fe0d7",
@@ -10058,7 +10904,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.213Z",
-    "updatedAt": "2026-09-30T19:15:31.213Z"
+    "updatedAt": "2026-09-30T19:15:31.213Z",
+    "emails": [
+      {
+        "endereco": "paulo.engenharia@pasautomacao.com",
+        "classificacao": "Outro"
+      }
+    ]
   },
   {
     "id": "f6facba9-11b5-41f6-acef-1ef82e5de106",
@@ -10226,7 +11078,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.214Z",
-    "updatedAt": "2026-09-30T19:15:31.214Z"
+    "updatedAt": "2026-09-30T19:15:31.214Z",
+    "emails": [
+      {
+        "endereco": "autecjoi@autecjoi.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "38854089-76d7-4091-a0bc-d02c13cdb4a3",
@@ -10338,7 +11196,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.214Z",
-    "updatedAt": "2026-09-30T19:15:31.214Z"
+    "updatedAt": "2026-09-30T19:15:31.214Z",
+    "emails": [
+      {
+        "endereco": "contato@lztec.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "e857eac5-a757-4f56-a359-8ff3f7da618b",
@@ -10366,7 +11230,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.214Z",
-    "updatedAt": "2026-09-30T19:15:31.214Z"
+    "updatedAt": "2026-09-30T19:15:31.214Z",
+    "emails": [
+      {
+        "endereco": "contato@fkengenhariaeletrica.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "375f7e21-e057-4306-8e56-0acd350dcad0",
@@ -10394,7 +11264,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.214Z",
-    "updatedAt": "2026-09-30T19:15:31.214Z"
+    "updatedAt": "2026-09-30T19:15:31.214Z",
+    "emails": [
+      {
+        "endereco": "nova@novatecnologia.srv.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "675ef0fd-9d6c-4d87-9bd1-95ab63f045b7",
@@ -10422,7 +11298,13 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T19:15:31.214Z",
-    "updatedAt": "2026-09-30T19:15:31.214Z"
+    "updatedAt": "2026-09-30T19:15:31.214Z",
+    "emails": [
+      {
+        "endereco": "comercial@innovatechmaquinas.com.br",
+        "classificacao": "Setor"
+      }
+    ]
   },
   {
     "id": "d995020c-8000-4bb6-a785-5034d6b46986",
