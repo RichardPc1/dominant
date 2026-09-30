@@ -46,7 +46,7 @@ export default function Home() {
   const [filterCat, setFilterCat] = useState('');
   const [filterPrio, setFilterPrio] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
-  const [filterNaoLigado, setFilterNaoLigado] = useState(false);
+  const [filterLigacao, setFilterLigacao] = useState<'' | 'nao' | 'sim'>('');
   const [sortBy, setSortBy] = useState<'score' | 'nome' | 'prioridade' | 'dataInclusao'>('score');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
 
@@ -89,7 +89,9 @@ export default function Home() {
       if (filterCat && l.categoria !== filterCat) return false;
       if (filterPrio && l.prioridade !== filterPrio) return false;
       if (filterStatus && l.status !== filterStatus) return false;
-      if (filterNaoLigado && (l.chamadas ?? []).length > 0) return false;
+      if (filterLigacao === 'nao' && (l.chamadas ?? []).length > 0) return false;
+      if (filterLigacao === 'sim' && (l.chamadas ?? []).length === 0) return false;
+
       return true;
     });
 
@@ -103,7 +105,7 @@ export default function Home() {
     });
 
     return list;
-  }, [leads, search, filterCat, filterPrio, filterStatus, sortBy, sortDir]);
+  }, [leads, search, filterCat, filterPrio, filterStatus, filterLigacao, sortBy, sortDir]);
 
   const stats = useMemo(() => ({
     total: leads.length,
@@ -247,18 +249,20 @@ export default function Home() {
             <option value="">Todos os status</option>
             {STATUS_LIST.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
-          <button
-            onClick={() => setFilterNaoLigado(v => !v)}
-            className={`text-sm px-3 py-1.5 rounded-lg border transition-colors ${filterNaoLigado ? 'bg-orange-100 text-orange-700 border-orange-200' : 'border-gray-300 text-gray-600 hover:bg-gray-50'}`}
-          >
-            📵 Ainda não liguei
-          </button>
-          {(search || filterCat || filterPrio || filterStatus || filterNaoLigado) && (
-            <button onClick={() => { setSearch(''); setFilterCat(''); setFilterPrio(''); setFilterStatus(''); setFilterNaoLigado(false); }} className="text-sm text-gray-500 hover:text-gray-900">
+          <select value={filterLigacao} onChange={e => setFilterLigacao(e.target.value as '' | 'nao' | 'sim')} className="text-sm border border-gray-300 rounded-lg px-3 py-1.5 outline-none focus:border-blue-400 bg-white">
+            <option value="">📞 Todas as ligações</option>
+            <option value="nao">📵 Ainda não liguei</option>
+            <option value="sim">✅ Já liguei</option>
+          </select>
+          {(search || filterCat || filterPrio || filterStatus || filterLigacao) && (
+            <button onClick={() => { setSearch(''); setFilterCat(''); setFilterPrio(''); setFilterStatus(''); setFilterLigacao(''); }} className="text-sm text-gray-500 hover:text-gray-900">
               Limpar filtros
             </button>
           )}
-          <span className="ml-auto text-xs text-gray-400">{filtered.length} resultado{filtered.length !== 1 ? 's' : ''}</span>
+          <button onClick={handleRefresh} className="text-sm px-3 py-1.5 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors" title="Atualizar lista">
+            ↻
+          </button>
+          <span className="text-xs text-gray-400">{filtered.length} resultado{filtered.length !== 1 ? 's' : ''}</span>
         </div>
 
         {/* Table */}
