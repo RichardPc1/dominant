@@ -150,6 +150,9 @@ export default function Home() {
             <Link href="/roteiros" className="px-4 py-2 text-sm text-gray-500 hover:text-gray-900 transition-colors">
               Roteiros
             </Link>
+            <Link href="/emails" className="px-4 py-2 text-sm text-gray-500 hover:text-gray-900 transition-colors">
+              E-mails
+            </Link>
             <Link href="/guia" className="px-4 py-2 text-sm text-gray-500 hover:text-gray-900 transition-colors">
               Guia
             </Link>
