@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Lead, Status, Chamada, ResultadoChamada, Categoria } from '@/lib/types';
+import { Lead, Status, Chamada, ResultadoChamada, Categoria, TipoEmail, EmailContato } from '@/lib/types';
 import { colunaPorChamada } from '@/lib/kanban';
 import { DEFAULT_CONFIG, OutcomesConfig } from '@/lib/outcomes';
 import LiveCall from '@/app/components/LiveCall';
@@ -36,6 +36,11 @@ const RESULTADO_COLORS: Record<ResultadoChamada, string> = {
   'Sem interesse': 'bg-red-100 text-red-800',
   'Número errado': 'bg-gray-100 text-gray-700',
 };
+
+const TIPOS_EMAIL: TipoEmail[] = [
+  'Dono', 'Proprietário', 'Diretor', 'Gerente', 'Responsável TI',
+  'Comercial', 'Compras', 'RH', 'Setor', 'Outro',
+];
 
 const CATEGORIAS: Categoria[] = [
   'ERP / PCP', 'Integrador de automação', 'Fabricante de máquinas',
@@ -103,6 +108,12 @@ export default function CallPage() {
   const [callNota, setCallNota] = useState('');
   const [callResultado, setCallResultado] = useState<ResultadoChamada | null>(null);
 
+  // Email contacts state
+  const [emailsList, setEmailsList] = useState<EmailContato[]>([]);
+  const [newEmailAddr, setNewEmailAddr] = useState('');
+  const [newEmailTipo, setNewEmailTipo] = useState<TipoEmail>('Setor');
+  const [emailSaving, setEmailSaving] = useState(false);
+
   // Quick edit state
   const [editOpen, setEditOpen] = useState(false);
   const [editFields, setEditFields] = useState<Partial<Lead>>({});
@@ -119,6 +130,7 @@ export default function CallPage() {
       setLead(found);
       if (found) {
         setNotes(found.notasLigacao ?? '');
+        setEmailsList(found.emails ?? []);
         setEditFields({
           nome: found.nome,
           categoria: found.categoria,
@@ -200,6 +212,27 @@ export default function CallPage() {
     setEditOpen(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  }
+
+  async function addEmail() {
+    const addr = newEmailAddr.trim();
+    if (!addr || !lead) return;
+    const updated = [...emailsList, { endereco: addr, classificacao: newEmailTipo }];
+    setEmailSaving(true);
+    await patch({ emails: updated });
+    setEmailsList(updated);
+    setNewEmailAddr('');
+    setNewEmailTipo('Setor');
+    setEmailSaving(false);
+  }
+
+  async function removeEmail(idx: number) {
+    if (!lead) return;
+    const updated = emailsList.filter((_, i) => i !== idx);
+    setEmailSaving(true);
+    await patch({ emails: updated });
+    setEmailsList(updated);
+    setEmailSaving(false);
   }
 
   if (!lead) {
@@ -410,6 +443,66 @@ export default function CallPage() {
                 <span className="italic">Site — capturar manualmente</span>
               </span>
             )}
+          </div>
+        </div>
+
+        {/* Emails */}
+        <div className="bg-white rounded-2xl border border-gray-200 p-6">
+          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+            E-mails
+            {emailsList.length > 0 && (
+              <span className="ml-2 bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs font-normal">{emailsList.length}</span>
+            )}
+          </h2>
+
+          {emailsList.length > 0 && (
+            <div className="space-y-2 mb-3">
+              {emailsList.map((e, i) => (
+                <div key={i} className="flex items-center gap-2 p-2.5 rounded-xl bg-gray-50 border border-gray-100">
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded bg-blue-50 text-blue-700 shrink-0">{e.classificacao}</span>
+                  <span className="text-sm text-gray-800 flex-1 break-all select-all">{e.endereco}</span>
+                  <button
+                    onClick={() => { navigator.clipboard?.writeText(e.endereco); }}
+                    className="shrink-0 text-xs px-2 py-0.5 rounded bg-gray-100 hover:bg-gray-200 text-gray-500"
+                  >
+                    copiar
+                  </button>
+                  <button
+                    onClick={() => removeEmail(i)}
+                    className="shrink-0 text-xs px-2 py-0.5 rounded bg-red-50 hover:bg-red-100 text-red-500"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="flex gap-2 items-end">
+            <div className="flex-1">
+              <input
+                type="email"
+                value={newEmailAddr}
+                onChange={e => setNewEmailAddr(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && addEmail()}
+                placeholder="novo@email.com.br"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400"
+              />
+            </div>
+            <select
+              value={newEmailTipo}
+              onChange={e => setNewEmailTipo(e.target.value as TipoEmail)}
+              className="border border-gray-300 rounded-lg px-2 py-2 text-sm outline-none focus:border-blue-400 bg-white"
+            >
+              {TIPOS_EMAIL.map(t => <option key={t} value={t}>{t}</option>)}
+            </select>
+            <button
+              onClick={addEmail}
+              disabled={!newEmailAddr.trim() || emailSaving}
+              className="px-3 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700 disabled:opacity-40 transition-colors"
+            >
+              {emailSaving ? '...' : '+ Add'}
+            </button>
           </div>
         </div>
 

@@ -43,6 +43,23 @@ export type Coluna =
   | "pausados"
   | "descartados";
 
+export type TipoEmail =
+  | 'Dono'
+  | 'Proprietário'
+  | 'Diretor'
+  | 'Gerente'
+  | 'Responsável TI'
+  | 'Comercial'
+  | 'Compras'
+  | 'RH'
+  | 'Setor'
+  | 'Outro';
+
+export interface EmailContato {
+  endereco: string;
+  classificacao: TipoEmail;
+}
+
 export interface EmailRascunho {
   status: "pendente" | "pronto" | "enviado";
   para: string;
@@ -96,6 +113,8 @@ export interface Lead {
   agendaData?: string;
   /** Hora do próximo contato: "09:30" ou texto livre ("cedo", "tarde"). */
   agendaHora?: string;
+  /** Lista de e-mails com classificação (Dono, Setor, etc.). */
+  emails?: EmailContato[];
   /** E-mail personalizado para este lead (escrito pelo Claude Code via /emails). */
   emailRascunho?: EmailRascunho;
   /** Data de follow-up do e-mail enviado (YYYY-MM-DD). */
