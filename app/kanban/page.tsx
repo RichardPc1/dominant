@@ -177,9 +177,6 @@ export default function KanbanPage() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     carregar();
-    // atualiza sozinho para enxergar o que os sócios mexeram
-    const t = setInterval(() => { if (!document.hidden) carregar(); }, 8000);
-    return () => clearInterval(t);
   }, [carregar]);
 
   async function patch(id: string, updates: Partial<Lead>) {
