@@ -3,6 +3,7 @@ import path from 'path';
 import { Lead } from './types';
 import { Redis } from '@upstash/redis';
 import { DEFAULT_CONFIG, OutcomesConfig } from './outcomes';
+import { repararDeslocado } from './reparar';
 
 const DATA_FILE = path.join(process.cwd(), 'data', 'leads.json');
 
@@ -22,7 +23,7 @@ const redis = REDIS_URL && REDIS_TOKEN ? new Redis({ url: REDIS_URL, token: REDI
 const LEADS_KEY = 'dominant:leads';
 const OUTCOMES_KEY = 'dominant:outcomes';
 
-const normalize = (l: Lead): Lead => ({ ...l, telefone: l.telefone ?? '', site: l.site ?? '' });
+const normalize = (l: Lead): Lead => repararDeslocado({ ...l, telefone: l.telefone ?? '', site: l.site ?? '' });
 
 function readFile(): Lead[] {
   ensureDataDir();

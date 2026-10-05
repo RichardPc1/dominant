@@ -3,11 +3,14 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Coluna, Lead } from '@/lib/types';
 import {
-  COLUNAS, chipAgenda, colunaDe, compararNaColuna, extrairEmail, linkWhatsApp, telefoneDe, ultimaChamada,
+  BOARD, COLUNAS, GAVETA, GrupoBoard, MAX_SEM_RESPOSTA, chipAgenda, colunaDe, compararNaColuna, extrairEmail,
+  linkWhatsApp, semRespostaSeguidas, telefoneDe, ultimaChamada,
 } from '@/lib/kanban';
 import { PriorityBadge } from '../components/Badges';
 
 type FiltroLigacao = 'todos' | 'com' | 'sem';
+
+const PASSO_FILA = 12;
 
 function CopyBtn({ value }: { value: string }) {
   const [ok, setOk] = useState(false);
@@ -35,15 +38,16 @@ function Card({
   onAgenda: (id: string, data: string, hora: string) => void;
 }) {
   const def = COLUNAS.find(c => c.id === coluna)!;
-  const chip = coluna === 'ligar' || coluna === 'aguardando' || coluna === 'tentar' ? chipAgenda(lead) : null;
+  const podeAgendar = coluna === 'ligar' || coluna === 'aguardando' || coluna === 'tentar';
+  const chip = podeAgendar ? chipAgenda(lead) : null;
   const fone = telefoneDe(lead);
-  const email = extrairEmail(lead);
+  const email = extrairEmail(lead) || lead.emails?.[0]?.endereco || '';
   const ult = ultimaChamada(lead);
   const nChamadas = (lead.chamadas ?? []).length;
+  const semResp = semRespostaSeguidas(lead);
   const [editando, setEditando] = useState(false);
   const [data, setData] = useState(lead.agendaData ?? '');
   const [hora, setHora] = useState(lead.agendaHora ?? '');
-  const podeAgendar = coluna === 'ligar' || coluna === 'aguardando' || coluna === 'tentar';
 
   return (
     <div
@@ -62,6 +66,7 @@ function Card({
         </Link>
         <PriorityBadge p={lead.prioridade} />
       </div>
+      <p className="text-[11px] text-gray-400 mt-0.5">{lead.categoria}{lead.localizacao ? ` · ${lead.localizacao}` : ''}</p>
 
       {fone ? (
         <div className="mt-1.5 flex items-center gap-1.5">
@@ -82,24 +87,35 @@ function Card({
         </div>
       )}
 
+      {semResp >= 1 && coluna !== 'pausados' && (
+        <p className={`mt-2 w-fit text-[11px] font-semibold rounded px-1.5 py-0.5 ${semResp >= 2 ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-800'}`}>
+          📵 {semResp} ligaç{semResp > 1 ? 'ões' : 'ão'} sem resposta{semResp >= 2 ? ' — tente por mensagem' : ''}
+        </p>
+      )}
+      {semResp >= MAX_SEM_RESPOSTA && coluna === 'pausados' && (
+        <p className="mt-2 w-fit text-[11px] font-semibold rounded px-1.5 py-0.5 bg-gray-200 text-gray-700">
+          📵 {semResp} ligações sem resposta — fila esgotada
+        </p>
+      )}
+
       {lead.emailRascunho && (
-        <span className={`mt-2 inline-block text-[11px] font-semibold rounded px-1.5 py-0.5 ${lead.emailRascunho.status === 'pronto' ? 'bg-emerald-100 text-emerald-800' : lead.emailRascunho.status === 'enviado' ? 'bg-gray-100 text-gray-600' : 'bg-yellow-100 text-yellow-800'}`}>
+        <span className={`mt-2 block w-fit text-[11px] font-semibold rounded px-1.5 py-0.5 ${lead.emailRascunho.status === 'pronto' ? 'bg-emerald-100 text-emerald-800' : lead.emailRascunho.status === 'enviado' ? 'bg-gray-100 text-gray-600' : 'bg-yellow-100 text-yellow-800'}`}>
           {lead.emailRascunho.status === 'pronto' ? '✉️ rascunho pronto pra enviar' : lead.emailRascunho.status === 'enviado' ? '✉️ enviado' : '✉️ aguardando /emails'}
         </span>
       )}
 
       {ult?.notas && (
-        <p className="mt-2 text-xs text-gray-700 bg-yellow-50 border border-yellow-100 rounded px-2 py-1 whitespace-pre-line line-clamp-4">
+        <p className="mt-2 text-xs text-gray-700 bg-yellow-50 border border-yellow-100 rounded px-2 py-1 whitespace-pre-line line-clamp-3">
           {ult.notas}
         </p>
       )}
 
       <div className="mt-2 flex items-center justify-between gap-2 text-[11px] text-gray-400">
-        <span>{nChamadas ? `${nChamadas} ligaç${nChamadas > 1 ? 'ões' : 'ão'}${ult ? ` · últ. ${ult.data.slice(0, 5)} ${ult.hora}` : ''}` : 'nunca ligado'} · {lead.score} pts</span>
+        <span>{nChamadas && ult ? `${nChamadas}× · últ. ${ult.data.slice(0, 5)} ${ult.hora}` : 'nunca ligado'}</span>
         <select
           value={coluna}
           onChange={e => onMove(lead.id, e.target.value as Coluna)}
-          className="text-[11px] text-gray-500 border border-gray-200 rounded px-1 py-0.5 bg-white max-w-24"
+          className="text-[11px] text-gray-500 border border-gray-200 rounded px-1 py-0.5 bg-white max-w-28"
           title="Mover para..."
         >
           {COLUNAS.map(c => <option key={c.id} value={c.id}>{c.icone} {c.titulo}</option>)}
@@ -134,12 +150,63 @@ function Card({
   );
 }
 
+function ColunaBoard({
+  grupo, leads, colunaDoLead, over, setOver, onDropLead, onMove, onAgenda, largura = 'w-80',
+}: {
+  grupo: GrupoBoard;
+  leads: Lead[];
+  colunaDoLead: Map<string, Coluna>;
+  over: string | null;
+  setOver: (id: string | null) => void;
+  onDropLead: (id: string, grupo: GrupoBoard) => void;
+  onMove: (id: string, c: Coluna) => void;
+  onAgenda: (id: string, data: string, hora: string) => void;
+  largura?: string;
+}) {
+  const [mostrar, setMostrar] = useState(grupo.limite ?? Infinity);
+  const visiveis = leads.slice(0, mostrar);
+  return (
+    <section
+      onDragOver={e => { e.preventDefault(); setOver(grupo.id); }}
+      onDragLeave={() => setOver(null)}
+      onDrop={e => {
+        e.preventDefault();
+        setOver(null);
+        const id = e.dataTransfer.getData('text/plain');
+        if (id) onDropLead(id, grupo);
+      }}
+      className={`${largura} shrink-0 rounded-xl bg-gray-100 border ${over === grupo.id ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'}`}
+    >
+      <div className={`${grupo.header} rounded-t-xl px-3 py-2 flex items-center justify-between`} title={grupo.dica}>
+        <h2 className="text-sm font-bold">{grupo.icone} {grupo.titulo}</h2>
+        <span className="text-xs font-bold bg-white/25 rounded-full px-2 py-0.5">{leads.length}</span>
+      </div>
+      <p className="px-3 pt-2 text-[11px] text-gray-400 leading-snug">{grupo.dica}</p>
+      <div className="p-2 space-y-2 max-h-[calc(100vh-11rem)] overflow-y-auto">
+        {leads.length === 0 && <p className="text-xs text-gray-300 text-center py-4">vazio</p>}
+        {visiveis.map(l => (
+          <Card key={l.id} lead={l} coluna={colunaDoLead.get(l.id)!} onMove={onMove} onAgenda={onAgenda} />
+        ))}
+        {leads.length > visiveis.length && (
+          <button
+            onClick={() => setMostrar(m => m + PASSO_FILA)}
+            className="w-full text-xs text-blue-600 hover:bg-white rounded-lg py-2 border border-dashed border-gray-300"
+          >
+            ver mais {Math.min(PASSO_FILA, leads.length - visiveis.length)} · faltam {leads.length - visiveis.length}
+          </button>
+        )}
+      </div>
+    </section>
+  );
+}
+
 export default function KanbanPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [busca, setBusca] = useState('');
-  const [over, setOver] = useState<Coluna | null>(null);
+  const [over, setOver] = useState<string | null>(null);
   const [filtroLigacao, setFiltroLigacao] = useState<FiltroLigacao>('todos');
+  const [gavetaAberta, setGavetaAberta] = useState(false);
   const [atualizando, setAtualizando] = useState(false);
   const [atualizadoEm, setAtualizadoEm] = useState('');
   const [filtrosLidos, setFiltrosLidos] = useState(false);
@@ -151,14 +218,15 @@ export default function KanbanPage() {
       const f = JSON.parse(localStorage.getItem('kanban-filtros') ?? '{}');
       if (typeof f.busca === 'string') setBusca(f.busca);
       if (f.ligacao === 'com' || f.ligacao === 'sem') setFiltroLigacao(f.ligacao);
+      if (f.gaveta === true) setGavetaAberta(true);
     } catch {}
     setFiltrosLidos(true);
     /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
   useEffect(() => {
     if (!filtrosLidos) return;
-    try { localStorage.setItem('kanban-filtros', JSON.stringify({ busca, ligacao: filtroLigacao })); } catch {}
-  }, [busca, filtroLigacao, filtrosLidos]);
+    try { localStorage.setItem('kanban-filtros', JSON.stringify({ busca, ligacao: filtroLigacao, gaveta: gavetaAberta })); } catch {}
+  }, [busca, filtroLigacao, gavetaAberta, filtrosLidos]);
 
   const carregar = useCallback(async () => {
     try {
@@ -191,23 +259,40 @@ export default function KanbanPage() {
   const move = (id: string, coluna: Coluna) => patch(id, { coluna });
   const agenda = (id: string, agendaData: string, agendaHora: string) => patch(id, { agendaData, agendaHora });
 
-  const porColuna = useMemo(() => {
+  // Soltar em "Mandar mensagem": e-mail se o lead tem e-mail, senão WhatsApp.
+  const soltar = (id: string, grupo: GrupoBoard) => {
+    const lead = leads.find(l => l.id === id);
+    if (!lead) return;
+    const alvo = grupo.etapas.length > 1 && !extrairEmail(lead) && !(lead.emails ?? []).length ? 'whatsapp' : grupo.alvo;
+    move(id, alvo);
+  };
+
+  const { porEtapa, colunaDoLead } = useMemo(() => {
     const q = busca.trim().toLowerCase();
     const map = Object.fromEntries(COLUNAS.map(c => [c.id, [] as Lead[]])) as Record<Coluna, Lead[]>;
+    const cols = new Map<string, Coluna>();
     for (const l of leads) {
       if (q && !l.nome.toLowerCase().includes(q)) continue;
       const temLigacao = (l.chamadas ?? []).length > 0;
       if (filtroLigacao === 'com' && !temLigacao) continue;
       if (filtroLigacao === 'sem' && temLigacao) continue;
-      map[colunaDe(l)].push(l);
+      const c = colunaDe(l);
+      cols.set(l.id, c);
+      map[c].push(l);
     }
     for (const c of COLUNAS) map[c.id].sort(compararNaColuna);
-    return map;
+    return { porEtapa: map, colunaDoLead: cols };
   }, [leads, busca, filtroLigacao]);
 
-  const atrasados = porColuna.ligar.filter(l => chipAgenda(l)?.urgencia === 0).length;
-  const hoje = porColuna.ligar.filter(l => chipAgenda(l)?.urgencia === 1).length;
-  const amanha = porColuna.ligar.filter(l => chipAgenda(l)?.urgencia === 2).length;
+  const doGrupo = (g: GrupoBoard) => g.etapas.flatMap(e => porEtapa[e]).sort(compararNaColuna);
+
+  const ligar = porEtapa.ligar;
+  const atrasados = ligar.filter(l => chipAgenda(l)?.urgencia === 0).length;
+  const hoje = ligar.filter(l => chipAgenda(l)?.urgencia === 1).length;
+  const amanha = ligar.filter(l => chipAgenda(l)?.urgencia === 2).length;
+  const foraDeJogo = GAVETA.reduce((n, g) => n + doGrupo(g).length, 0);
+
+  const propsComuns = { colunaDoLead, over, setOver, onDropLead: soltar, onMove: move, onAgenda: agenda };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -244,35 +329,23 @@ export default function KanbanPage() {
       {loading ? (
         <div className="py-20 text-center text-gray-400">Carregando...</div>
       ) : (
-        <div className="flex-1 overflow-x-auto p-4">
+        <div className="flex-1 overflow-x-auto p-4 space-y-4">
           <div className="flex gap-3 items-start min-w-max">
-            {COLUNAS.map(col => (
-              <section
-                key={col.id}
-                onDragOver={e => { e.preventDefault(); setOver(col.id); }}
-                onDragLeave={() => setOver(o => (o === col.id ? null : o))}
-                onDrop={e => {
-                  e.preventDefault();
-                  setOver(null);
-                  const id = e.dataTransfer.getData('text/plain');
-                  if (id) move(id, col.id);
-                }}
-                className={`w-80 shrink-0 rounded-xl bg-gray-100 border ${over === col.id ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'}`}
-              >
-                <div className={`${col.header} rounded-t-xl px-3 py-2 flex items-center justify-between`} title={col.dica}>
-                  <h2 className="text-sm font-bold">{col.icone} {col.titulo}</h2>
-                  <span className="text-xs font-bold bg-white/25 rounded-full px-2 py-0.5">{porColuna[col.id].length}</span>
-                </div>
-                <div className="p-2 space-y-2 max-h-[calc(100vh-9rem)] overflow-y-auto">
-                  {porColuna[col.id].length === 0 && (
-                    <p className="text-xs text-gray-400 text-center py-6">{col.dica}</p>
-                  )}
-                  {porColuna[col.id].map(l => (
-                    <Card key={l.id} lead={l} coluna={col.id} onMove={move} onAgenda={agenda} />
-                  ))}
-                </div>
-              </section>
-            ))}
+            {BOARD.map(g => <ColunaBoard key={g.id} grupo={g} leads={doGrupo(g)} {...propsComuns} />)}
+          </div>
+
+          <div>
+            <button
+              onClick={() => setGavetaAberta(a => !a)}
+              className="text-sm text-gray-600 hover:text-gray-900 border border-gray-300 bg-white rounded-lg px-3 py-1.5"
+            >
+              {gavetaAberta ? '▼' : '▶'} Fora de jogo ({foraDeJogo}) — {GAVETA.map(g => `${g.titulo} ${doGrupo(g).length}`).join(' · ')}
+            </button>
+            {gavetaAberta && (
+              <div className="flex gap-3 items-start min-w-max mt-3">
+                {GAVETA.map(g => <ColunaBoard key={g.id} grupo={{ ...g, limite: 25 }} leads={doGrupo(g)} {...propsComuns} />)}
+              </div>
+            )}
           </div>
         </div>
       )}

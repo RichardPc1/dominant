@@ -273,7 +273,7 @@ export default function CallPage() {
           <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">{lead.nome}</h1>
-              <p className="text-sm text-gray-500 mt-1">{lead.localizacao} · {lead.segmento || lead.porte}</p>
+              <p className="text-sm text-gray-500 mt-1">{[lead.localizacao, lead.segmento].filter(Boolean).join(' · ')}</p>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
               <PriorityBadge p={lead.prioridade} />
@@ -386,42 +386,6 @@ export default function CallPage() {
           )}
         </div>
 
-        {/* What they do */}
-        <div className="bg-white rounded-2xl border border-gray-200 p-6">
-          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">O que fazem</h2>
-          <p className="text-gray-800 text-sm leading-relaxed">{lead.perfil || '—'}</p>
-        </div>
-
-        {/* Why it makes sense */}
-        <div className="bg-blue-50 rounded-2xl border border-blue-100 p-6">
-          <h2 className="text-xs font-semibold text-blue-600 uppercase tracking-wide mb-2">Por que faz sentido</h2>
-          <p className="text-gray-800 text-sm leading-relaxed">{lead.porqueFazSentido || '—'}</p>
-          {lead.fonte && (
-            <a href={lead.fonte} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline mt-2 block truncate">
-              {lead.fonte}
-            </a>
-          )}
-        </div>
-
-        {/* Roteiro link */}
-        {(() => {
-          const r = ROTEIROS.find(x => x.categoria === lead.categoria);
-          if (!r) return null;
-          return (
-            <Link
-              href={`/roteiros?cat=${r.id}`}
-              className="flex items-center justify-between bg-indigo-50 border border-indigo-200 rounded-2xl p-5 hover:bg-indigo-100 transition-colors group"
-            >
-              <div>
-                <p className="text-xs font-semibold text-indigo-500 uppercase tracking-wide mb-0.5">Roteiro de abordagem</p>
-                <p className="text-sm font-semibold text-indigo-800">{r.categoria}</p>
-                <p className="text-xs text-indigo-500 mt-0.5">{r.tagline}</p>
-              </div>
-              <span className="text-indigo-400 text-lg group-hover:translate-x-1 transition-transform">→</span>
-            </Link>
-          );
-        })()}
-
         {/* Contact */}
         <div className="bg-white rounded-2xl border border-gray-200 p-6">
           <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Contato / canal de entrada</h2>
@@ -506,10 +470,38 @@ export default function CallPage() {
           </div>
         </div>
 
-        {/* Next step */}
-        <div className="bg-amber-50 rounded-2xl border border-amber-100 p-6">
-          <h2 className="text-xs font-semibold text-amber-600 uppercase tracking-wide mb-2">Próximo passo sugerido</h2>
-          <p className="text-gray-800 text-sm leading-relaxed">{lead.proximoPasso || '—'}</p>
+        {/* Sobre a empresa */}
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 space-y-4">
+          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Sobre a empresa</h2>
+          <div>
+            <p className="text-xs font-medium text-gray-400 mb-0.5">O que fazem</p>
+            <p className="text-gray-800 text-sm leading-relaxed">{lead.perfil || '—'}</p>
+          </div>
+          <div>
+            <p className="text-xs font-medium text-blue-500 mb-0.5">Por que faz sentido</p>
+            <p className="text-gray-800 text-sm leading-relaxed">{lead.porqueFazSentido || '—'}</p>
+          </div>
+          {lead.proximoPasso && (
+            <div className="bg-amber-50 border border-amber-100 rounded-xl p-3">
+              <p className="text-xs font-medium text-amber-600 mb-0.5">Próximo passo sugerido</p>
+              <p className="text-gray-800 text-sm leading-relaxed">{lead.proximoPasso}</p>
+            </div>
+          )}
+          {/^https?:\/\//i.test(lead.fonte) && (
+            <a href={lead.fonte} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline block truncate">
+              Fonte: {lead.fonte}
+            </a>
+          )}
+          {(() => {
+            const r = ROTEIROS.find(x => x.categoria === lead.categoria);
+            if (!r) return null;
+            return (
+              <Link href={`/roteiros?cat=${r.id}`} className="flex items-center justify-between bg-indigo-50 border border-indigo-200 rounded-xl p-3 hover:bg-indigo-100 transition-colors">
+                <span className="text-sm font-semibold text-indigo-800">Roteiro de abordagem: {r.categoria}</span>
+                <span className="text-indigo-400">→</span>
+              </Link>
+            );
+          })()}
         </div>
 
         {/* Notes */}
@@ -535,7 +527,7 @@ export default function CallPage() {
 
         {/* Status actions */}
         <div className="bg-white rounded-2xl border border-gray-200 p-6">
-          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Atualizar status</h2>
+          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Status comercial</h2>
           <div className="flex flex-wrap gap-2">
             {STATUS_ACTIONS.map(a => (
               <button

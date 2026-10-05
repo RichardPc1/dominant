@@ -23,6 +23,47 @@ export const COLUNAS: ColunaDef[] = [
   { id: 'descartados', titulo: 'Sem interesse', icone: '❌', dica: 'Morreram', header: 'bg-red-500 text-white', faixa: 'border-l-red-400' },
 ];
 
+/**
+ * O que aparece no quadro. São menos colunas que as 10 "etapas" acima:
+ * e-mail + WhatsApp viram uma só ("Mandar mensagem"), e o que está fora de jogo
+ * (sem telefone, pausados, sem interesse) fica recolhido numa gaveta.
+ */
+export interface GrupoBoard {
+  id: string;
+  titulo: string;
+  icone: string;
+  dica: string;
+  header: string;
+  /** etapas (Coluna) que aparecem neste grupo */
+  etapas: Coluna[];
+  /** etapa aplicada quando um card é solto aqui */
+  alvo: Coluna;
+  /** só mostra os N melhores (por agenda/score) e um botão "ver mais" */
+  limite?: number;
+}
+
+const def = (id: Coluna) => COLUNAS.find(c => c.id === id)!;
+const grupo = (id: Coluna, extra: Partial<GrupoBoard> = {}): GrupoBoard => {
+  const c = def(id);
+  return { id, titulo: c.titulo, icone: c.icone, dica: c.dica, header: c.header, etapas: [id], alvo: id, ...extra };
+};
+
+export const BOARD: GrupoBoard[] = [
+  grupo('ligar', { titulo: 'Ligar', dica: 'Retornos e ligações com dia/hora marcados' }),
+  grupo('tentar', { dica: '1 ligação sem resposta. Na 2ª falha o lead vai para Mensagem' }),
+  grupo('email', { id: 'mensagem', titulo: 'Mandar mensagem', dica: 'Pediram e-mail/WhatsApp, ou 2 ligações sem resposta', etapas: ['email', 'whatsapp'] }),
+  grupo('aguardando'),
+  grupo('avancado'),
+  grupo('novos', { titulo: 'Próximos da fila', dica: 'Nunca ligados e com telefone, melhor score primeiro', limite: 12 }),
+];
+
+/** Gaveta recolhida: fora do trabalho do dia. */
+export const GAVETA: GrupoBoard[] = [
+  grupo('pesquisar', { titulo: 'Achar contato', dica: 'Sem telefone ou número errado' }),
+  grupo('pausados', { dica: 'Fora de foco, ou 3 ligações sem resposta' }),
+  grupo('descartados'),
+];
+
 const STATUS_AVANCADO = ['Reunião marcada', 'Proposta enviada', 'Piloto', 'Parceiro ativo'];
 
 export function ultimaChamada(lead: Lead): Chamada | undefined {
@@ -59,17 +100,53 @@ export function colunaPorChamada(resultado: ResultadoChamada, notas: string): Co
   }
 }
 
-/** Coluna efetiva: a escolhida manualmente ou, na falta dela, a derivada do histórico. */
-export function colunaDe(lead: Lead): Coluna {
+/** Limite de ligações seguidas sem resposta: a 2ª falha muda de canal, a 3ª encerra a fila de ligação. */
+export const MAX_SEM_RESPOSTA = 3;
+
+/** Quantas das últimas ligações seguidas ficaram sem resposta (não atendeu / caixa postal). */
+export function semRespostaSeguidas(lead: Lead): number {
+  let n = 0;
+  const cs = lead.chamadas ?? [];
+  for (let i = cs.length - 1; i >= 0; i--) {
+    if (cs[i].resultado === 'Não atendeu' || cs[i].resultado === 'Caixa postal') n++;
+    else break;
+  }
+  return n;
+}
+
+function temEmail(lead: Lead): boolean {
+  return (lead.emails ?? []).length > 0 || !!extrairEmail(lead);
+}
+
+function colunaBase(lead: Lead): Coluna {
   if (lead.coluna) return lead.coluna;
   const ultima = ultimaChamada(lead);
   if (!ultima) {
     return lead.status === 'Pausado' || lead.status === 'Monitorar' ? 'pausados'
       : lead.status === 'Fechado' ? 'descartados'
+      : lead.status === 'A pesquisar' ? 'pesquisar'
       : 'novos';
   }
   if (STATUS_AVANCADO.includes(lead.status)) return 'avancado';
   return colunaPorChamada(ultima.resultado, ultima.notas ?? '');
+}
+
+/**
+ * Coluna efetiva: a escolhida manualmente ou, na falta dela, a derivada do histórico,
+ * com duas regras de limpeza:
+ *  - "Tentar de novo" só guarda quem tem 1 tentativa sem resposta. Com 2, vai para
+ *    mensagem (e-mail ou WhatsApp); com 3 seguidas, sai da fila (pausados).
+ *  - Lead novo sem telefone utilizável não é "ligável": vai para "Achar contato".
+ */
+export function colunaDe(lead: Lead): Coluna {
+  const base = colunaBase(lead);
+  if (base === 'tentar') {
+    const n = semRespostaSeguidas(lead);
+    if (n >= MAX_SEM_RESPOSTA) return 'pausados';
+    if (n >= 2) return temEmail(lead) ? 'email' : 'whatsapp';
+  }
+  if (base === 'novos' && !telefoneDe(lead)) return 'pesquisar';
+  return base;
 }
 
 /** Telefone utilizável: campo telefone, ou um número achado nas notas. */
