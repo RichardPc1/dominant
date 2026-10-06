@@ -1,0 +1,16 @@
+[
+  {
+    "nome": "Empresa ABC",
+    "para": "contato@empresaabc.com.br",
+    "assunto": "DOMINANT X EMPRESA ABC",
+    "corpo": "Olá, prezados!\n\nEspero que esteja bem.\n\nGostaríamos de apresentar uma solução que pode otimizar processos repetitivos no seu escritório, combinando automação RPA e Inteligência Artificial.\n\nE SE QUISER VER AO VIVO como funciona, consegue 15 minutos essa semana para uma demonstração? Tenho disponibilidade na quinta ou na sexta. Mas se outro horário funcionar melhor, é só me falar.\n\nAtenciosamente,\nBruno Guimarães",
+    "pdf": "C:\\Caminho\\Para\\Proposta_Empresa_ABC.pdf"
+  },
+  {
+    "nome": "Empresa XYZ (sem PDF)",
+    "para": "contato@xyz.com.br",
+    "assunto": "DOMINANT X EMPRESA XYZ",
+    "corpo": "Olá, prezados!\n\nTexto do e-mail...",
+    "pdf": null
+  }
+]
