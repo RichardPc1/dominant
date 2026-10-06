@@ -82,6 +82,16 @@ export interface Chamada {
   classificacao?: string;
 }
 
+export type CanalMensagem = 'WhatsApp' | 'E-mail' | 'LinkedIn' | 'Outro';
+
+export interface Mensagem {
+  id: string;
+  data: string;
+  hora: string;
+  canal: CanalMensagem;
+  notas: string;
+}
+
 export interface Lead {
   id: string;
   nome: string;
@@ -119,6 +129,8 @@ export interface Lead {
   emailRascunho?: EmailRascunho;
   /** Data de follow-up do e-mail enviado (YYYY-MM-DD). */
   followUpEm?: string;
+  /** Histórico de mensagens enviadas (WhatsApp, e-mail, LinkedIn). */
+  mensagens?: Mensagem[];
   createdAt: string;
   updatedAt: string;
 }

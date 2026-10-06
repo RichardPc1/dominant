@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Lead, Status, Chamada, ResultadoChamada, Categoria, TipoEmail, EmailContato } from '@/lib/types';
+import { Lead, Status, Chamada, ResultadoChamada, Categoria, TipoEmail, EmailContato, Mensagem, CanalMensagem } from '@/lib/types';
 import { colunaPorChamada } from '@/lib/kanban';
 import { DEFAULT_CONFIG, OutcomesConfig } from '@/lib/outcomes';
 import LiveCall from '@/app/components/LiveCall';
@@ -108,6 +108,12 @@ export default function CallPage() {
   const [callNota, setCallNota] = useState('');
   const [callResultado, setCallResultado] = useState<ResultadoChamada | null>(null);
 
+  // Messages state
+  const [mensagensList, setMensagensList] = useState<Mensagem[]>([]);
+  const [registrandoMsg, setRegistrandoMsg] = useState(false);
+  const [msgCanal, setMsgCanal] = useState<CanalMensagem>('WhatsApp');
+  const [msgNota, setMsgNota] = useState('');
+
   // Email contacts state
   const [emailsList, setEmailsList] = useState<EmailContato[]>([]);
   const [newEmailAddr, setNewEmailAddr] = useState('');
@@ -130,6 +136,7 @@ export default function CallPage() {
       setLead(found);
       if (found) {
         setNotes(found.notasLigacao ?? '');
+        setMensagensList(found.mensagens ?? []);
         setEmailsList(found.emails ?? []);
         setEditFields({
           nome: found.nome,
@@ -212,6 +219,22 @@ export default function CallPage() {
     setEditOpen(false);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  }
+
+  async function registrarMensagem() {
+    if (!lead) return;
+    const { data, hora } = nowBR();
+    const msg: Mensagem = {
+      id: Math.random().toString(36).slice(2),
+      data, hora,
+      canal: msgCanal,
+      notas: msgNota,
+    };
+    const novas = [...mensagensList, msg];
+    await patch({ mensagens: novas });
+    setMensagensList(novas);
+    setMsgNota('');
+    setRegistrandoMsg(false);
   }
 
   async function addEmail() {
@@ -377,6 +400,92 @@ export default function CallPage() {
                 </button>
                 <button
                   onClick={() => { setRegistering(false); setCallNota(''); setCallResultado(null); }}
+                  className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* MESSAGES LOG */}
+        <div className="bg-white rounded-2xl border border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Histórico de mensagens
+              {mensagensList.length > 0 && (
+                <span className="ml-2 bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs font-normal">
+                  {mensagensList.length}
+                </span>
+              )}
+            </h2>
+            {!registrandoMsg && (
+              <button
+                onClick={() => setRegistrandoMsg(true)}
+                className="px-3 py-1.5 bg-gray-900 text-white text-xs font-medium rounded-lg hover:bg-gray-700 transition-colors"
+              >
+                + Registrar mensagem
+              </button>
+            )}
+          </div>
+
+          {mensagensList.length === 0 && !registrandoMsg && (
+            <p className="text-sm text-gray-400 italic">Nenhuma mensagem registrada ainda.</p>
+          )}
+
+          {mensagensList.length > 0 && (
+            <div className="space-y-2 mb-4">
+              {[...mensagensList].reverse().map(m => (
+                <div key={m.id} className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded bg-green-100 text-green-800">
+                        {m.canal === 'WhatsApp' ? '💬' : m.canal === 'E-mail' ? '✉️' : m.canal === 'LinkedIn' ? '🔗' : '📩'} {m.canal}
+                      </span>
+                      <span className="text-xs text-gray-400">{m.data} às {m.hora}</span>
+                    </div>
+                    {m.notas && <p className="text-sm text-gray-700 mt-1">{m.notas}</p>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {registrandoMsg && (
+            <div className="border border-gray-200 rounded-xl p-4 space-y-3 bg-gray-50">
+              <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Canal</p>
+              <div className="flex flex-wrap gap-2">
+                {(['WhatsApp', 'E-mail', 'LinkedIn', 'Outro'] as CanalMensagem[]).map(c => (
+                  <button
+                    key={c}
+                    onClick={() => setMsgCanal(c)}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors ${
+                      msgCanal === c
+                        ? 'bg-gray-900 text-white border-gray-900'
+                        : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-100'
+                    }`}
+                  >
+                    {c === 'WhatsApp' ? '💬' : c === 'E-mail' ? '✉️' : c === 'LinkedIn' ? '🔗' : '📩'} {c}
+                  </button>
+                ))}
+              </div>
+              <textarea
+                value={msgNota}
+                onChange={e => setMsgNota(e.target.value)}
+                placeholder="O que foi enviado? (opcional)"
+                rows={2}
+                className="w-full text-sm border border-gray-300 rounded-lg p-2.5 resize-none outline-none focus:border-blue-400"
+              />
+              <div className="flex gap-2">
+                <button
+                  onClick={registrarMensagem}
+                  className="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors"
+                >
+                  Salvar
+                </button>
+                <button
+                  onClick={() => { setRegistrandoMsg(false); setMsgNota(''); }}
                   className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900"
                 >
                   Cancelar
