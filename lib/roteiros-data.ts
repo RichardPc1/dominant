@@ -706,5 +706,274 @@ export const ROTEIROS: Roteiro[] = [
       },
     ],
   },
+  {
+    id: 'followup-contabil',
+    categoria: 'Follow-up — Escritório Contábil',
+    tagline: 'Retorno após e-mail de outubro — transformar clique em conversa',
+    duracao: '3–5 min',
+    canal: 'Telefone → WhatsApp',
+    alvo: 'Sócio-contador, gerente ou quem recebeu o e-mail da campanha',
+    sections: [
+      {
+        id: 'contexto',
+        icon: '🎯',
+        title: 'Contexto — o que foi enviado',
+        items: [
+          { type: 'text', text: 'Esse lead recebeu um e-mail da Dominant no início de outubro/2026 sobre automação RPA para escritórios contábeis — eliminação de tarefas manuais como digitação de NF, SPED, conciliação e relatórios. O follow-up é a segunda chance: transformar um e-mail que "talvez ele tenha visto" em uma conversa real.' },
+          { type: 'tip', text: '📌 Não assuma que leu. A abertura é "mandei um e-mail, não sei se chegou a ver". Isso não é fraqueza — é cortesia. E elimina qualquer constrangimento de "sim vi mas não respondi".' },
+        ],
+      },
+      {
+        id: 'telefone',
+        icon: '📞',
+        title: 'Ligação de follow-up',
+        items: [
+          { type: 'tip', text: 'Abertura direta — 4 segundos:' },
+          { type: 'script', text: '"Oi, [nome], tudo bem? Aqui é [seu nome] da Dominant. Eu mandei um e-mail há alguns dias sobre automação para escritórios contábeis — processos como emissão de NF, SPED, folha de pagamento no eSocial. Você chegou a ver?"' },
+          { type: 'tip', text: 'Se VIU e não respondeu:' },
+          { type: 'script', text: '"Ótimo! E teve alguma coisa que chamou atenção — algum processo que vocês fazem na mão hoje que tomou tempo?"' },
+          { type: 'tip', text: 'Se NÃO VIU (ou não lembra):' },
+          { type: 'script', text: '"Sem problema, posso resumir em 1 minuto. A gente faz automação de processos para contabilidades — o robô faz a digitação, o preenchimento de sistema, o SPED, enquanto o time cuida do que importa. Vi que o escritório de vocês atende [porte/setor]. Tem 3 minutinhos?"' },
+          { type: 'tip', text: 'Perguntas-âncora após abertura:' },
+          { type: 'list', items: [
+            '"Qual processo toma mais tempo do time hoje — digitação de NF, lançamentos, SPED ou conciliação?"',
+            '"Tem colaborador que passa mais de 2 horas por dia fazendo a mesma tarefa repetitiva?"',
+            '"Se o volume de clientes dobrar, vocês conseguem absorver sem contratar mais gente?"',
+          ]},
+        ],
+      },
+      {
+        id: 'whatsapp',
+        icon: '💬',
+        title: 'WhatsApp — se não atender',
+        items: [
+          { type: 'tip', text: 'Mensagem curta após a ligação não atendida:' },
+          { type: 'script', text: '"Oi [nome], [seu nome] da Dominant. Tentei te ligar agora. Mandei um e-mail essa semana sobre automação de processos para contabilidades — SPED, NF, folha no eSocial. Tem 5 minutos algum momento essa semana pra eu te mostrar como funciona?"' },
+          { type: 'tip', text: 'Se abriu mas não respondeu (1 dia depois):' },
+          { type: 'script', text: '"Oi [nome]! Só passei pra checar se você teve chance de ver o e-mail sobre RPA para contabilidades. Se fizer sentido conversar, pode me responder aqui mesmo — marco um horário na sua agenda."' },
+        ],
+      },
+      {
+        id: 'objecoes',
+        icon: '🛡️',
+        title: 'Objeções comuns nesse nicho',
+        items: [
+          { type: 'tip', text: '"Já temos sistema de automação."' },
+          { type: 'script', text: '"Que ótimo! Esse sistema automatiza o preenchimento nos portais — eSocial, SPED, Receita? Ou ele ajuda mais na parte interna do escritório? A maioria dos sistemas contábeis tem módulos, mas o time ainda digita manualmente em vários portais. Se vocês já têm isso resolvido, estão na frente."' },
+          { type: 'tip', text: '"Não temos orçamento no momento."' },
+          { type: 'script', text: '"Entendo. Posso te mostrar como funciona o cálculo de retorno — quanto o escritório paga em horas de trabalho manual por mês versus o custo da automação? Em escritórios do porte de vocês geralmente o payback é em menos de 4 meses. Quer que eu faça essa conta com os números de vocês?"' },
+          { type: 'tip', text: '"Manda mais informação por e-mail."' },
+          { type: 'script', text: '"Claro! Mas deixa eu te perguntar uma coisa antes de mandar: qual é o processo que mais dói no dia a dia — o que eu deveria focar no material que vou te enviar?"' },
+        ],
+      },
+      {
+        id: 'fechamento',
+        icon: '✅',
+        title: 'Fechamento',
+        items: [
+          { type: 'script', text: '"Que tal isso: te mando um exemplo de automação que fizemos num escritório contábil parecido — antes e depois de um processo de SPED. Você vê, mostra pro sócio, e se fizer sentido a gente marca 20 minutos pra ver o que dá pra automatizar em vocês. Qual e-mail confirmo?"' },
+          { type: 'tip', text: '📅 Se marcar call: "Ótimo! [dia] às [hora]. Se quiser, traz o colaborador que fica mais tempo nessas tarefas — ajuda a ver o impacto real."' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'followup-juridico',
+    categoria: 'Follow-up — Escritório Jurídico',
+    tagline: 'Retorno após e-mail de outubro — do processo manual ao robô que monitora prazos',
+    duracao: '3–5 min',
+    canal: 'Telefone → WhatsApp',
+    alvo: 'Sócio, gestor administrativo ou quem recebeu o e-mail da campanha',
+    sections: [
+      {
+        id: 'contexto',
+        icon: '🎯',
+        title: 'Contexto — o que foi enviado',
+        items: [
+          { type: 'text', text: 'Lead recebeu e-mail da Dominant em outubro/2026 sobre automação RPA para escritórios jurídicos — monitoramento de andamentos no TJ-SP/TJPR, cálculo de prazos, download de decisões e notificação automática de advogados. Nicho sensível a prazo e erro — é a dor real deles.' },
+          { type: 'tip', text: '⚖️ Escritórios jurídicos são avessos a risco. Não venda tecnologia — venda eliminação de erro e tranquilidade de prazo. "Robô que não deixa prazo passar" é mais forte do que "automação de processos".' },
+        ],
+      },
+      {
+        id: 'telefone',
+        icon: '📞',
+        title: 'Ligação de follow-up',
+        items: [
+          { type: 'tip', text: 'Abertura:' },
+          { type: 'script', text: '"Oi [nome], [seu nome] da Dominant. Eu mandei um e-mail há alguns dias sobre automação para escritórios jurídicos — monitoramento de andamentos e controle de prazos automático no TJ. Você chegou a ver?"' },
+          { type: 'tip', text: 'Gancho de dor — se tiver atenção:' },
+          { type: 'script', text: '"Qual é a rotina de vocês hoje pra acompanhar andamentos — alguém faz a busca manual nos tribunais? Porque o problema que a gente resolve é exatamente esse: o robô faz a busca todo dia, baixa as decisões, calcula os prazos e avisa o advogado responsável automaticamente — sem ninguém precisar entrar no portal."' },
+          { type: 'tip', text: 'Perguntas-âncora:' },
+          { type: 'list', items: [
+            '"Quantos processos ativos o escritório acompanha hoje?"',
+            '"Tem alguém dedicado só a monitorar andamentos e calcular prazos?"',
+            '"Já teve situação de prazo que quase passou — ou passou — porque o andamento não foi visto a tempo?"',
+          ]},
+        ],
+      },
+      {
+        id: 'whatsapp',
+        icon: '💬',
+        title: 'WhatsApp — se não atender',
+        items: [
+          { type: 'script', text: '"Oi [nome], [seu nome] da Dominant. Tentei te ligar. Mandei um e-mail sobre automação de monitoramento de processos — o robô monitora andamentos no TJ, calcula prazos e avisa o advogado, sem ninguém entrar no portal. Tem 5 minutos essa semana?"' },
+        ],
+      },
+      {
+        id: 'objecoes',
+        icon: '🛡️',
+        title: 'Objeções comuns nesse nicho',
+        items: [
+          { type: 'tip', text: '"Já temos software jurídico que faz isso."' },
+          { type: 'script', text: '"Faz sentido. Esse software monitora os portais dos tribunais automaticamente ou ainda depende do colaborador entrar e verificar? A maioria dos softwares jurídicos organiza os processos depois que alguém atualiza — o RPA faz a busca por conta própria, diariamente, e alimenta o sistema de vocês."' },
+          { type: 'tip', text: '"Nosso time já tem essa rotina controlada."' },
+          { type: 'script', text: '"Que ótimo! E quanto tempo por dia seu time investe nisso? Se for mais de 1 hora, provavelmente tem automação a fazer — porque esse é exatamente o tipo de tarefa que um robô faz mais rápido e sem erro."' },
+          { type: 'tip', text: '"Não temos interesse agora."' },
+          { type: 'script', text: '"Entendo. Posso te mandar um exemplo de como funciona num escritório do mesmo porte — leva 3 minutos pra ver. Se não fizer sentido, não tem problema. Qual e-mail?"' },
+        ],
+      },
+      {
+        id: 'fechamento',
+        icon: '✅',
+        title: 'Fechamento',
+        items: [
+          { type: 'script', text: '"Te mando o vídeo do robô monitorando processos no TJ-SP em tempo real — você vê como funciona e mostra pro sócio. Se fizer sentido, a gente agenda 20 minutos pra mapear os portais que vocês usam. Qual e-mail confirmo?"' },
+          { type: 'tip', text: '📅 Se marcar: "Perfeito! Se puder me contar antes quantos processos ativos o escritório tem, já chego com uma estimativa do tempo que seria liberado."' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'followup-logistica',
+    categoria: 'Follow-up — Transportadora / Logística',
+    tagline: 'Retorno após e-mail de outubro — CT-e, MDFe e rastreio sem digitação',
+    duracao: '3–5 min',
+    canal: 'Telefone → WhatsApp',
+    alvo: 'Dono, gerente operacional ou quem recebeu o e-mail da campanha',
+    sections: [
+      {
+        id: 'contexto',
+        icon: '🎯',
+        title: 'Contexto — o que foi enviado',
+        items: [
+          { type: 'text', text: 'Lead recebeu e-mail da Dominant em outubro/2026 sobre automação RPA para transportadoras — emissão de CT-e e MDFe no SEFAZ, cálculo de frete, cotação de tabela e envio de rastreio automático. Dor real: operação cresce mas não tem como contratar só pra digitar documento fiscal.' },
+          { type: 'tip', text: '🚛 Em transporte, o que converte é velocidade e volume. "O robô emite 31 CT-es em 38 segundos — o que levaria 3h30min na mão" é o número que prende atenção.' },
+        ],
+      },
+      {
+        id: 'telefone',
+        icon: '📞',
+        title: 'Ligação de follow-up',
+        items: [
+          { type: 'tip', text: 'Abertura:' },
+          { type: 'script', text: '"Oi [nome], [seu nome] da Dominant. Mandei um e-mail semana passada sobre automação de CT-e e MDFe para transportadoras. Você chegou a ver?"' },
+          { type: 'tip', text: 'Gancho imediato:' },
+          { type: 'script', text: '"A ideia é simples: o robô pega os pedidos, acessa o sistema de vocês, emite o CT-e no SEFAZ, calcula o frete e já manda o rastreio pro cliente — tudo automático. Quantos CT-es vocês emitem por dia hoje?"' },
+          { type: 'tip', text: 'Perguntas-âncora:' },
+          { type: 'list', items: [
+            '"Isso hoje é feito na mão — alguém digita as informações no sistema fiscal?"',
+            '"Tem alguma transportadora que vocês perdem tempo conciliando frete — tabela versus o que foi cobrado?"',
+            '"Nos picos de movimento, o gargalo está em emissão de documento ou em outro lugar?"',
+          ]},
+        ],
+      },
+      {
+        id: 'whatsapp',
+        icon: '💬',
+        title: 'WhatsApp — se não atender',
+        items: [
+          { type: 'script', text: '"Oi [nome], [seu nome] da Dominant. Tentei te ligar. Mandei um e-mail sobre automação de CT-e para transportadoras — robô emite, calcula frete e manda rastreio automaticamente. Quantos CT-es vocês emitem por dia? Posso te mostrar como ficaria em 5 minutos."' },
+        ],
+      },
+      {
+        id: 'objecoes',
+        icon: '🛡️',
+        title: 'Objeções comuns nesse nicho',
+        items: [
+          { type: 'tip', text: '"Já temos TMS que faz isso."' },
+          { type: 'script', text: '"Faz sentido. O TMS de vocês já integra direto com o SEFAZ ou ainda precisa de alguém para confirmar e transmitir? A maioria dos TMS ajuda na gestão mas o CT-e ainda passa por uma etapa manual. Se o de vocês já é 100% automático, ótimo — mas é raro."' },
+          { type: 'tip', text: '"Não temos tempo pra implementar."' },
+          { type: 'script', text: '"Processos de CT-e a gente configura em 1 a 2 semanas. Enquanto a gente configura, a operação continua normal — não para nada. Posso te mandar um exemplo de uma transportadora que a gente automatizou recentemente?"' },
+          { type: 'tip', text: '"Deve ser caro pra nossa operação."' },
+          { type: 'script', text: '"Depende do volume. Me conta quantos CT-es por dia em média — faço uma estimativa rápida do custo e do retorno. Geralmente o payback é em 3 a 5 meses se o volume for acima de 20 CT-es por dia."' },
+        ],
+      },
+      {
+        id: 'fechamento',
+        icon: '✅',
+        title: 'Fechamento',
+        items: [
+          { type: 'script', text: '"Te mando um exemplo de automação de CT-e que fizemos — você vê o antes e depois. Se fizer sentido, a gente marca 20 minutos pra mapear o processo de vocês e fazer uma estimativa real. Qual e-mail?"' },
+          { type: 'tip', text: '📅 Se marcar: "Ótimo! Me diz antes quantos CT-es por dia em média e qual sistema fiscal vocês usam — já chego com uma proposta desenhada."' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'followup-imobiliario',
+    categoria: 'Follow-up — Imobiliária / Administradora',
+    tagline: 'Retorno após e-mail de outubro — cobranças, boletos e inadimplência sem trabalho manual',
+    duracao: '3–5 min',
+    canal: 'Telefone → WhatsApp',
+    alvo: 'Sócio, gerente financeiro ou quem recebeu o e-mail da campanha',
+    sections: [
+      {
+        id: 'contexto',
+        icon: '🎯',
+        title: 'Contexto — o que foi enviado',
+        items: [
+          { type: 'text', text: 'Lead recebeu e-mail da Dominant em outubro/2026 sobre automação RPA para imobiliárias e administradoras de imóveis — geração de boletos mensais, aplicação de reajuste IGP-M/IPCA, envio de cobranças por e-mail e WhatsApp, e controle de inadimplência. A dor: processo repetitivo todo começo de mês, alto risco de erro humano.' },
+          { type: 'tip', text: '🏢 O gatilho de emoção aqui é reajuste e inadimplência. "127 boletos em 41 segundos — o que levaria 5 horas na mão" é o número. Mais forte ainda: "reajuste IGP-M aplicado automaticamente em todos os contratos aniversariantes".' },
+        ],
+      },
+      {
+        id: 'telefone',
+        icon: '📞',
+        title: 'Ligação de follow-up',
+        items: [
+          { type: 'tip', text: 'Abertura:' },
+          { type: 'script', text: '"Oi [nome], [seu nome] da Dominant. Mandei um e-mail essa semana sobre automação de cobranças para imobiliárias — geração de boletos, envio automático e controle de inadimplência. Você chegou a ver?"' },
+          { type: 'tip', text: 'Gancho — primeiro de mês:' },
+          { type: 'script', text: '"A gente resolve aquele processo que todo começo de mês toma horas do time: o robô gera os boletos, aplica o reajuste nos contratos aniversariantes, manda por e-mail e WhatsApp pra cada inquilino e já atualiza a lista de inadimplentes. Quantos contratos de locação vocês administram hoje?"' },
+          { type: 'tip', text: 'Perguntas-âncora:' },
+          { type: 'list', items: [
+            '"Esse processo de cobrança mensal — quanto tempo o time gasta por mês nisso?"',
+            '"O reajuste IGP-M é aplicado manualmente contrato a contrato ou tem algum controle automatizado?"',
+            '"Inadimplência — vocês têm rotina de cobrança por WhatsApp hoje ou é tudo por e-mail e telefone?"',
+          ]},
+        ],
+      },
+      {
+        id: 'whatsapp',
+        icon: '💬',
+        title: 'WhatsApp — se não atender',
+        items: [
+          { type: 'script', text: '"Oi [nome], [seu nome] da Dominant. Tentei te ligar. Mandei um e-mail sobre automação de cobranças para imobiliárias — boletos, reajuste IGP-M e inadimplência automáticos. Quantos contratos vocês administram? Posso te mostrar como ficaria em 5 minutos."' },
+        ],
+      },
+      {
+        id: 'objecoes',
+        icon: '🛡️',
+        title: 'Objeções comuns nesse nicho',
+        items: [
+          { type: 'tip', text: '"Já temos software imobiliário que faz isso."' },
+          { type: 'script', text: '"Faz sentido. Esse software gera o boleto e já manda pelo WhatsApp automaticamente, sem ninguém clicar? A maioria dos sistemas imobiliários gera o boleto, mas o envio e o controle de inadimplência ainda precisam de intervenção manual. Se o de vocês já faz tudo automático, ótimo — mas é comum ter alguma etapa ainda manual."' },
+          { type: 'tip', text: '"Nosso time já tem isso controlado."' },
+          { type: 'script', text: '"Que bom! E quanto tempo por mês o time investe nisso — boletos, reajuste, cobrança? Se for mais de 4 horas por mês, provavelmente tem algo pra automatizar — porque esse é o tipo de tarefa que o robô faz em minutos sem erro."' },
+          { type: 'tip', text: '"Não temos orçamento."' },
+          { type: 'script', text: '"Entendo. Me conta quantos contratos vocês têm e quanto o time gasta nisso por mês — faço uma estimativa rápida do custo versus o que pagam hoje em hora de trabalho. Geralmente o número surpreende."' },
+        ],
+      },
+      {
+        id: 'fechamento',
+        icon: '✅',
+        title: 'Fechamento',
+        items: [
+          { type: 'script', text: '"Te mando um exemplo de automação de cobranças que fizemos — você vê os números antes e depois. Se fizer sentido, a gente marca 20 minutos pra ver como encaixaria no processo de vocês. Qual e-mail confirmo?"' },
+          { type: 'tip', text: '📅 Se marcar: "Perfeito! Me diz quantos contratos de locação vocês administram e qual sistema vocês usam — já chego com uma ideia do que dá pra automatizar."' },
+        ],
+      },
+    ],
+  },
 ];
 
