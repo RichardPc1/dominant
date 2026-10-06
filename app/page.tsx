@@ -1,9 +1,11 @@
 'use client';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import { Lead, Categoria, Prioridade, Status } from '@/lib/types';
 import { PriorityBadge, StatusBadge, CategoriaBadge } from './components/Badges';
 import RunRoundModal from './components/RunRoundModal';
+
+const FILTERS_KEY = 'dominant-filters';
 
 const CATEGORIAS: Categoria[] = [
   'ERP / PCP', 'Integrador de automação', 'Fabricante de máquinas',
@@ -47,8 +49,35 @@ export default function Home() {
   const [filterPrio, setFilterPrio] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [filterLigacao, setFilterLigacao] = useState<'' | 'nao' | 'sim'>('');
+  const [filterLoc, setFilterLoc] = useState('');
   const [sortBy, setSortBy] = useState<'score' | 'nome' | 'prioridade' | 'dataInclusao'>('score');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
+  const filtersReady = useRef(false);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(FILTERS_KEY);
+      if (saved) {
+        const f = JSON.parse(saved);
+        if (f.search !== undefined) setSearch(f.search);
+        if (f.filterCat !== undefined) setFilterCat(f.filterCat);
+        if (f.filterPrio !== undefined) setFilterPrio(f.filterPrio);
+        if (f.filterStatus !== undefined) setFilterStatus(f.filterStatus);
+        if (f.filterLigacao !== undefined) setFilterLigacao(f.filterLigacao);
+        if (f.filterLoc !== undefined) setFilterLoc(f.filterLoc);
+        if (f.sortBy !== undefined) setSortBy(f.sortBy);
+        if (f.sortDir !== undefined) setSortDir(f.sortDir);
+      }
+    } catch {}
+    filtersReady.current = true;
+  }, []);
+
+  useEffect(() => {
+    if (!filtersReady.current) return;
+    try {
+      localStorage.setItem(FILTERS_KEY, JSON.stringify({ search, filterCat, filterPrio, filterStatus, filterLigacao, filterLoc, sortBy, sortDir }));
+    } catch {}
+  }, [search, filterCat, filterPrio, filterStatus, filterLigacao, filterLoc, sortBy, sortDir]);
 
   async function fetchLeads() {
     const res = await fetch('/api/leads', { cache: 'no-store' });
@@ -91,6 +120,7 @@ export default function Home() {
       if (filterStatus && l.status !== filterStatus) return false;
       if (filterLigacao === 'nao' && (l.chamadas ?? []).length > 0) return false;
       if (filterLigacao === 'sim' && (l.chamadas ?? []).length === 0) return false;
+      if (filterLoc && l.localizacao !== filterLoc) return false;
 
       return true;
     });
@@ -105,7 +135,11 @@ export default function Home() {
     });
 
     return list;
-  }, [leads, search, filterCat, filterPrio, filterStatus, filterLigacao, sortBy, sortDir]);
+  }, [leads, search, filterCat, filterPrio, filterStatus, filterLigacao, filterLoc, sortBy, sortDir]);
+
+  const locations = useMemo(() =>
+    [...new Set(leads.map(l => l.localizacao).filter(Boolean))].sort(),
+  [leads]);
 
   const stats = useMemo(() => ({
     total: leads.length,
@@ -257,8 +291,12 @@ export default function Home() {
             <option value="nao">📵 Ainda não liguei</option>
             <option value="sim">✅ Já liguei</option>
           </select>
-          {(search || filterCat || filterPrio || filterStatus || filterLigacao) && (
-            <button onClick={() => { setSearch(''); setFilterCat(''); setFilterPrio(''); setFilterStatus(''); setFilterLigacao(''); }} className="text-sm text-gray-500 hover:text-gray-900">
+          <select value={filterLoc} onChange={e => setFilterLoc(e.target.value)} className="text-sm border border-gray-300 rounded-lg px-3 py-1.5 outline-none focus:border-blue-400 bg-white">
+            <option value="">📍 Todas as cidades</option>
+            {locations.map(loc => <option key={loc} value={loc}>{loc}</option>)}
+          </select>
+          {(search || filterCat || filterPrio || filterStatus || filterLigacao || filterLoc) && (
+            <button onClick={() => { setSearch(''); setFilterCat(''); setFilterPrio(''); setFilterStatus(''); setFilterLigacao(''); setFilterLoc(''); }} className="text-sm text-gray-500 hover:text-gray-900">
               Limpar filtros
             </button>
           )}
