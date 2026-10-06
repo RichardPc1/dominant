@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Demo RPA — Controle Processual — Dominant</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#0F0C1E;font-family:'Segoe UI',Arial,sans-serif;font-size:13px}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden}
+.screen.active{display:flex}
+#sp{background:linear-gradient(135deg,#0F0C1E 0%,#1A1440 55%,#2A1A6E 100%);align-items:center;justify-content:center;flex-direction:column;gap:16px}
+.sp-badge{font-size:10px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:2px;border:1px solid rgba(201,168,76,.3);padding:4px 14px;border-radius:20px}
+.sp-title{font-size:30px;font-weight:900;color:#fff;text-align:center;line-height:1.15;max-width:580px}
+.sp-title span{color:#C9A84C}
+.sp-sub{font-size:13px;color:rgba(255,255,255,.5);max-width:460px;text-align:center;line-height:1.65}
+.sp-btn{margin-top:20px;background:#C9A84C;color:#0F0C1E;font-size:13px;font-weight:800;padding:14px 40px;border:none;border-radius:3px;cursor:pointer;transition:all .2s}
+.sp-btn:hover{background:#D4B55A;transform:translateY(-1px)}
+.sp-hint{font-size:10px;color:rgba(255,255,255,.2)}
+.hdr{background:#0C0A1A;display:flex;align-items:center;padding:0 18px;height:52px;flex-shrink:0;border-bottom:1px solid rgba(201,168,76,.2)}
+.hdr-icon{width:32px;height:32px;background:#C9A84C;border-radius:4px;display:grid;place-items:center;font-size:18px}
+.hdr-name{font-size:15px;font-weight:800;color:#fff;margin-left:10px}
+.hdr-name span{color:#C9A84C}
+.hdr-sub{font-size:9px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.8px;margin-top:1px}
+.hdr-nav{margin-left:28px;display:flex}
+.hdr-tab{padding:0 14px;height:52px;display:flex;align-items:center;font-size:11px;color:rgba(255,255,255,.4);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.hdr-tab.on{color:#C9A84C;border-bottom-color:#C9A84C}
+.hdr-badge{margin-left:auto;background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.4);color:#C9A84C;font-size:10px;font-weight:700;padding:3px 11px;border-radius:12px}
+.hdr-usr{margin-left:16px;font-size:10px;color:rgba(255,255,255,.35);text-align:right}
+.hdr-usr strong{color:#fff;font-size:11px;display:block}
+.bg{background:#0D0C20;flex:1;display:flex;align-items:center;justify-content:center}
+.card{background:#14112A;border:1px solid rgba(201,168,76,.2);border-radius:6px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.5);width:420px}
+.card-hdr{background:#0C0A1A;padding:18px 22px;border-bottom:2px solid #C9A84C}
+.card-hdr-t{font-size:13px;font-weight:700;color:#fff}
+.card-hdr-s{font-size:10px;color:rgba(255,255,255,.3);margin-top:2px}
+.card-body{padding:20px 22px}
+.lf{margin-bottom:13px}
+.lf label{display:block;font-size:10px;font-weight:700;color:#C9A84C;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.lf input{width:100%;border:1px solid rgba(255,255,255,.1);border-radius:3px;padding:9px 11px;font-size:13px;color:#fff;background:#0C0A1A;outline:none;transition:border .2s}
+.lf input:focus{border-color:#C9A84C}
+.btn-main{width:100%;background:#C9A84C;color:#0F0C1E;font-size:13px;font-weight:800;padding:11px;border:none;border-radius:3px;cursor:pointer;margin-top:4px}
+.dash{background:#0D0C20;flex:1;display:flex;flex-direction:column;overflow:hidden}
+.dash-top{background:#0C0A1A;padding:11px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,.05)}
+.dash-top h2{font-size:13px;font-weight:700;color:#fff}
+.dash-body{flex:1;display:flex;overflow:hidden}
+.sidebar{width:190px;background:#0C0A1A;border-right:1px solid rgba(255,255,255,.05);padding:12px 0}
+.sb-item{padding:9px 16px;display:flex;align-items:center;gap:9px;font-size:11px;color:rgba(255,255,255,.35);cursor:pointer;border-left:2px solid transparent}
+.sb-item.on{color:#C9A84C;border-left-color:#C9A84C;background:rgba(201,168,76,.05)}
+.main-area{flex:1;padding:16px;overflow:auto;display:flex;flex-direction:column;gap:12px}
+.kpi-row{display:flex;gap:10px}
+.kpi{background:#14112A;border:1px solid rgba(255,255,255,.07);border-radius:5px;padding:12px 14px;flex:1}
+.kpi-lbl{font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.5px}
+.kpi-val{font-size:22px;font-weight:800;color:#fff;margin-top:3px}
+.kpi-val.g{color:#C9A84C}.kpi-val.r{color:#E05555}.kpi-val.b{color:#7CB9E8}
+.kpi-sub{font-size:10px;color:rgba(255,255,255,.25);margin-top:2px}
+.tbl-card{background:#14112A;border:1px solid rgba(255,255,255,.07);border-radius:5px;overflow:hidden}
+.tbl-hdr{background:#0C0A1A;padding:10px 14px;display:flex;align-items:center;gap:8px}
+.tbl-hdr h3{font-size:11px;font-weight:700;color:#fff}
+.tbl-hdr .cnt{font-size:10px;color:rgba(255,255,255,.25)}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.4px;padding:8px 12px;text-align:left;border-bottom:1px solid rgba(255,255,255,.06)}
+.tbl td{font-size:11px;color:rgba(255,255,255,.7);padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)}
+.tbl tr:last-child td{border:none}
+.tag{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px}
+.tag.urg{background:rgba(224,85,85,.15);color:#E05555}
+.tag.atv{background:rgba(201,168,76,.15);color:#C9A84C}
+.tag.ok{background:rgba(124,185,232,.15);color:#7CB9E8}
+.tag.pro{background:rgba(160,220,160,.15);color:#90D890}
+.aut{background:#0D0C20;flex:1;display:flex;overflow:hidden}
+.aut-left{flex:1;border-right:1px solid rgba(255,255,255,.05);position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.aut-right{width:290px;background:#0C0A1A;display:flex;flex-direction:column;overflow:hidden}
+.aut-right-hdr{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.05)}
+.aut-right-hdr h3{font-size:12px;font-weight:700;color:#fff}
+.aut-right-hdr p{font-size:10px;color:rgba(255,255,255,.3);margin-top:2px}
+.log-area{flex:1;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:6px}
+.log-entry{display:flex;align-items:flex-start;gap:8px;font-size:11px}
+.log-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.log-dot.ok{background:#C9A84C}
+.log-dot.run{background:#7CB9E8;animation:pulse .8s infinite}
+.log-dot.wait{background:rgba(255,255,255,.15)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.log-text{color:rgba(255,255,255,.65);line-height:1.4}
+.log-text strong{color:#C9A84C}
+.prog-area{padding:12px 16px;border-top:1px solid rgba(255,255,255,.05)}
+.prog-lbl{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,.35);margin-bottom:6px}
+.prog-bar{background:rgba(255,255,255,.07);border-radius:10px;height:5px;overflow:hidden}
+.prog-fill{height:100%;background:#C9A84C;border-radius:10px;transition:width .6s ease}
+.cursor{position:absolute;width:14px;height:14px;pointer-events:none;transition:all .5s cubic-bezier(.4,0,.2,1);z-index:999;display:none}
+.cursor::before{content:'';position:absolute;inset:0;border:2px solid #C9A84C;border-radius:50%;animation:cp 1s infinite}
+.cursor::after{content:'';position:absolute;top:50%;left:50%;width:4px;height:4px;background:#C9A84C;border-radius:50%;transform:translate(-50%,-50%)}
+@keyframes cp{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.4}}
+#cp{background:linear-gradient(135deg,#0F0C1E 0%,#1E1844 100%);align-items:center;justify-content:center;flex-direction:column;gap:14px}
+.cp-icon{width:72px;height:72px;background:rgba(201,168,76,.12);border:2px solid #C9A84C;border-radius:50%;display:grid;place-items:center;font-size:32px}
+.cp-title{font-size:24px;font-weight:800;color:#fff;text-align:center}
+.cp-title span{color:#C9A84C}
+.cp-sub{font-size:13px;color:rgba(255,255,255,.45);text-align:center;max-width:420px;line-height:1.6}
+.cp-stats{display:flex;gap:24px;margin-top:8px}
+.cp-stat{text-align:center}
+.cp-stat-v{font-size:28px;font-weight:900;color:#C9A84C}
+.cp-stat-l{font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.cp-btn{margin-top:16px;background:rgba(255,255,255,.07);color:#fff;font-size:12px;font-weight:600;padding:10px 28px;border:1px solid rgba(255,255,255,.18);border-radius:3px;cursor:pointer}
+.pow{position:relative;margin-top:16px;font-size:10px;color:rgba(255,255,255,.18)}
+.pow span{color:rgba(201,168,76,.5);font-weight:700}
+</style>
+</head>
+<body>
+<div id="sp" class="screen active">
+  <div class="sp-badge">Demo Interativo · Dominant RPA</div>
+  <div class="sp-title">Automação de<br><span>Controle Processual</span></div>
+  <div class="sp-sub">O robô acessa o portal do Tribunal de Justiça, verifica andamentos, baixa decisões e calcula prazos automaticamente — para todos os processos do escritório.</div>
+  <button class="sp-btn" onclick="startDemo()">▶ Iniciar demonstração</button>
+  <div class="sp-hint">Duração aproximada: 45 segundos</div>
+  <div class="pow">Tecnologia <span>DOMINANT</span></div>
+</div>
+
+<div id="s1" class="screen">
+  <div class="hdr">
+    <div style="display:flex;align-items:center">
+      <div class="hdr-icon">⚖</div>
+      <div style="margin-left:10px"><div class="hdr-name">Jus<span>Digital</span></div><div class="hdr-sub">Portal de Processos</div></div>
+    </div>
+    <div class="hdr-nav"><div class="hdr-tab on">Autenticação</div></div>
+    <div class="hdr-usr" style="margin-left:auto">Sistema Judicial<strong>TJ-SP · e-SAJ</strong></div>
+  </div>
+  <div class="bg">
+    <div class="card">
+      <div class="card-hdr"><div class="card-hdr-t">Acesso ao Portal Judicial</div><div class="card-hdr-s">Informe suas credenciais de advogado</div></div>
+      <div class="card-body">
+        <div class="lf"><label>OAB / CPF</label><input id="f-oab" type="text" placeholder="SP 123.456" readonly></div>
+        <div class="lf"><label>Senha</label><input id="f-pass" type="password" placeholder="••••••••" readonly></div>
+        <div class="lf"><label>Escritório</label><input id="f-esc" type="text" placeholder="Nome do escritório" readonly></div>
+        <button class="btn-main" id="f-btn" disabled>Acessar Portal</button>
+      </div>
+    </div>
+  </div>
+  <div class="cursor" id="cur"></div>
+</div>
+
+<div id="s2" class="screen">
+  <div class="hdr">
+    <div style="display:flex;align-items:center"><div class="hdr-icon">⚖</div><div style="margin-left:10px"><div class="hdr-name">Jus<span>Digital</span></div><div class="hdr-sub">Portal de Processos</div></div></div>
+    <div class="hdr-nav">
+      <div class="hdr-tab">Painel</div><div class="hdr-tab on">Processos</div><div class="hdr-tab">Prazos</div><div class="hdr-tab">Documentos</div>
+    </div>
+    <div class="hdr-badge">⚡ ROBÔ ATIVO</div>
+    <div class="hdr-usr" style="margin-left:10px"><strong>Dr. Carlos Souza</strong>OAB/SP 123.456</div>
+  </div>
+  <div class="dash">
+    <div class="dash-top"><h2>Processos Ativos — Monitoramento Automático</h2></div>
+    <div class="dash-body">
+      <div class="sidebar">
+        <div class="sb-item on"><span>📋</span>Todos os processos</div>
+        <div class="sb-item"><span>🔴</span>Prazos críticos</div>
+        <div class="sb-item"><span>📬</span>Novos andamentos</div>
+        <div class="sb-item"><span>📄</span>Documentos</div>
+        <div class="sb-item"><span>📅</span>Agenda</div>
+        <div class="sb-item"><span>👥</span>Clientes</div>
+      </div>
+      <div class="main-area">
+        <div class="kpi-row">
+          <div class="kpi"><div class="kpi-lbl">Processos Ativos</div><div class="kpi-val g">84</div><div class="kpi-sub">em acompanhamento</div></div>
+          <div class="kpi"><div class="kpi-lbl">Prazos Esta Semana</div><div class="kpi-val r">7</div><div class="kpi-sub">requerem atenção</div></div>
+          <div class="kpi"><div class="kpi-lbl">Novos Andamentos</div><div class="kpi-val g">0</div><div class="kpi-sub" id="k-and">verificando...</div></div>
+          <div class="kpi"><div class="kpi-lbl">Audiências</div><div class="kpi-val b">3</div><div class="kpi-sub">nos próximos 15 dias</div></div>
+        </div>
+        <div class="tbl-card">
+          <div class="tbl-hdr"><h3>Processos com Andamentos Pendentes</h3><span class="cnt">verificando...</span></div>
+          <table class="tbl">
+            <thead><tr><th>Nº Processo</th><th>Parte</th><th>Vara</th><th>Último Andamento</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>1001234-55.2023.8.26.0100</td><td>Silva vs. Empresa ABC</td><td>1ª Vara Cível</td><td>14/09/2026</td><td><span class="tag urg">Verificar</span></td></tr>
+              <tr><td>1009876-11.2024.8.26.0100</td><td>João Santos</td><td>3ª Vara Trabalhista</td><td>01/10/2026</td><td><span class="tag atv">Ativo</span></td></tr>
+              <tr><td>1005544-33.2022.8.26.0200</td><td>Maria Costa</td><td>2ª Vara de Família</td><td>28/09/2026</td><td><span class="tag atv">Ativo</span></td></tr>
+              <tr><td>1007788-99.2025.8.26.0100</td><td>Tech Corp Ltda</td><td>4ª Vara Empresarial</td><td>05/10/2026</td><td><span class="tag ok">Atualizado</span></td></tr>
+              <tr><td>1003322-77.2023.8.26.0050</td><td>Roberto Lima</td><td>1ª Vara Criminal</td><td>10/09/2026</td><td><span class="tag urg">Verificar</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="s3" class="screen">
+  <div class="hdr">
+    <div style="display:flex;align-items:center"><div class="hdr-icon">⚖</div><div style="margin-left:10px"><div class="hdr-name">Jus<span>Digital</span></div><div class="hdr-sub">Portal de Processos</div></div></div>
+    <div class="hdr-nav"><div class="hdr-tab">Processos</div><div class="hdr-tab on">Automação</div></div>
+    <div class="hdr-badge">⚡ ROBÔ ATIVO</div>
+  </div>
+  <div class="aut">
+    <div class="aut-left">
+      <div id="aut-content"></div>
+      <div class="cursor" id="cur3"></div>
+    </div>
+    <div class="aut-right">
+      <div class="aut-right-hdr"><h3>⚖ Robô Judicial</h3><p>Monitoramento de processos</p></div>
+      <div class="log-area" id="log-area"></div>
+      <div class="prog-area">
+        <div class="prog-lbl"><span>Progresso</span><span id="prog-pct">0%</span></div>
+        <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="cp" class="screen">
+  <div class="cp-icon">⚖️</div>
+  <div class="cp-title">Processos <span>Atualizados!</span></div>
+  <div class="cp-sub">O robô consultou todos os processos no TJ-SP, identificou novos andamentos, baixou as decisões e calculou os prazos automaticamente — notificações enviadas aos advogados responsáveis.</div>
+  <div class="cp-stats">
+    <div class="cp-stat"><div class="cp-stat-v">84</div><div class="cp-stat-l">Processos verificados</div></div>
+    <div class="cp-stat"><div class="cp-stat-v">12</div><div class="cp-stat-l">Novos andamentos</div></div>
+    <div class="cp-stat"><div class="cp-stat-v">7</div><div class="cp-stat-l">Prazos alertados</div></div>
+  </div>
+  <button class="cp-btn" onclick="openReport()">Ver Relatório Completo →</button>
+  <div class="pow">Automação por <span>DOMINANT TECNOLOGIA</span></div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const screens=['sp','s1','s2','s3','cp'];
+function show(id){screens.forEach(s=>{$(s).classList.toggle('active',$(s).id===id)})}
+function wait(ms){return new Promise(r=>setTimeout(r,ms))}
+function moveCursor(cur,x,y){cur.style.left=x+'px';cur.style.top=y+'px';cur.style.display='block'}
+async function typeIn(el,text,ms=60){el.value='';for(const c of text){el.value+=c;await wait(ms)}}
+function addLog(text,type='ok'){
+  const a=$('log-area'),d=document.createElement('div');
+  d.className='log-entry';
+  d.innerHTML=`<div class="log-dot ${type}"></div><div class="log-text">${text}</div>`;
+  a.appendChild(d);a.scrollTop=a.scrollHeight;return d;
+}
+function setProgress(pct){$('prog-fill').style.width=pct+'%';$('prog-pct').textContent=pct+'%'}
+
+const steps=[
+  {pct:18,title:'Acessando portal TJ-SP',html:`
+    <div style="background:#14112A;border:1px solid rgba(201,168,76,.2);border-radius:6px;width:520px;overflow:hidden">
+      <div style="background:#0C0A1A;padding:10px 14px;border-bottom:2px solid #C9A84C;font-size:11px;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px">
+        <span>⚖️</span> TJ-SP — Portal e-SAJ · Consulta de Processos
+      </div>
+      <div style="padding:14px">
+        <div style="background:#0C0A1A;border-radius:4px;padding:12px 14px;font-size:11px;color:rgba(255,255,255,.6);line-height:1.8">
+          <span style="color:#C9A84C">▶</span> Acessando: esaj.tjsp.jus.br<br>
+          <span style="color:#C9A84C">▶</span> Autenticação OAB/SP 123.456... <span id="tj-auth" style="color:rgba(255,255,255,.3)">conectando...</span><br>
+          <span style="color:#C9A84C">▶</span> Carregando lista de processos vinculados...<br>
+          <span id="tj-count" style="color:rgba(255,255,255,.3)">   Aguardando...</span>
+        </div>
+      </div>
+    </div>`,
+    action:async()=>{
+      await wait(500);$('tj-auth').textContent='✓ Autenticado';$('tj-auth').style.color='#C9A84C';
+      await wait(600);$('tj-count').textContent='   84 processos vinculados encontrados ✓';$('tj-count').style.color='#C9A84C';
+    }
+  },
+  {pct:38,title:'Verificando novos andamentos',html:`
+    <div style="background:#14112A;border:1px solid rgba(201,168,76,.2);border-radius:6px;width:540px;overflow:hidden">
+      <div style="background:#0C0A1A;padding:10px 14px;border-bottom:2px solid #C9A84C;font-size:11px;font-weight:700;color:#fff">Consulta de Andamentos — TJ-SP</div>
+      <div style="padding:12px 14px;display:flex;flex-direction:column;gap:7px">
+        ${[['1001234-55.2023...','Silva vs. ABC','Sentença proferida — 06/10/2026'],['1009876-11.2024...','João Santos','Pauta de audiência — 15/10/2026'],['1005544-33.2022...','Maria Costa','Intimação expedida — 05/10/2026'],['1007788-99.2025...','Tech Corp Ltda','Sem novos andamentos','none'],['1003322-77.2023...','Roberto Lima','Decisão interlocutória — 06/10/2026']].map(([n,p,a,none],i)=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:7px 10px;background:#0C0A1A;border-radius:3px;font-size:11px">
+          <div id="aj${i}" style="width:7px;height:7px;border-radius:50%;background:${none?'rgba(255,255,255,.15)':'rgba(201,168,76,.2)'};flex-shrink:0"></div>
+          <span style="color:rgba(255,255,255,.4);font-size:10px;width:130px">${n}</span>
+          <span style="color:rgba(255,255,255,.5)">${p}</span>
+          <span id="as${i}" style="margin-left:auto;font-size:10px;color:rgba(255,255,255,.25)">${a}</span>
+        </div>`).join('')}
+      </div>
+    </div>`,
+    action:async()=>{
+      for(let i=0;i<5;i++){
+        if(i!==3){$(`aj${i}`).style.background='#C9A84C';$(`as${i}`).style.color='#C9A84C';}
+        await wait(350);
+      }
+    }
+  },
+  {pct:60,title:'Baixando decisões e documentos',html:`
+    <div style="background:#14112A;border:1px solid rgba(201,168,76,.2);border-radius:6px;width:520px;overflow:hidden">
+      <div style="background:#0C0A1A;padding:10px 14px;border-bottom:2px solid #C9A84C;font-size:11px;font-weight:700;color:#fff">Download Automático de Documentos</div>
+      <div style="padding:14px;display:flex;flex-direction:column;gap:8px">
+        ${[['Sentença — Proc. 1001234','PDF · 4 páginas'],['Pauta audiência — 1009876','PDF · 1 página'],['Intimação — Proc. 1005544','PDF · 2 páginas'],['Decisão interl. — 1003322','PDF · 3 páginas']].map(([n,t],i)=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:#0C0A1A;border-radius:3px;font-size:11px">
+          <span style="font-size:18px">📄</span>
+          <div style="flex:1"><div style="color:rgba(255,255,255,.75)">${n}</div><div style="font-size:10px;color:rgba(255,255,255,.3);margin-top:2px">${t}</div></div>
+          <span id="dl${i}" style="font-size:10px;color:rgba(255,255,255,.25)">aguardando...</span>
+        </div>`).join('')}
+      </div>
+    </div>`,
+    action:async()=>{
+      for(let i=0;i<4;i++){$(`dl${i}`).textContent='✓ Baixado';$(`dl${i}`).style.color='#C9A84C';await wait(380);}
+    }
+  },
+  {pct:80,title:'Calculando prazos processuais',html:`
+    <div style="background:#14112A;border:1px solid rgba(201,168,76,.2);border-radius:6px;width:540px;overflow:hidden">
+      <div style="background:#0C0A1A;padding:10px 14px;border-bottom:2px solid #C9A84C;font-size:11px;font-weight:700;color:#fff">Cálculo Automático de Prazos</div>
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr style="background:#0C0A1A">${['Processo','Evento','Prazo','Vencimento','Alerta'].map(h=>`<th style="font-size:10px;color:rgba(255,255,255,.3);padding:7px 12px;text-align:left;border-bottom:1px solid rgba(255,255,255,.05)">${h}</th>`).join('')}</tr></thead>
+        <tbody>
+          ${[['1001234','Contestação','15 dias corridos','21/10/2026','🔴'],['1009876','Audiência','—','15/10/2026','🟡'],['1005544','Manifestação','5 dias úteis','13/10/2026','🔴'],['1003322','Recurso','10 dias úteis','20/10/2026','🟡']].map(([p,e,pr,v,a],i)=>`
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)">
+            ${[p,e,pr,v].map(x=>`<td style="font-size:11px;color:rgba(255,255,255,.65);padding:7px 12px">${x}</td>`).join('')}
+            <td style="padding:7px 12px"><span id="pr${i}" style="font-size:11px">${a}</span></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`,
+    action:async()=>{await wait(600);}
+  },
+  {pct:95,title:'Notificando advogados responsáveis',html:`
+    <div style="background:#14112A;border:1px solid rgba(201,168,76,.2);border-radius:6px;width:520px">
+      <div style="background:#0C0A1A;padding:10px 14px;border-bottom:2px solid #C9A84C;font-size:11px;font-weight:700;color:#fff">Notificações Enviadas</div>
+      <div style="padding:14px;display:flex;flex-direction:column;gap:8px">
+        ${[['Dr. Carlos Souza','4 processos atualizados + 2 prazos críticos'],['Dra. Ana Lima','1 intimação + 1 audiência agendada'],['Dr. Pedro Costa','1 decisão interlocutória para recurso']].map(([adv,msg],i)=>`
+        <div style="display:flex;align-items:flex-start;gap:10px;padding:10px;background:#0C0A1A;border-radius:3px">
+          <div style="width:30px;height:30px;background:rgba(201,168,76,.15);border-radius:50%;display:grid;place-items:center;font-size:14px;flex-shrink:0">👤</div>
+          <div><div style="font-size:11px;font-weight:700;color:#C9A84C">${adv}</div><div style="font-size:10px;color:rgba(255,255,255,.45);margin-top:2px">${msg}</div></div>
+          <span id="nt${i}" style="margin-left:auto;font-size:10px;color:rgba(255,255,255,.25)">enviando...</span>
+        </div>`).join('')}
+      </div>
+    </div>`,
+    action:async()=>{for(let i=0;i<3;i++){$(`nt${i}`).textContent='✓ Notificado';$(`nt${i}`).style.color='#C9A84C';await wait(400);}}
+  }
+];
+
+let stepIdx=0;
+async function runStep(){
+  if(stepIdx>=steps.length){show('cp');return;}
+  const s=steps[stepIdx];
+  setProgress(s.pct);
+  $('aut-content').innerHTML=s.html;
+  const entry=addLog(`<strong>${s.title}</strong>`,'run');
+  await wait(400);await s.action();
+  entry.querySelector('.log-dot').className='log-dot ok';
+  entry.querySelector('.log-text').innerHTML=`<strong>${s.title}</strong> — concluído`;
+  stepIdx++;await wait(900);runStep();
+}
+
+async function startDemo(){
+  show('s1');
+  const cur=$('cur');await wait(400);
+  cur.style.display='block';moveCursor(cur,200,215);await wait(500);
+  await typeIn($('f-oab'),'SP 123.456',60);
+  moveCursor(cur,200,255);await wait(400);
+  await typeIn($('f-pass'),'••••••••',70);
+  moveCursor(cur,200,295);await wait(400);
+  await typeIn($('f-esc'),'Souza & Lima Advogados',55);
+  moveCursor(cur,200,345);await wait(500);
+  const btn=$('f-btn');btn.disabled=false;
+  btn.click();await wait(300);show('s2');
+  await wait(1800);show('s3');
+  addLog('Robô iniciado','ok');addLog('Conectado ao TJ-SP','ok');
+  await wait(500);runStep();
+}
+function openReport(){window.open('RELATORIO_JURIDICO.html','_blank');}
+</script>
+</body>
+</html>

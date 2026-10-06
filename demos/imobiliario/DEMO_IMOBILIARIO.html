@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Demo RPA — Cobranças Mensais — Dominant</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#0D1F1A;font-family:'Segoe UI',Arial,sans-serif;font-size:13px}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden}
+.screen.active{display:flex}
+#sp{background:linear-gradient(135deg,#0D1F1A 0%,#122A22 55%,#193D2E 100%);align-items:center;justify-content:center;flex-direction:column;gap:16px}
+.sp-badge{font-size:10px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:2px;border:1px solid rgba(16,185,129,.3);padding:4px 14px;border-radius:20px}
+.sp-title{font-size:30px;font-weight:900;color:#fff;text-align:center;line-height:1.15;max-width:580px}
+.sp-title span{color:#10B981}
+.sp-sub{font-size:13px;color:rgba(255,255,255,.5);max-width:460px;text-align:center;line-height:1.65}
+.sp-btn{margin-top:20px;background:#10B981;color:#fff;font-size:13px;font-weight:800;padding:14px 40px;border:none;border-radius:3px;cursor:pointer;transition:all .2s}
+.sp-btn:hover{background:#059669;transform:translateY(-1px)}
+.sp-hint{font-size:10px;color:rgba(255,255,255,.2)}
+.hdr{background:#091511;display:flex;align-items:center;padding:0 18px;height:52px;flex-shrink:0;border-bottom:1px solid rgba(16,185,129,.2)}
+.hdr-icon{width:32px;height:32px;background:#10B981;border-radius:4px;display:grid;place-items:center;font-size:16px;font-weight:900;color:#fff}
+.hdr-name{font-size:15px;font-weight:800;color:#fff;margin-left:10px}
+.hdr-name span{color:#10B981}
+.hdr-sub{font-size:9px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.8px;margin-top:1px}
+.hdr-nav{margin-left:28px;display:flex}
+.hdr-tab{padding:0 14px;height:52px;display:flex;align-items:center;font-size:11px;color:rgba(255,255,255,.4);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.hdr-tab.on{color:#10B981;border-bottom-color:#10B981}
+.hdr-badge{margin-left:auto;background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.4);color:#10B981;font-size:10px;font-weight:700;padding:3px 11px;border-radius:12px}
+.hdr-usr{margin-left:16px;font-size:10px;color:rgba(255,255,255,.35);text-align:right}
+.hdr-usr strong{color:#fff;font-size:11px;display:block}
+.bg{background:#0D1F1A;flex:1;display:flex;align-items:center;justify-content:center}
+.card{background:#122A22;border:1px solid rgba(16,185,129,.2);border-radius:6px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.5);width:420px}
+.card-hdr{background:#091511;padding:18px 22px;border-bottom:2px solid #10B981}
+.card-hdr-t{font-size:13px;font-weight:700;color:#fff}
+.card-hdr-s{font-size:10px;color:rgba(255,255,255,.3);margin-top:2px}
+.card-body{padding:20px 22px}
+.lf{margin-bottom:13px}
+.lf label{display:block;font-size:10px;font-weight:700;color:#10B981;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.lf input{width:100%;border:1px solid rgba(255,255,255,.1);border-radius:3px;padding:9px 11px;font-size:13px;color:#fff;background:#091511;outline:none;transition:border .2s}
+.lf input:focus{border-color:#10B981}
+.btn-main{width:100%;background:#10B981;color:#fff;font-size:13px;font-weight:800;padding:11px;border:none;border-radius:3px;cursor:pointer;margin-top:4px}
+.dash{background:#0D1F1A;flex:1;display:flex;flex-direction:column;overflow:hidden}
+.dash-top{background:#091511;padding:11px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,.05)}
+.dash-top h2{font-size:13px;font-weight:700;color:#fff}
+.dash-body{flex:1;display:flex;overflow:hidden}
+.sidebar{width:190px;background:#091511;border-right:1px solid rgba(255,255,255,.05);padding:12px 0}
+.sb-item{padding:9px 16px;display:flex;align-items:center;gap:9px;font-size:11px;color:rgba(255,255,255,.35);cursor:pointer;border-left:2px solid transparent}
+.sb-item.on{color:#10B981;border-left-color:#10B981;background:rgba(16,185,129,.05)}
+.main-area{flex:1;padding:16px;overflow:auto;display:flex;flex-direction:column;gap:12px}
+.kpi-row{display:flex;gap:10px}
+.kpi{background:#122A22;border:1px solid rgba(255,255,255,.07);border-radius:5px;padding:12px 14px;flex:1}
+.kpi-lbl{font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.5px}
+.kpi-val{font-size:22px;font-weight:800;color:#fff;margin-top:3px}
+.kpi-val.g{color:#10B981}.kpi-val.r{color:#E05555}.kpi-val.b{color:#63B3ED}
+.kpi-sub{font-size:10px;color:rgba(255,255,255,.25);margin-top:2px}
+.tbl-card{background:#122A22;border:1px solid rgba(255,255,255,.07);border-radius:5px;overflow:hidden}
+.tbl-hdr{background:#091511;padding:10px 14px;display:flex;align-items:center;gap:8px}
+.tbl-hdr h3{font-size:11px;font-weight:700;color:#fff}
+.tbl-hdr .cnt{font-size:10px;color:rgba(255,255,255,.25)}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.4px;padding:8px 12px;text-align:left;border-bottom:1px solid rgba(255,255,255,.06)}
+.tbl td{font-size:11px;color:rgba(255,255,255,.7);padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)}
+.tbl tr:last-child td{border:none}
+.tag{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px}
+.tag.pend{background:rgba(249,115,22,.15);color:#F97316}
+.tag.ok{background:rgba(16,185,129,.15);color:#10B981}
+.tag.atv{background:rgba(99,179,237,.15);color:#63B3ED}
+.tag.ina{background:rgba(224,85,85,.15);color:#E05555}
+.aut{background:#0D1F1A;flex:1;display:flex;overflow:hidden}
+.aut-left{flex:1;border-right:1px solid rgba(255,255,255,.05);position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.aut-right{width:290px;background:#091511;display:flex;flex-direction:column;overflow:hidden}
+.aut-right-hdr{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.05)}
+.aut-right-hdr h3{font-size:12px;font-weight:700;color:#fff}
+.aut-right-hdr p{font-size:10px;color:rgba(255,255,255,.3);margin-top:2px}
+.log-area{flex:1;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:6px}
+.log-entry{display:flex;align-items:flex-start;gap:8px;font-size:11px}
+.log-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.log-dot.ok{background:#10B981}
+.log-dot.run{background:#63B3ED;animation:pulse .8s infinite}
+.log-dot.wait{background:rgba(255,255,255,.15)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.log-text{color:rgba(255,255,255,.65);line-height:1.4}
+.log-text strong{color:#10B981}
+.prog-area{padding:12px 16px;border-top:1px solid rgba(255,255,255,.05)}
+.prog-lbl{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,.35);margin-bottom:6px}
+.prog-bar{background:rgba(255,255,255,.07);border-radius:10px;height:5px;overflow:hidden}
+.prog-fill{height:100%;background:#10B981;border-radius:10px;transition:width .6s ease}
+#cp{background:linear-gradient(135deg,#0D1F1A 0%,#1A3A2A 100%);align-items:center;justify-content:center;flex-direction:column;gap:14px}
+.cp-icon{width:72px;height:72px;background:rgba(16,185,129,.12);border:2px solid #10B981;border-radius:50%;display:grid;place-items:center;font-size:32px}
+.cp-title{font-size:24px;font-weight:800;color:#fff;text-align:center}
+.cp-title span{color:#10B981}
+.cp-sub{font-size:13px;color:rgba(255,255,255,.45);text-align:center;max-width:420px;line-height:1.6}
+.cp-stats{display:flex;gap:24px;margin-top:8px}
+.cp-stat{text-align:center}
+.cp-stat-v{font-size:28px;font-weight:900;color:#10B981}
+.cp-stat-l{font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.cp-btn{margin-top:16px;background:rgba(255,255,255,.07);color:#fff;font-size:12px;font-weight:600;padding:10px 28px;border:1px solid rgba(255,255,255,.18);border-radius:3px;cursor:pointer}
+.pow{margin-top:16px;font-size:10px;color:rgba(255,255,255,.18)}
+.pow span{color:rgba(16,185,129,.5);font-weight:700}
+</style>
+</head>
+<body>
+<div id="sp" class="screen active">
+  <div class="sp-badge">Demo Interativo · Dominant RPA</div>
+  <div class="sp-title">Automação de<br><span>Cobranças Mensais</span></div>
+  <div class="sp-sub">O robô consulta todos os contratos de locação, verifica os vencimentos, gera os boletos, envia os avisos aos inquilinos e atualiza o controle de inadimplência — tudo automaticamente.</div>
+  <button class="sp-btn" onclick="startDemo()">▶ Iniciar demonstração</button>
+  <div class="sp-hint">Duração aproximada: 45 segundos</div>
+  <div class="pow">Tecnologia <span>DOMINANT</span></div>
+</div>
+
+<div id="s1" class="screen">
+  <div class="hdr">
+    <div style="display:flex;align-items:center">
+      <div class="hdr-icon">🏢</div>
+      <div style="margin-left:10px"><div class="hdr-name">Imove<span>Pro</span></div><div class="hdr-sub">Sistema de Gestão Imobiliária</div></div>
+    </div>
+    <div class="hdr-nav"><div class="hdr-tab on">Login</div></div>
+    <div class="hdr-usr" style="margin-left:auto">Módulo Financeiro<strong>v 3.8.2</strong></div>
+  </div>
+  <div class="bg">
+    <div class="card">
+      <div class="card-hdr"><div class="card-hdr-t">Acesso ao ImovePro</div><div class="card-hdr-s">Gestão completa de locações</div></div>
+      <div class="card-body">
+        <div class="lf"><label>E-mail</label><input id="f-email" type="text" placeholder="usuario@imobiliaria.com.br" readonly></div>
+        <div class="lf"><label>Senha</label><input id="f-pass" type="password" placeholder="••••••••" readonly></div>
+        <div class="lf"><label>Imobiliária</label><input id="f-imob" type="text" placeholder="Selecione a empresa" readonly></div>
+        <button class="btn-main" id="f-btn" disabled>Acessar Sistema</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="s2" class="screen">
+  <div class="hdr">
+    <div style="display:flex;align-items:center"><div class="hdr-icon">🏢</div><div style="margin-left:10px"><div class="hdr-name">Imove<span>Pro</span></div><div class="hdr-sub">Sistema de Gestão Imobiliária</div></div></div>
+    <div class="hdr-nav">
+      <div class="hdr-tab">Painel</div><div class="hdr-tab on">Contratos</div><div class="hdr-tab">Financeiro</div><div class="hdr-tab">Imóveis</div>
+    </div>
+    <div class="hdr-badge">⚡ ROBÔ ATIVO</div>
+    <div class="hdr-usr" style="margin-left:10px"><strong>Admin Financeiro</strong>Central Imóveis SP</div>
+  </div>
+  <div class="dash">
+    <div class="dash-top"><h2>Contratos de Locação — Cobranças do Mês</h2></div>
+    <div class="dash-body">
+      <div class="sidebar">
+        <div class="sb-item on"><span>📋</span>Contratos ativos</div>
+        <div class="sb-item"><span>💰</span>Cobranças</div>
+        <div class="sb-item"><span>🔴</span>Inadimplência</div>
+        <div class="sb-item"><span>🏠</span>Imóveis</div>
+        <div class="sb-item"><span>👤</span>Inquilinos</div>
+        <div class="sb-item"><span>📊</span>Relatórios</div>
+      </div>
+      <div class="main-area">
+        <div class="kpi-row">
+          <div class="kpi"><div class="kpi-lbl">Contratos Ativos</div><div class="kpi-val g">127</div><div class="kpi-sub">em vigor</div></div>
+          <div class="kpi"><div class="kpi-lbl">Cobranças Outubro</div><div class="kpi-val g">0</div><div class="kpi-sub" id="k-cob">processando...</div></div>
+          <div class="kpi"><div class="kpi-lbl">Valor Total</div><div class="kpi-val g">R$ 284.600</div><div class="kpi-sub">a receber</div></div>
+          <div class="kpi"><div class="kpi-lbl">Inadimplentes</div><div class="kpi-val r">8</div><div class="kpi-sub">do mês anterior</div></div>
+        </div>
+        <div class="tbl-card">
+          <div class="tbl-hdr"><h3>Contratos com Vencimento em Outubro</h3><span class="cnt">127 contratos</span></div>
+          <table class="tbl">
+            <thead><tr><th>Contrato</th><th>Inquilino</th><th>Imóvel</th><th>Valor Aluguel</th><th>Vencimento</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>LOC-2024-001</td><td>Ana Rodrigues Silva</td><td>Apto 32 · Rua das Flores</td><td>R$ 1.850,00</td><td>10/10/2026</td><td><span class="tag pend">Pendente</span></td></tr>
+              <tr><td>LOC-2023-045</td><td>Carlos Eduardo Lima</td><td>Casa 15 · Jardim América</td><td>R$ 3.200,00</td><td>15/10/2026</td><td><span class="tag pend">Pendente</span></td></tr>
+              <tr><td>LOC-2025-012</td><td>Mariana Costa Souza</td><td>Apto 108 · Edifício Sol</td><td>R$ 2.400,00</td><td>10/10/2026</td><td><span class="tag pend">Pendente</span></td></tr>
+              <tr><td>LOC-2022-088</td><td>Roberto Alves Jr.</td><td>Sala Comercial 05</td><td>R$ 5.600,00</td><td>05/10/2026</td><td><span class="tag ina">Atrasado</span></td></tr>
+              <tr><td>LOC-2024-067</td><td>Patrícia Mendes</td><td>Apto 201 · Vila Nova</td><td>R$ 1.650,00</td><td>10/10/2026</td><td><span class="tag pend">Pendente</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="s3" class="screen">
+  <div class="hdr">
+    <div style="display:flex;align-items:center"><div class="hdr-icon">🏢</div><div style="margin-left:10px"><div class="hdr-name">Imove<span>Pro</span></div><div class="hdr-sub">Sistema de Gestão Imobiliária</div></div></div>
+    <div class="hdr-nav"><div class="hdr-tab">Contratos</div><div class="hdr-tab on">Automação</div></div>
+    <div class="hdr-badge">⚡ ROBÔ ATIVO</div>
+  </div>
+  <div class="aut">
+    <div class="aut-left">
+      <div id="aut-content"></div>
+    </div>
+    <div class="aut-right">
+      <div class="aut-right-hdr"><h3>🏢 Robô Imobiliário</h3><p>Cobrança mensal automática</p></div>
+      <div class="log-area" id="log-area"></div>
+      <div class="prog-area">
+        <div class="prog-lbl"><span>Progresso</span><span id="prog-pct">0%</span></div>
+        <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="cp" class="screen">
+  <div class="cp-icon">🏢</div>
+  <div class="cp-title">Cobranças <span>Geradas!</span></div>
+  <div class="cp-sub">O robô consultou todos os contratos, verificou os vencimentos, gerou os boletos bancários, enviou avisos por e-mail e WhatsApp aos inquilinos e atualizou o controle de inadimplência.</div>
+  <div class="cp-stats">
+    <div class="cp-stat"><div class="cp-stat-v">127</div><div class="cp-stat-l">Boletos gerados</div></div>
+    <div class="cp-stat"><div class="cp-stat-v">R$ 284k</div><div class="cp-stat-l">A receber</div></div>
+    <div class="cp-stat"><div class="cp-stat-v">41 seg</div><div class="cp-stat-l">Tempo total</div></div>
+  </div>
+  <button class="cp-btn" onclick="openReport()">Ver Relatório Completo →</button>
+  <div class="pow">Automação por <span>DOMINANT TECNOLOGIA</span></div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const screens=['sp','s1','s2','s3','cp'];
+function show(id){screens.forEach(s=>{$(s).classList.toggle('active',$(s).id===id)})}
+function wait(ms){return new Promise(r=>setTimeout(r,ms))}
+async function typeIn(el,text,ms=60){el.value='';for(const c of text){el.value+=c;await wait(ms)}}
+function addLog(text,type='ok'){
+  const a=$('log-area'),d=document.createElement('div');
+  d.className='log-entry';
+  d.innerHTML=`<div class="log-dot ${type}"></div><div class="log-text">${text}</div>`;
+  a.appendChild(d);a.scrollTop=a.scrollHeight;return d;
+}
+function setProgress(pct){$('prog-fill').style.width=pct+'%';$('prog-pct').textContent=pct+'%'}
+
+const contratos=[
+  ['LOC-2024-001','Ana Rodrigues Silva','Apto 32','R$ 1.850,00','10/10'],
+  ['LOC-2023-045','Carlos Eduardo Lima','Casa 15','R$ 3.200,00','15/10'],
+  ['LOC-2025-012','Mariana Costa Souza','Apto 108','R$ 2.400,00','10/10'],
+  ['LOC-2022-088','Roberto Alves Jr.','Sala Comerc.','R$ 5.600,00','05/10'],
+  ['LOC-2024-067','Patrícia Mendes','Apto 201','R$ 1.650,00','10/10'],
+];
+
+const steps=[
+  {pct:18,title:'Consultando contratos ativos',html:`
+    <div style="background:#122A22;border:1px solid rgba(16,185,129,.2);border-radius:6px;width:520px;overflow:hidden">
+      <div style="background:#091511;padding:10px 14px;border-bottom:2px solid #10B981;font-size:11px;font-weight:700;color:#fff">ImovePro — Contratos Outubro/2026</div>
+      <div style="padding:14px;font-size:11px;color:rgba(255,255,255,.6);line-height:2">
+        <span style="color:#10B981">▶</span> Conectando ao banco ImovePro...<br>
+        <span style="color:#10B981">▶</span> Filtro: status=ATIVO · mês_cobrança=OUT/2026<br>
+        <span id="c-count" style="color:rgba(255,255,255,.3)">   Carregando contratos...</span><br>
+        <span id="c-val" style="color:rgba(255,255,255,.3)">   Calculando totais...</span>
+      </div>
+    </div>`,
+    action:async()=>{
+      await wait(500);$('c-count').textContent='   127 contratos ativos encontrados ✓';$('c-count').style.color='#10B981';
+      await wait(400);$('c-val').textContent='   Total a receber: R$ 284.600,00 ✓';$('c-val').style.color='#10B981';
+    }
+  },
+  {pct:38,title:'Verificando vencimentos e reajustes',html:`
+    <div style="background:#122A22;border:1px solid rgba(16,185,129,.2);border-radius:6px;width:560px;overflow:hidden">
+      <div style="background:#091511;padding:10px 14px;border-bottom:2px solid #10B981;font-size:11px;font-weight:700;color:#fff">Verificação de Vencimentos</div>
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr style="background:#091511">${['Contrato','Inquilino','Valor','Vencimento','IGP-M','Status'].map(h=>`<th style="font-size:10px;color:rgba(255,255,255,.3);padding:7px 10px;text-align:left;border-bottom:1px solid rgba(255,255,255,.05)">${h}</th>`).join('')}</tr></thead>
+        <tbody>${contratos.map(([c,i,im,v,dt],idx)=>`
+        <tr style="border-bottom:1px solid rgba(255,255,255,.04)">
+          <td style="font-size:10px;color:rgba(255,255,255,.5);padding:7px 10px">${c}</td>
+          <td style="font-size:11px;color:rgba(255,255,255,.65);padding:7px 10px">${i.split(' ')[0]} ${i.split(' ')[1]}</td>
+          <td id="cv${idx}" style="font-size:11px;font-weight:700;padding:7px 10px;color:rgba(255,255,255,.25)">${v}</td>
+          <td style="font-size:10px;color:rgba(255,255,255,.5);padding:7px 10px">${dt}/2026</td>
+          <td id="igp${idx}" style="font-size:10px;padding:7px 10px;color:rgba(255,255,255,.25)">calc...</td>
+          <td id="cst${idx}" style="font-size:10px;padding:7px 10px;color:rgba(255,255,255,.25)">verif...</td>
+        </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`,
+    action:async()=>{
+      const igps=['+0%','+3.2%','+0%','+3.2%','+0%'];
+      const status=['Normal','Reajustado','Normal','Atrasado','Normal'];
+      for(let i=0;i<5;i++){
+        $(`cv${i}`).style.color='#10B981';$(`igp${i}`).textContent=igps[i];$(`igp${i}`).style.color='#10B981';
+        $(`cst${i}`).textContent=status[i];$(`cst${i}`).style.color=status[i]==='Atrasado'?'#E05555':'#10B981';
+        await wait(320);
+      }
+    }
+  },
+  {pct:58,title:'Gerando boletos bancários',html:`
+    <div style="background:#122A22;border:1px solid rgba(16,185,129,.2);border-radius:6px;width:540px;overflow:hidden">
+      <div style="background:#091511;padding:10px 14px;border-bottom:2px solid #10B981;font-size:11px;font-weight:700;color:#fff">Geração de Boletos — Banco Bradesco</div>
+      <div style="padding:14px;display:flex;flex-direction:column;gap:8px">
+        ${contratos.map(([c,i,im,v],idx)=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:#091511;border-radius:3px">
+          <span style="font-size:18px">📄</span>
+          <div style="flex:1">
+            <div style="font-size:11px;color:rgba(255,255,255,.75)">${i.split(' ')[0]} ${i.split(' ')[1]} — ${im}</div>
+            <div style="font-size:10px;color:rgba(255,255,255,.3);margin-top:2px">${v}</div>
+          </div>
+          <span id="bol${idx}" style="font-size:10px;color:rgba(255,255,255,.25)">gerando...</span>
+        </div>`).join('')}
+        <div style="font-size:10px;color:rgba(255,255,255,.3);text-align:center;padding-top:4px">+ 122 boletos adicionais sendo processados...</div>
+      </div>
+    </div>`,
+    action:async()=>{for(let i=0;i<5;i++){$(`bol${i}`).textContent='✓ Gerado';$(`bol${i}`).style.color='#10B981';await wait(320);}}
+  },
+  {pct:78,title:'Enviando avisos aos inquilinos',html:`
+    <div style="background:#122A22;border:1px solid rgba(16,185,129,.2);border-radius:6px;width:520px">
+      <div style="background:#091511;padding:10px 14px;border-bottom:2px solid #10B981;font-size:11px;font-weight:700;color:#fff">Notificações Enviadas</div>
+      <div style="padding:14px;display:flex;flex-direction:column;gap:8px">
+        ${contratos.map(([c,i,im,v],idx)=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:9px 10px;background:#091511;border-radius:3px">
+          <div style="width:30px;height:30px;background:rgba(16,185,129,.15);border-radius:50%;display:grid;place-items:center;font-size:14px;flex-shrink:0">👤</div>
+          <div>
+            <div style="font-size:11px;font-weight:600;color:#10B981">${i.split(' ')[0]} ${i.split(' ')[1]}</div>
+            <div style="font-size:10px;color:rgba(255,255,255,.4);margin-top:1px">E-mail + WhatsApp com boleto · ${v}</div>
+          </div>
+          <span id="aviso${idx}" style="margin-left:auto;font-size:10px;color:rgba(255,255,255,.25)">enviando...</span>
+        </div>`).join('')}
+      </div>
+    </div>`,
+    action:async()=>{for(let i=0;i<5;i++){$(`aviso${i}`).textContent='✓ Enviado';$(`aviso${i}`).style.color='#10B981';await wait(350);}}
+  },
+  {pct:95,title:'Atualizando controle de inadimplência',html:`
+    <div style="background:#122A22;border:1px solid rgba(16,185,129,.2);border-radius:6px;width:520px">
+      <div style="background:#091511;padding:10px 14px;border-bottom:2px solid #10B981;font-size:11px;font-weight:700;color:#fff">Controle de Inadimplência — Outubro/2026</div>
+      <div style="padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        ${[['127','Boletos gerados'],['R$ 284.600','A receber no mês'],['8','Inadimplentes ativos'],['41 seg','Tempo de execução']].map(([v,l],i)=>`
+        <div style="background:#091511;border-radius:4px;padding:12px;text-align:center">
+          <div id="fin${i}" style="font-size:22px;font-weight:800;color:rgba(255,255,255,.25)">${v}</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.3);margin-top:4px">${l}</div>
+        </div>`).join('')}
+      </div>
+    </div>`,
+    action:async()=>{
+      for(let i=0;i<4;i++){
+        $(`fin${i}`).style.color=i===2?'#E05555':'#10B981';await wait(300);
+      }
+    }
+  }
+];
+
+let stepIdx=0;
+async function runStep(){
+  if(stepIdx>=steps.length){show('cp');return;}
+  const s=steps[stepIdx];
+  setProgress(s.pct);
+  $('aut-content').innerHTML=s.html;
+  const entry=addLog(`<strong>${s.title}</strong>`,'run');
+  await wait(400);await s.action();
+  entry.querySelector('.log-dot').className='log-dot ok';
+  entry.querySelector('.log-text').innerHTML=`<strong>${s.title}</strong> — concluído`;
+  stepIdx++;await wait(900);runStep();
+}
+
+async function startDemo(){
+  show('s1');
+  await wait(400);
+  await typeIn($('f-email'),'admin@centralimoveisp.com.br',50);
+  await wait(400);
+  await typeIn($('f-pass'),'••••••••',70);
+  await wait(400);
+  await typeIn($('f-imob'),'Central Imóveis SP',55);
+  await wait(500);
+  $('f-btn').disabled=false;$('f-btn').click();
+  await wait(300);show('s2');
+  await wait(1800);show('s3');
+  addLog('Robô iniciado','ok');addLog('ImovePro conectado','ok');
+  await wait(500);runStep();
+}
+function openReport(){window.open('RELATORIO_IMOBILIARIO.html','_blank');}
+</script>
+</body>
+</html>

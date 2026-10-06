@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Demo RPA — Escrituração Fiscal — Dominant</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#071E3D;font-family:'Segoe UI',Arial,sans-serif;font-size:13px}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden}
+.screen.active{display:flex}
+
+/* ── Splash ── */
+#sp{background:linear-gradient(135deg,#071E3D 0%,#0A2E5C 55%,#0D4B8E 100%);align-items:center;justify-content:center;flex-direction:column;gap:16px}
+.sp-badge{font-size:10px;font-weight:700;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:2px;border:1px solid rgba(255,255,255,.15);padding:4px 12px;border-radius:20px}
+.sp-title{font-size:30px;font-weight:900;color:#fff;text-align:center;line-height:1.15;max-width:580px}
+.sp-title span{color:#10D9A0}
+.sp-sub{font-size:13px;color:rgba(255,255,255,.55);max-width:460px;text-align:center;line-height:1.65;margin-top:2px}
+.sp-btn{margin-top:22px;background:#10D9A0;color:#071E3D;font-size:13px;font-weight:800;padding:14px 40px;border:none;border-radius:3px;cursor:pointer;transition:all .2s;letter-spacing:.3px}
+.sp-btn:hover{background:#0EC48F;transform:translateY(-1px)}
+.sp-hint{font-size:10px;color:rgba(255,255,255,.2);margin-top:8px}
+
+/* ── Header ── */
+.hdr{background:#051629;display:flex;align-items:center;padding:0 18px;height:52px;flex-shrink:0;border-bottom:1px solid rgba(16,217,160,.25)}
+.hdr-logo{display:flex;align-items:center;gap:10px}
+.hdr-icon{width:32px;height:32px;background:#10D9A0;border-radius:4px;display:grid;place-items:center;font-size:15px;font-weight:900;color:#071E3D}
+.hdr-name{font-size:15px;font-weight:800;color:#fff}
+.hdr-name span{color:#10D9A0}
+.hdr-sub{font-size:9px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.8px;margin-top:1px}
+.hdr-nav{margin-left:32px;display:flex;gap:0}
+.hdr-tab{padding:0 14px;height:52px;display:flex;align-items:center;font-size:11px;color:rgba(255,255,255,.45);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.hdr-tab.on{color:#10D9A0;border-bottom-color:#10D9A0}
+.hdr-usr{margin-left:auto;font-size:10px;color:rgba(255,255,255,.4);text-align:right}
+.hdr-usr strong{color:#fff;font-size:11px;display:block}
+.hdr-badge{display:inline-block;background:#10D9A0;color:#071E3D;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:8px}
+
+/* ── Login ── */
+.bg{background:#0C1F35;flex:1;display:flex;align-items:center;justify-content:center}
+.card{background:#0A2040;border:1px solid rgba(16,217,160,.15);border-radius:6px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.4)}
+.card-hdr{background:#071E3D;padding:18px 22px;border-bottom:2px solid #10D9A0}
+.card-hdr-t{font-size:13px;font-weight:700;color:#fff}
+.card-hdr-s{font-size:10px;color:rgba(255,255,255,.35);margin-top:2px}
+.card-body{padding:20px 22px}
+.lf{margin-bottom:13px}
+.lf label{display:block;font-size:10px;font-weight:700;color:#10D9A0;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.lf input{width:100%;border:1px solid rgba(255,255,255,.12);border-radius:3px;padding:9px 11px;font-size:13px;color:#fff;background:#071E3D;outline:none;transition:border .2s}
+.lf input:focus{border-color:#10D9A0}
+.lf-row{display:flex;gap:10px}
+.lf-row .lf{flex:1}
+.btn-main{width:100%;background:#10D9A0;color:#071E3D;font-size:13px;font-weight:800;padding:11px;border:none;border-radius:3px;cursor:pointer;margin-top:4px;transition:opacity .2s}
+.btn-main:hover{opacity:.88}
+.card-foot{padding:10px 22px 14px;border-top:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between}
+.card-foot span{font-size:10px;color:rgba(255,255,255,.25)}
+
+/* ── Dashboard ── */
+.dash{background:#0B1D30;flex:1;display:flex;flex-direction:column;overflow:hidden}
+.dash-top{background:#071E3D;padding:12px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,.06)}
+.dash-top h2{font-size:13px;font-weight:700;color:#fff}
+.dash-top .ds{font-size:11px;color:rgba(255,255,255,.35)}
+.dash-top .badge{margin-left:auto;background:rgba(16,217,160,.15);border:1px solid rgba(16,217,160,.35);color:#10D9A0;font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px}
+.dash-body{flex:1;display:flex;gap:0;overflow:hidden}
+.sidebar{width:200px;background:#071E3D;border-right:1px solid rgba(255,255,255,.06);padding:12px 0;flex-shrink:0}
+.sb-item{padding:9px 16px;display:flex;align-items:center;gap:9px;font-size:11px;color:rgba(255,255,255,.4);cursor:pointer;border-left:2px solid transparent}
+.sb-item.on{color:#10D9A0;border-left-color:#10D9A0;background:rgba(16,217,160,.06)}
+.sb-item span{font-size:16px}
+.main-area{flex:1;padding:16px;overflow:auto;display:flex;flex-direction:column;gap:12px}
+.kpi-row{display:flex;gap:10px}
+.kpi{background:#0A2040;border:1px solid rgba(255,255,255,.08);border-radius:5px;padding:12px 14px;flex:1}
+.kpi-lbl{font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.5px}
+.kpi-val{font-size:22px;font-weight:800;color:#fff;margin-top:3px}
+.kpi-val.green{color:#10D9A0}
+.kpi-val.yellow{color:#F5C842}
+.kpi-val.red{color:#F56942}
+.kpi-sub{font-size:10px;color:rgba(255,255,255,.3);margin-top:2px}
+.tbl-card{background:#0A2040;border:1px solid rgba(255,255,255,.08);border-radius:5px;overflow:hidden}
+.tbl-hdr{background:#071E3D;padding:10px 14px;display:flex;align-items:center;gap:8px}
+.tbl-hdr h3{font-size:11px;font-weight:700;color:#fff}
+.tbl-hdr .cnt{font-size:10px;color:rgba(255,255,255,.3)}
+.tbl-hdr .ml{margin-left:auto;font-size:10px;color:#10D9A0;cursor:pointer}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.4px;padding:8px 12px;text-align:left;border-bottom:1px solid rgba(255,255,255,.06)}
+.tbl td{font-size:11px;color:rgba(255,255,255,.75);padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr.hi td{background:rgba(16,217,160,.06)}
+.tag{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px}
+.tag.pen{background:rgba(245,200,66,.15);color:#F5C842}
+.tag.ok{background:rgba(16,217,160,.15);color:#10D9A0}
+.tag.err{background:rgba(245,105,66,.15);color:#F56942}
+.tag.proc{background:rgba(99,179,237,.15);color:#63B3ED}
+
+/* ── Automação ── */
+.aut{background:#0B1D30;flex:1;display:flex;gap:0;overflow:hidden}
+.aut-left{flex:1;overflow:hidden;position:relative;border-right:1px solid rgba(255,255,255,.06)}
+.aut-right{width:300px;background:#071E3D;display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+.aut-right-hdr{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.06)}
+.aut-right-hdr h3{font-size:12px;font-weight:700;color:#fff}
+.aut-right-hdr p{font-size:10px;color:rgba(255,255,255,.35);margin-top:2px}
+.log-area{flex:1;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:6px}
+.log-entry{display:flex;align-items:flex-start;gap:8px;font-size:11px}
+.log-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.log-dot.ok{background:#10D9A0}
+.log-dot.run{background:#63B3ED;animation:pulse .8s infinite}
+.log-dot.wait{background:rgba(255,255,255,.2)}
+.log-dot.err{background:#F56942}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.log-text{color:rgba(255,255,255,.7);line-height:1.4}
+.log-text strong{color:#10D9A0}
+.prog-area{padding:14px 16px;border-top:1px solid rgba(255,255,255,.06)}
+.prog-lbl{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,.4);margin-bottom:6px}
+.prog-bar{background:rgba(255,255,255,.08);border-radius:10px;height:6px;overflow:hidden}
+.prog-fill{height:100%;background:#10D9A0;border-radius:10px;transition:width .6s ease}
+.aut-content{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+
+/* robot cursor */
+.cursor{position:absolute;width:16px;height:16px;pointer-events:none;transition:all .5s cubic-bezier(.4,0,.2,1);z-index:999}
+.cursor::before{content:'';position:absolute;inset:0;border:2px solid #10D9A0;border-radius:50%;animation:cursorPulse 1s infinite}
+.cursor::after{content:'';position:absolute;top:50%;left:50%;width:4px;height:4px;background:#10D9A0;border-radius:50%;transform:translate(-50%,-50%)}
+@keyframes cursorPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.5}}
+
+/* highlight */
+.hl{outline:2px solid #10D9A0!important;outline-offset:2px;transition:outline .3s}
+
+/* ── Complete ── */
+#cp{background:linear-gradient(135deg,#071E3D 0%,#0A3060 100%);align-items:center;justify-content:center;flex-direction:column;gap:14px}
+.cp-icon{width:72px;height:72px;background:rgba(16,217,160,.15);border:2px solid #10D9A0;border-radius:50%;display:grid;place-items:center;font-size:32px}
+.cp-title{font-size:24px;font-weight:800;color:#fff;text-align:center}
+.cp-title span{color:#10D9A0}
+.cp-sub{font-size:13px;color:rgba(255,255,255,.5);text-align:center;max-width:420px;line-height:1.6}
+.cp-stats{display:flex;gap:24px;margin-top:8px}
+.cp-stat{text-align:center}
+.cp-stat-v{font-size:28px;font-weight:900;color:#10D9A0}
+.cp-stat-l{font-size:10px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.cp-btn{margin-top:16px;background:rgba(255,255,255,.08);color:#fff;font-size:12px;font-weight:600;padding:10px 28px;border:1px solid rgba(255,255,255,.2);border-radius:3px;cursor:pointer;transition:all .2s}
+.cp-btn:hover{background:rgba(255,255,255,.14)}
+.pow{position:absolute;bottom:20px;font-size:10px;color:rgba(255,255,255,.2)}
+.pow span{color:rgba(16,217,160,.5);font-weight:700}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="sp" class="screen active">
+  <div class="sp-badge">Demo Interativo · Dominant RPA</div>
+  <div class="sp-title">Automação de<br><span>Escrituração Fiscal</span></div>
+  <div class="sp-sub">Veja como o robô acessa o sistema fiscal, identifica NF-es pendentes, classifica e lança automaticamente — sem nenhuma intervenção humana.</div>
+  <button class="sp-btn" onclick="startDemo()">▶ Iniciar demonstração</button>
+  <div class="sp-hint">Duração aproximada: 45 segundos</div>
+  <div class="pow" style="position:relative;margin-top:16px">Tecnologia <span>DOMINANT</span></div>
+</div>
+
+<!-- LOGIN -->
+<div id="s1" class="screen">
+  <div class="hdr">
+    <div class="hdr-logo">
+      <div class="hdr-icon">F</div>
+      <div><div class="hdr-name">Fiscal<span>Pro</span></div><div class="hdr-sub">Sistema de Escrituração</div></div>
+    </div>
+    <div class="hdr-nav">
+      <div class="hdr-tab on">Acesso ao Sistema</div>
+    </div>
+    <div class="hdr-usr">Módulo Fiscal<strong>Versão 4.2.1</strong></div>
+  </div>
+  <div class="bg">
+    <div class="card" style="width:400px">
+      <div class="card-hdr">
+        <div class="card-hdr-t">Autenticação do Sistema</div>
+        <div class="card-hdr-s">Informe suas credenciais de acesso</div>
+      </div>
+      <div class="card-body">
+        <div class="lf"><label>CNPJ da Empresa</label><input id="f-cnpj" type="text" placeholder="00.000.000/0001-00" readonly></div>
+        <div class="lf-row">
+          <div class="lf"><label>Usuário</label><input id="f-user" type="text" placeholder="usuario" readonly></div>
+          <div class="lf"><label>Senha</label><input id="f-pass" type="password" placeholder="••••••••" readonly></div>
+        </div>
+        <div class="lf"><label>Filial</label><input id="f-fil" type="text" placeholder="Matriz" readonly></div>
+        <button class="btn-main" id="f-btn" disabled>Acessar Sistema</button>
+      </div>
+      <div class="card-foot">
+        <span>FiscalPro © 2026</span>
+        <span>SSL Seguro</span>
+      </div>
+    </div>
+  </div>
+  <div class="cursor" id="cur" style="display:none"></div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="s2" class="screen">
+  <div class="hdr">
+    <div class="hdr-logo">
+      <div class="hdr-icon">F</div>
+      <div><div class="hdr-name">Fiscal<span>Pro</span></div><div class="hdr-sub">Sistema de Escrituração</div></div>
+    </div>
+    <div class="hdr-nav">
+      <div class="hdr-tab">Painel</div>
+      <div class="hdr-tab on">Notas Fiscais</div>
+      <div class="hdr-tab">Apuração</div>
+      <div class="hdr-tab">SPED</div>
+    </div>
+    <div class="hdr-usr"><strong>contabilidade@empresa.com.br</strong>CNPJ 12.345.678/0001-90</div>
+    <div class="hdr-badge">ROBÔ ATIVO</div>
+  </div>
+  <div class="dash">
+    <div class="dash-top">
+      <h2>Notas Fiscais Pendentes de Escrituração</h2>
+      <span class="ds">Competência: Outubro/2026</span>
+      <span class="badge">⚡ Automação em andamento</span>
+    </div>
+    <div class="dash-body">
+      <div class="sidebar">
+        <div class="sb-item on"><span>📂</span>NF-e Entrada</div>
+        <div class="sb-item"><span>📤</span>NF-e Saída</div>
+        <div class="sb-item"><span>📋</span>NF-s Serviços</div>
+        <div class="sb-item"><span>✅</span>Escrituradas</div>
+        <div class="sb-item"><span>⚠️</span>Pendências</div>
+        <div class="sb-item"><span>📊</span>Apuração</div>
+        <div class="sb-item"><span>📁</span>SPED Fiscal</div>
+      </div>
+      <div class="main-area">
+        <div class="kpi-row">
+          <div class="kpi"><div class="kpi-lbl">Pendentes</div><div class="kpi-val yellow" id="k-pen">47</div><div class="kpi-sub">NF-es aguardando</div></div>
+          <div class="kpi"><div class="kpi-lbl">Escrituradas Hoje</div><div class="kpi-val green" id="k-ok">0</div><div class="kpi-sub">Pelo robô agora</div></div>
+          <div class="kpi"><div class="kpi-lbl">Total Mês</div><div class="kpi-val">312</div><div class="kpi-sub">NF-es no período</div></div>
+          <div class="kpi"><div class="kpi-lbl">Crédito ICMS</div><div class="kpi-val green">R$ 0</div><div class="kpi-sub">Calculando...</div></div>
+        </div>
+        <div class="tbl-card">
+          <div class="tbl-hdr"><h3>Fila de Escrituração</h3><span class="cnt">47 documentos</span><span class="ml">Exportar →</span></div>
+          <table class="tbl" id="nf-tbl">
+            <thead><tr><th>Chave NF-e</th><th>Emitente</th><th>Valor</th><th>CFOP</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr id="r0"><td>3526 1012 3456 7890 0001...</td><td>Fornecedor Alfa Ltda</td><td>R$ 8.450,00</td><td>1102</td><td><span class="tag pen">Pendente</span></td></tr>
+              <tr id="r1"><td>3526 1098 7654 3210 0002...</td><td>Distribuidora Beta S/A</td><td>R$ 3.200,00</td><td>1202</td><td><span class="tag pen">Pendente</span></td></tr>
+              <tr id="r2"><td>3526 1055 4433 2211 0003...</td><td>Comércio Gama ME</td><td>R$ 1.875,50</td><td>1556</td><td><span class="tag pen">Pendente</span></td></tr>
+              <tr id="r3"><td>3526 1077 8899 1122 0004...</td><td>Serviços Delta Eireli</td><td>R$ 12.000,00</td><td>1910</td><td><span class="tag pen">Pendente</span></td></tr>
+              <tr id="r4"><td>3526 1033 5566 7788 0005...</td><td>Indústria Épsilon S/A</td><td>R$ 5.630,20</td><td>1102</td><td><span class="tag pen">Pendente</span></td></tr>
+              <tr><td colspan="5" style="color:rgba(255,255,255,.2);text-align:center;padding:10px;font-size:11px">+ 42 documentos adicionais na fila...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cursor" id="cur2" style="display:none"></div>
+</div>
+
+<!-- AUTOMAÇÃO RUNNING -->
+<div id="s3" class="screen">
+  <div class="hdr">
+    <div class="hdr-logo">
+      <div class="hdr-icon">F</div>
+      <div><div class="hdr-name">Fiscal<span>Pro</span></div><div class="hdr-sub">Sistema de Escrituração</div></div>
+    </div>
+    <div class="hdr-nav">
+      <div class="hdr-tab">Painel</div>
+      <div class="hdr-tab on">Notas Fiscais</div>
+      <div class="hdr-tab">Apuração</div>
+    </div>
+    <div class="hdr-badge">ROBÔ ATIVO</div>
+  </div>
+  <div class="aut">
+    <div class="aut-left">
+      <div class="aut-content" id="aut-content">
+        <!-- injected dynamically -->
+      </div>
+      <div class="cursor" id="cur3" style="display:none"></div>
+    </div>
+    <div class="aut-right">
+      <div class="aut-right-hdr">
+        <h3>⚡ Robô em execução</h3>
+        <p>Escrituração automática de NF-es</p>
+      </div>
+      <div class="log-area" id="log-area"></div>
+      <div class="prog-area">
+        <div class="prog-lbl"><span>Progresso</span><span id="prog-pct">0%</span></div>
+        <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COMPLETE -->
+<div id="cp" class="screen">
+  <div class="cp-icon">✅</div>
+  <div class="cp-title">Escrituração <span>Concluída!</span></div>
+  <div class="cp-sub">O robô processou todas as notas fiscais pendentes, classificou por CFOP, validou os dados e lançou automaticamente no sistema — sem nenhuma intervenção manual.</div>
+  <div class="cp-stats">
+    <div class="cp-stat"><div class="cp-stat-v">47</div><div class="cp-stat-l">NF-es escrituradas</div></div>
+    <div class="cp-stat"><div class="cp-stat-v">R$ 31.155</div><div class="cp-stat-l">Total processado</div></div>
+    <div class="cp-stat"><div class="cp-stat-v">100%</div><div class="cp-stat-l">Sem erros</div></div>
+  </div>
+  <button class="cp-btn" onclick="openReport()">Ver Relatório Completo →</button>
+  <div class="pow">Automação por <span>DOMINANT TECNOLOGIA</span></div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const screens = ['sp','s1','s2','s3','cp'];
+function show(id){ screens.forEach(s=>{ const el=$(s); el.classList.toggle('active', el.id===id); }); }
+
+function wait(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+function moveCursor(cur, x, y){
+  cur.style.left = x+'px';
+  cur.style.top  = y+'px';
+  cur.style.display = 'block';
+}
+
+async function typeIn(el, text, ms=60){
+  el.value='';
+  for(const c of text){ el.value+=c; await wait(ms); }
+}
+
+function addLog(text, type='ok'){
+  const a = $('log-area');
+  const d = document.createElement('div');
+  d.className='log-entry';
+  d.innerHTML=`<div class="log-dot ${type}"></div><div class="log-text">${text}</div>`;
+  a.appendChild(d);
+  a.scrollTop=a.scrollHeight;
+  return d;
+}
+
+function setProgress(pct){
+  $('prog-fill').style.width=pct+'%';
+  $('prog-pct').textContent=pct+'%';
+}
+
+// ── Step contents for automation screen ──
+const steps = [
+  {
+    pct:15, title:'Identificando NF-es pendentes',
+    html:`<div style="background:#0A2040;border:1px solid rgba(255,255,255,.1);border-radius:6px;width:560px;overflow:hidden">
+      <div style="background:#071E3D;padding:10px 14px;border-bottom:2px solid #10D9A0;font-size:11px;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px">
+        <span style="width:8px;height:8px;background:#10D9A0;border-radius:50%;display:inline-block"></span>
+        FiscalPro — Módulo NF-e · Fila de Entrada
+      </div>
+      <div style="padding:14px">
+        <div style="background:#051629;border-radius:4px;padding:10px 12px;font-size:11px;color:#10D9A0;font-family:monospace;line-height:1.7">
+          &gt; Conectando ao SEFAZ... <span style="color:rgba(255,255,255,.4)">OK</span><br>
+          &gt; Consultando manifestação do destinatário...<br>
+          &gt; <span id="st-count" style="color:#F5C842">Aguardando...</span><br>
+          &gt; Filtrando competência 10/2026...
+        </div>
+      </div>
+    </div>`,
+    action: async () => {
+      await wait(600);
+      $('st-count').textContent = 'Encontradas: 47 NF-es pendentes de escrituração ✓';
+    }
+  },
+  {
+    pct:35, title:'Baixando e validando XMLs',
+    html:`<div style="background:#0A2040;border:1px solid rgba(255,255,255,.1);border-radius:6px;width:560px;overflow:hidden">
+      <div style="background:#071E3D;padding:10px 14px;border-bottom:2px solid #10D9A0;font-size:11px;font-weight:700;color:#fff">Download e Validação de XMLs</div>
+      <div style="padding:14px;display:flex;flex-direction:column;gap:8px" id="xml-list">
+        ${['Alfa Ltda — 8.450,00','Beta S/A — 3.200,00','Gama ME — 1.875,50','Delta Eireli — 12.000,00','Épsilon S/A — 5.630,20'].map((n,i)=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:#051629;border-radius:3px;font-size:11px">
+          <div style="width:16px;height:16px;border-radius:50%;background:rgba(16,217,160,.15);display:grid;place-items:center;color:#10D9A0;font-size:10px;font-weight:700" id="xv${i}">○</div>
+          <span style="color:rgba(255,255,255,.7)">${n}</span>
+          <span style="margin-left:auto;font-size:9px;color:rgba(255,255,255,.3)" id="xs${i}">aguardando...</span>
+        </div>`).join('')}
+        <div style="font-size:10px;color:rgba(255,255,255,.3);text-align:center;padding:4px">+ 42 documentos adicionais...</div>
+      </div>
+    </div>`,
+    action: async () => {
+      for(let i=0;i<5;i++){
+        $(`xv${i}`).textContent='✓'; $(`xv${i}`).style.background='rgba(16,217,160,.2)';
+        $(`xs${i}`).textContent='XML válido'; $(`xs${i}`).style.color='#10D9A0';
+        await wait(300);
+      }
+    }
+  },
+  {
+    pct:55, title:'Classificando por CFOP',
+    html:`<div style="background:#0A2040;border:1px solid rgba(255,255,255,.1);border-radius:6px;width:580px;overflow:hidden">
+      <div style="background:#071E3D;padding:10px 14px;border-bottom:2px solid #10D9A0;font-size:11px;font-weight:700;color:#fff">Classificação por CFOP — IA Fiscal</div>
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr style="background:#051629">
+          ${['Emitente','CFOP','Natureza','CST','Status'].map(h=>`<th style="font-size:10px;color:rgba(255,255,255,.35);padding:8px 12px;text-align:left;border-bottom:1px solid rgba(255,255,255,.06)">${h}</th>`).join('')}
+        </tr></thead>
+        <tbody>
+          ${[['Alfa Ltda','1102','Compra p/Revenda','000',''],['Beta S/A','1202','Dev. Venda','000',''],['Gama ME','1556','Compra Ativo Imob.','070',''],['Delta Eireli','1910','Outra Entrada','000',''],['Épsilon S/A','1102','Compra p/Revenda','000','']].map(([e,c,n,cst],i)=>`
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04)">
+            <td style="font-size:11px;color:rgba(255,255,255,.7);padding:7px 12px">${e}</td>
+            <td style="font-size:11px;color:#F5C842;padding:7px 12px;font-weight:700">${c}</td>
+            <td style="font-size:11px;color:rgba(255,255,255,.5);padding:7px 12px">${n}</td>
+            <td style="font-size:11px;color:rgba(255,255,255,.5);padding:7px 12px">${cst}</td>
+            <td style="padding:7px 12px"><span id="cf${i}" style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;background:rgba(16,217,160,.15);color:#10D9A0">✓ OK</span></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`,
+    action: async () => { await wait(500); }
+  },
+  {
+    pct:78, title:'Lançando no sistema',
+    html:`<div style="background:#0A2040;border:1px solid rgba(255,255,255,.1);border-radius:6px;width:560px">
+      <div style="background:#071E3D;padding:10px 14px;border-bottom:2px solid #10D9A0;font-size:11px;font-weight:700;color:#fff">Lançamento Contábil Automático</div>
+      <div style="padding:14px">
+        <div style="background:#051629;border-radius:4px;padding:10px 12px;font-family:monospace;font-size:11px;color:#10D9A0;line-height:1.8">
+          <span id="lc1" style="color:rgba(255,255,255,.3)">&gt; Abrindo lançamento #47-2026/10...</span><br>
+          <span id="lc2" style="color:rgba(255,255,255,.3)">&gt; Déb: 1.1.3.01.001 Estoque Mercadorias</span><br>
+          <span id="lc3" style="color:rgba(255,255,255,.3)">&gt; Créd: 2.1.1.01.001 Fornecedores</span><br>
+          <span id="lc4" style="color:rgba(255,255,255,.3)">&gt; Apurando crédito ICMS — 12% s/ R$ 31.155</span><br>
+          <span id="lc5" style="color:rgba(255,255,255,.3)">&gt; Crédito ICMS: R$ 3.738,60</span><br>
+          <span id="lc6" style="color:rgba(255,255,255,.3)">&gt; 47 lançamentos contábeis gerados ✓</span>
+        </div>
+      </div>
+    </div>`,
+    action: async () => {
+      for(let i=1;i<=6;i++){
+        $(`lc${i}`).style.color= i<6 ? '#10D9A0' : '#F5C842';
+        await wait(350);
+      }
+    }
+  },
+  {
+    pct:95, title:'Gerando SPED e fechando',
+    html:`<div style="background:#0A2040;border:1px solid rgba(255,255,255,.1);border-radius:6px;width:560px">
+      <div style="background:#071E3D;padding:10px 14px;border-bottom:2px solid #10D9A0;font-size:11px;font-weight:700;color:#fff">Resumo de Apuração — Out/2026</div>
+      <div style="padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        ${[['Total Entradas','R$ 31.155,70','#fff'],['Crédito ICMS','R$ 3.738,60','#10D9A0'],['NF-es Escrituradas','47 documentos','#F5C842'],['Tempo Total','00:00:42','#63B3ED']].map(([l,v,c])=>`
+        <div style="background:#051629;border-radius:4px;padding:10px 12px">
+          <div style="font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.4px">${l}</div>
+          <div style="font-size:16px;font-weight:800;color:${c};margin-top:4px">${v}</div>
+        </div>`).join('')}
+      </div>
+    </div>`,
+    action: async () => { await wait(800); }
+  }
+];
+
+let stepIdx = 0;
+
+async function runStep(){
+  if(stepIdx >= steps.length){ show('cp'); return; }
+  const s = steps[stepIdx];
+  setProgress(s.pct);
+  $('aut-content').innerHTML = s.html;
+  const entry = addLog(`<strong>${s.title}</strong>`, 'run');
+  await wait(400);
+  await s.action();
+  entry.querySelector('.log-dot').className='log-dot ok';
+  entry.querySelector('.log-text').innerHTML=`<strong>${s.title}</strong> — concluído`;
+  stepIdx++;
+  await wait(900);
+  runStep();
+}
+
+async function startDemo(){
+  show('s1');
+  const cur = $('cur');
+  await wait(400);
+  moveCursor(cur, 200, 220);
+  await wait(600);
+  await typeIn($('f-cnpj'),'12.345.678/0001-90', 55);
+  moveCursor(cur, 200, 260);
+  await wait(400);
+  await typeIn($('f-user'),'contabilidade', 60);
+  moveCursor(cur, 310, 260);
+  await wait(300);
+  await typeIn($('f-pass'),'••••••••', 80);
+  moveCursor(cur, 200, 315);
+  await wait(400);
+  await typeIn($('f-fil'),'Matriz', 70);
+  moveCursor(cur, 200, 358);
+  await wait(500);
+  const btn=$('f-btn'); btn.disabled=false; btn.classList.add('hl');
+  await wait(600);
+  btn.click();
+  await wait(300);
+  show('s2');
+  await wait(1800);
+  show('s3');
+  addLog('Robô iniciado com sucesso', 'ok');
+  addLog('Conectado ao FiscalPro', 'ok');
+  await wait(500);
+  runStep();
+}
+
+function openReport(){ window.open('RELATORIO_CONTABIL.html','_blank'); }
+</script>
+</body>
+</html>

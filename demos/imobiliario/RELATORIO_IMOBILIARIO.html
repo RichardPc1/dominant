@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Relatório — Cobranças Mensais — Dominant RPA</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0D1F1A;color:#fff;font-family:'Segoe UI',Arial,sans-serif;font-size:13px;padding:32px}
+.header{display:flex;align-items:center;gap:16px;margin-bottom:28px;padding-bottom:20px;border-bottom:2px solid #10B981}
+.logo{width:48px;height:48px;background:#10B981;border-radius:6px;display:grid;place-items:center;font-size:22px}
+.header-text h1{font-size:20px;font-weight:800}
+.header-text h1 span{color:#10B981}
+.header-text p{font-size:11px;color:rgba(255,255,255,.4);margin-top:3px}
+.badge{margin-left:auto;background:rgba(16,185,129,.15);border:1px solid #10B981;color:#10B981;font-size:11px;font-weight:700;padding:6px 16px;border-radius:20px}
+.kpi-row{display:flex;gap:12px;margin-bottom:20px}
+.kpi{background:#122A22;border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:14px 18px;flex:1}
+.kpi-lbl{font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.5px}
+.kpi-val{font-size:26px;font-weight:800;margin-top:4px}
+.kpi-val.g{color:#10B981}.kpi-val.r{color:#E05555}.kpi-val.b{color:#63B3ED}
+.kpi-sub{font-size:10px;color:rgba(255,255,255,.3);margin-top:3px}
+.section{background:#122A22;border:1px solid rgba(255,255,255,.08);border-radius:6px;overflow:hidden;margin-bottom:16px}
+.section-hdr{background:#091511;padding:11px 16px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between}
+.section-hdr h2{font-size:12px;font-weight:700}
+.section-hdr span{font-size:10px;color:rgba(255,255,255,.3)}
+table{width:100%;border-collapse:collapse}
+th{font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.4px;padding:9px 14px;text-align:left;border-bottom:1px solid rgba(255,255,255,.06)}
+td{font-size:11px;color:rgba(255,255,255,.7);padding:9px 14px;border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border:none}
+.tag{display:inline-block;font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px}
+.tag.ok{background:rgba(16,185,129,.15);color:#10B981}
+.tag.ina{background:rgba(224,85,85,.15);color:#E05555}
+.tag.pend{background:rgba(249,115,22,.15);color:#F97316}
+.footer{margin-top:24px;text-align:center;font-size:10px;color:rgba(255,255,255,.2);padding-top:16px;border-top:1px solid rgba(255,255,255,.06)}
+.footer span{color:rgba(16,185,129,.5);font-weight:700}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">🏢</div>
+  <div class="header-text">
+    <h1>Relatório de <span>Cobranças Mensais</span></h1>
+    <p>Processado pelo Robô Dominant · Outubro/2026 · Central Imóveis SP</p>
+  </div>
+  <div class="badge">✓ Concluído com sucesso</div>
+</div>
+<div class="kpi-row">
+  <div class="kpi"><div class="kpi-lbl">Boletos Gerados</div><div class="kpi-val g">127</div><div class="kpi-sub">100% emitidos</div></div>
+  <div class="kpi"><div class="kpi-lbl">Total a Receber</div><div class="kpi-val g">R$ 284.600</div><div class="kpi-sub">competência out/2026</div></div>
+  <div class="kpi"><div class="kpi-lbl">Inadimplentes</div><div class="kpi-val r">8</div><div class="kpi-sub">notificados automaticamente</div></div>
+  <div class="kpi"><div class="kpi-lbl">Tempo de Execução</div><div class="kpi-val b">41 seg</div><div class="kpi-sub">vs. ~5h manual</div></div>
+</div>
+<div class="section">
+  <div class="section-hdr"><h2>Cobranças Geradas — Amostra</h2><span>127 boletos emitidos</span></div>
+  <table>
+    <thead><tr><th>Contrato</th><th>Inquilino</th><th>Imóvel</th><th>Valor</th><th>Vencimento</th><th>Notificado</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>LOC-2024-001</td><td>Ana Rodrigues Silva</td><td>Apto 32 · Rua das Flores</td><td>R$ 1.850,00</td><td>10/10/2026</td><td>E-mail + WhatsApp</td><td><span class="tag ok">Enviado</span></td></tr>
+      <tr><td>LOC-2023-045</td><td>Carlos Eduardo Lima</td><td>Casa 15 · Jardim América</td><td>R$ 3.296,00</td><td>15/10/2026</td><td>E-mail + WhatsApp</td><td><span class="tag ok">Enviado</span></td></tr>
+      <tr><td>LOC-2025-012</td><td>Mariana Costa Souza</td><td>Apto 108 · Ed. Sol</td><td>R$ 2.400,00</td><td>10/10/2026</td><td>E-mail + WhatsApp</td><td><span class="tag ok">Enviado</span></td></tr>
+      <tr><td>LOC-2022-088</td><td>Roberto Alves Jr.</td><td>Sala Comercial 05</td><td>R$ 5.779,20</td><td>05/10/2026</td><td>E-mail + Carta</td><td><span class="tag ina">Inadimplente</span></td></tr>
+      <tr><td>LOC-2024-067</td><td>Patrícia Mendes</td><td>Apto 201 · Vila Nova</td><td>R$ 1.650,00</td><td>10/10/2026</td><td>E-mail + WhatsApp</td><td><span class="tag ok">Enviado</span></td></tr>
+      <tr><td colspan="7" style="text-align:center;color:rgba(255,255,255,.2);font-style:italic">+ 122 contratos adicionais processados...</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="section">
+  <div class="section-hdr"><h2>Resumo por Canal de Notificação</h2><span>Out/2026</span></div>
+  <table>
+    <thead><tr><th>Canal</th><th>Enviados</th><th>Tx. Entrega</th><th>Obs.</th></tr></thead>
+    <tbody>
+      <tr><td>E-mail com boleto PDF</td><td>127</td><td style="color:#10B981;font-weight:700">100%</td><td>Boleto + instrução de pagamento</td></tr>
+      <tr><td>WhatsApp (texto + link)</td><td>119</td><td style="color:#10B981;font-weight:700">93,7%</td><td>8 sem WhatsApp cadastrado</td></tr>
+      <tr><td>Carta via Correios</td><td>8</td><td style="color:#F97316;font-weight:700">Enviada</td><td>Inadimplentes — notificação formal</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="section">
+  <div class="section-hdr"><h2>Controle de Reajustes IGP-M</h2><span>Contratos aniversariantes</span></div>
+  <table>
+    <thead><tr><th>Contrato</th><th>Inquilino</th><th>Valor Anterior</th><th>IGP-M Aplicado</th><th>Novo Valor</th></tr></thead>
+    <tbody>
+      <tr><td>LOC-2023-045</td><td>Carlos Eduardo Lima</td><td>R$ 3.100,00</td><td>+3,2%</td><td style="color:#10B981;font-weight:700">R$ 3.199,20</td></tr>
+      <tr><td>LOC-2022-088</td><td>Roberto Alves Jr.</td><td>R$ 5.600,00</td><td>+3,2%</td><td style="color:#10B981;font-weight:700">R$ 5.779,20</td></tr>
+      <tr><td colspan="5" style="text-align:center;color:rgba(255,255,255,.2);font-style:italic">105 contratos sem reajuste neste mês</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="footer">Automação executada por <span>DOMINANT TECNOLOGIA</span> · RPA + Inteligência Artificial · contato@dominanttec.com.br</div>
+</body>
+</html>

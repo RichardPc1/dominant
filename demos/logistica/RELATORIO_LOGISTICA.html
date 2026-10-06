@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Relatório — Emissão de CT-e — Dominant RPA</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0F1923;color:#fff;font-family:'Segoe UI',Arial,sans-serif;font-size:13px;padding:32px}
+.header{display:flex;align-items:center;gap:16px;margin-bottom:28px;padding-bottom:20px;border-bottom:2px solid #F97316}
+.logo{width:48px;height:48px;background:#F97316;border-radius:6px;display:grid;place-items:center;font-size:22px}
+.header-text h1{font-size:20px;font-weight:800}
+.header-text h1 span{color:#F97316}
+.header-text p{font-size:11px;color:rgba(255,255,255,.4);margin-top:3px}
+.badge{margin-left:auto;background:rgba(249,115,22,.15);border:1px solid #F97316;color:#F97316;font-size:11px;font-weight:700;padding:6px 16px;border-radius:20px}
+.kpi-row{display:flex;gap:12px;margin-bottom:20px}
+.kpi{background:#162533;border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:14px 18px;flex:1}
+.kpi-lbl{font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.5px}
+.kpi-val{font-size:26px;font-weight:800;margin-top:4px}
+.kpi-val.g{color:#F97316}.kpi-val.b{color:#63D9A0}.kpi-val.w{color:#7CB9E8}
+.kpi-sub{font-size:10px;color:rgba(255,255,255,.3);margin-top:3px}
+.section{background:#162533;border:1px solid rgba(255,255,255,.08);border-radius:6px;overflow:hidden;margin-bottom:16px}
+.section-hdr{background:#0B1520;padding:11px 16px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between}
+.section-hdr h2{font-size:12px;font-weight:700}
+.section-hdr span{font-size:10px;color:rgba(255,255,255,.3)}
+table{width:100%;border-collapse:collapse}
+th{font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.4px;padding:9px 14px;text-align:left;border-bottom:1px solid rgba(255,255,255,.06)}
+td{font-size:11px;color:rgba(255,255,255,.7);padding:9px 14px;border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border:none}
+.tag{display:inline-block;font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px}
+.tag.ok{background:rgba(99,217,160,.15);color:#63D9A0}
+.footer{margin-top:24px;text-align:center;font-size:10px;color:rgba(255,255,255,.2);padding-top:16px;border-top:1px solid rgba(255,255,255,.06)}
+.footer span{color:rgba(249,115,22,.5);font-weight:700}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">🚛</div>
+  <div class="header-text">
+    <h1>Relatório de <span>Emissão de CT-e</span></h1>
+    <p>Processado pelo Robô Dominant · Outubro/2026 · Filial SP Centro</p>
+  </div>
+  <div class="badge">✓ Concluído com sucesso</div>
+</div>
+<div class="kpi-row">
+  <div class="kpi"><div class="kpi-lbl">CT-es Emitidos</div><div class="kpi-val g">31</div><div class="kpi-sub">100% autorizados SEFAZ</div></div>
+  <div class="kpi"><div class="kpi-lbl">Valor em Mercadorias</div><div class="kpi-val g">R$ 182.440</div><div class="kpi-sub">processados hoje</div></div>
+  <div class="kpi"><div class="kpi-lbl">Frete Total Calculado</div><div class="kpi-val b">R$ 3.572,80</div><div class="kpi-sub">média R$ 115,25/CT-e</div></div>
+  <div class="kpi"><div class="kpi-lbl">Tempo de Execução</div><div class="kpi-val w">38 seg</div><div class="kpi-sub">vs. ~3h30min manual</div></div>
+</div>
+<div class="section">
+  <div class="section-hdr"><h2>CT-es Emitidos — Detalhamento</h2><span>31 documentos</span></div>
+  <table>
+    <thead><tr><th>Chave CT-e</th><th>Destinatário</th><th>Destino</th><th>Peso</th><th>Valor Merc.</th><th>Frete</th><th>Status SEFAZ</th></tr></thead>
+    <tbody>
+      <tr><td>CTe-3526-0610-0001</td><td>Distribuidora Norte Ltda</td><td>Campinas/SP</td><td>340 kg</td><td>R$ 18.500</td><td>R$ 462,00</td><td><span class="tag ok">Autorizado</span></td></tr>
+      <tr><td>CTe-3526-0610-0002</td><td>Supermercado Bom Preço</td><td>Ribeirão Preto/SP</td><td>210 kg</td><td>R$ 9.200</td><td>R$ 298,50</td><td><span class="tag ok">Autorizado</span></td></tr>
+      <tr><td>CTe-3526-0610-0003</td><td>Indústria Metal Forte S/A</td><td>São José/SC</td><td>850 kg</td><td>R$ 42.000</td><td>R$ 1.140,00</td><td><span class="tag ok">Autorizado</span></td></tr>
+      <tr><td>CTe-3526-0610-0004</td><td>Farmácia Popular ME</td><td>Santos/SP</td><td>45 kg</td><td>R$ 6.800</td><td>R$ 92,30</td><td><span class="tag ok">Autorizado</span></td></tr>
+      <tr><td>CTe-3526-0610-0005</td><td>Construmax Materiais</td><td>Curitiba/PR</td><td>1.200 kg</td><td>R$ 28.300</td><td>R$ 1.580,00</td><td><span class="tag ok">Autorizado</span></td></tr>
+      <tr><td colspan="7" style="text-align:center;color:rgba(255,255,255,.2);font-style:italic">+ 26 CT-es adicionais emitidos...</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="section">
+  <div class="section-hdr"><h2>Resumo de Notificações</h2><span>Rastreio enviado</span></div>
+  <table>
+    <thead><tr><th>Canal</th><th>Enviados</th><th>Taxa de Entrega</th><th>Observação</th></tr></thead>
+    <tbody>
+      <tr><td>E-mail com XML + DACTE</td><td>31</td><td style="color:#63D9A0;font-weight:700">100%</td><td>Destinatário + transportadora</td></tr>
+      <tr><td>SMS de rastreio</td><td>31</td><td style="color:#63D9A0;font-weight:700">100%</td><td>Link de rastreio personalizado</td></tr>
+      <tr><td>Atualização no TMS</td><td>31</td><td style="color:#63D9A0;font-weight:700">100%</td><td>Status alterado para EM_TRANSITO</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="footer">Automação executada por <span>DOMINANT TECNOLOGIA</span> · RPA + Inteligência Artificial · contato@dominanttec.com.br</div>
+</body>
+</html>

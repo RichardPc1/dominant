@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Demo RPA — Emissão de CT-e — Dominant</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#0F1923;font-family:'Segoe UI',Arial,sans-serif;font-size:13px}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden}
+.screen.active{display:flex}
+#sp{background:linear-gradient(135deg,#0F1923 0%,#162533 55%,#1E3A4A 100%);align-items:center;justify-content:center;flex-direction:column;gap:16px}
+.sp-badge{font-size:10px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:2px;border:1px solid rgba(249,115,22,.3);padding:4px 14px;border-radius:20px}
+.sp-title{font-size:30px;font-weight:900;color:#fff;text-align:center;line-height:1.15;max-width:580px}
+.sp-title span{color:#F97316}
+.sp-sub{font-size:13px;color:rgba(255,255,255,.5);max-width:460px;text-align:center;line-height:1.65}
+.sp-btn{margin-top:20px;background:#F97316;color:#fff;font-size:13px;font-weight:800;padding:14px 40px;border:none;border-radius:3px;cursor:pointer;transition:all .2s}
+.sp-btn:hover{background:#EA6A00;transform:translateY(-1px)}
+.sp-hint{font-size:10px;color:rgba(255,255,255,.2)}
+.hdr{background:#0B1520;display:flex;align-items:center;padding:0 18px;height:52px;flex-shrink:0;border-bottom:1px solid rgba(249,115,22,.2)}
+.hdr-icon{width:32px;height:32px;background:#F97316;border-radius:4px;display:grid;place-items:center;font-size:14px;font-weight:900;color:#fff}
+.hdr-name{font-size:15px;font-weight:800;color:#fff;margin-left:10px}
+.hdr-name span{color:#F97316}
+.hdr-sub{font-size:9px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.8px;margin-top:1px}
+.hdr-nav{margin-left:28px;display:flex}
+.hdr-tab{padding:0 14px;height:52px;display:flex;align-items:center;font-size:11px;color:rgba(255,255,255,.4);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.hdr-tab.on{color:#F97316;border-bottom-color:#F97316}
+.hdr-badge{margin-left:auto;background:rgba(249,115,22,.15);border:1px solid rgba(249,115,22,.4);color:#F97316;font-size:10px;font-weight:700;padding:3px 11px;border-radius:12px}
+.hdr-usr{margin-left:16px;font-size:10px;color:rgba(255,255,255,.35);text-align:right}
+.hdr-usr strong{color:#fff;font-size:11px;display:block}
+.bg{background:#0F1923;flex:1;display:flex;align-items:center;justify-content:center}
+.card{background:#162533;border:1px solid rgba(249,115,22,.2);border-radius:6px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.5);width:420px}
+.card-hdr{background:#0B1520;padding:18px 22px;border-bottom:2px solid #F97316}
+.card-hdr-t{font-size:13px;font-weight:700;color:#fff}
+.card-hdr-s{font-size:10px;color:rgba(255,255,255,.3);margin-top:2px}
+.card-body{padding:20px 22px}
+.lf{margin-bottom:13px}
+.lf label{display:block;font-size:10px;font-weight:700;color:#F97316;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.lf input{width:100%;border:1px solid rgba(255,255,255,.1);border-radius:3px;padding:9px 11px;font-size:13px;color:#fff;background:#0B1520;outline:none;transition:border .2s}
+.lf input:focus{border-color:#F97316}
+.btn-main{width:100%;background:#F97316;color:#fff;font-size:13px;font-weight:800;padding:11px;border:none;border-radius:3px;cursor:pointer;margin-top:4px}
+.dash{background:#0F1923;flex:1;display:flex;flex-direction:column;overflow:hidden}
+.dash-top{background:#0B1520;padding:11px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,.05)}
+.dash-top h2{font-size:13px;font-weight:700;color:#fff}
+.dash-body{flex:1;display:flex;overflow:hidden}
+.sidebar{width:190px;background:#0B1520;border-right:1px solid rgba(255,255,255,.05);padding:12px 0}
+.sb-item{padding:9px 16px;display:flex;align-items:center;gap:9px;font-size:11px;color:rgba(255,255,255,.35);cursor:pointer;border-left:2px solid transparent}
+.sb-item.on{color:#F97316;border-left-color:#F97316;background:rgba(249,115,22,.05)}
+.main-area{flex:1;padding:16px;overflow:auto;display:flex;flex-direction:column;gap:12px}
+.kpi-row{display:flex;gap:10px}
+.kpi{background:#162533;border:1px solid rgba(255,255,255,.07);border-radius:5px;padding:12px 14px;flex:1}
+.kpi-lbl{font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.5px}
+.kpi-val{font-size:22px;font-weight:800;color:#fff;margin-top:3px}
+.kpi-val.g{color:#F97316}.kpi-val.r{color:#E05555}.kpi-val.b{color:#63D9A0}
+.kpi-sub{font-size:10px;color:rgba(255,255,255,.25);margin-top:2px}
+.tbl-card{background:#162533;border:1px solid rgba(255,255,255,.07);border-radius:5px;overflow:hidden}
+.tbl-hdr{background:#0B1520;padding:10px 14px;display:flex;align-items:center;gap:8px}
+.tbl-hdr h3{font-size:11px;font-weight:700;color:#fff}
+.tbl-hdr .cnt{font-size:10px;color:rgba(255,255,255,.25)}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:10px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.4px;padding:8px 12px;text-align:left;border-bottom:1px solid rgba(255,255,255,.06)}
+.tbl td{font-size:11px;color:rgba(255,255,255,.7);padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04)}
+.tbl tr:last-child td{border:none}
+.tag{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px}
+.tag.pend{background:rgba(249,115,22,.15);color:#F97316}
+.tag.ok{background:rgba(99,217,160,.15);color:#63D9A0}
+.tag.atv{background:rgba(124,185,232,.15);color:#7CB9E8}
+.aut{background:#0F1923;flex:1;display:flex;overflow:hidden}
+.aut-left{flex:1;border-right:1px solid rgba(255,255,255,.05);position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.aut-right{width:290px;background:#0B1520;display:flex;flex-direction:column;overflow:hidden}
+.aut-right-hdr{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.05)}
+.aut-right-hdr h3{font-size:12px;font-weight:700;color:#fff}
+.aut-right-hdr p{font-size:10px;color:rgba(255,255,255,.3);margin-top:2px}
+.log-area{flex:1;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:6px}
+.log-entry{display:flex;align-items:flex-start;gap:8px;font-size:11px}
+.log-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.log-dot.ok{background:#F97316}
+.log-dot.run{background:#7CB9E8;animation:pulse .8s infinite}
+.log-dot.wait{background:rgba(255,255,255,.15)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.log-text{color:rgba(255,255,255,.65);line-height:1.4}
+.log-text strong{color:#F97316}
+.prog-area{padding:12px 16px;border-top:1px solid rgba(255,255,255,.05)}
+.prog-lbl{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,.35);margin-bottom:6px}
+.prog-bar{background:rgba(255,255,255,.07);border-radius:10px;height:5px;overflow:hidden}
+.prog-fill{height:100%;background:#F97316;border-radius:10px;transition:width .6s ease}
+.cursor{position:absolute;width:14px;height:14px;pointer-events:none;transition:all .5s cubic-bezier(.4,0,.2,1);z-index:999;display:none}
+.cursor::before{content:'';position:absolute;inset:0;border:2px solid #F97316;border-radius:50%;animation:cp 1s infinite}
+.cursor::after{content:'';position:absolute;top:50%;left:50%;width:4px;height:4px;background:#F97316;border-radius:50%;transform:translate(-50%,-50%)}
+@keyframes cp{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.4}}
+#cp{background:linear-gradient(135deg,#0F1923 0%,#1E3345 100%);align-items:center;justify-content:center;flex-direction:column;gap:14px}
+.cp-icon{width:72px;height:72px;background:rgba(249,115,22,.12);border:2px solid #F97316;border-radius:50%;display:grid;place-items:center;font-size:32px}
+.cp-title{font-size:24px;font-weight:800;color:#fff;text-align:center}
+.cp-title span{color:#F97316}
+.cp-sub{font-size:13px;color:rgba(255,255,255,.45);text-align:center;max-width:420px;line-height:1.6}
+.cp-stats{display:flex;gap:24px;margin-top:8px}
+.cp-stat{text-align:center}
+.cp-stat-v{font-size:28px;font-weight:900;color:#F97316}
+.cp-stat-l{font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.cp-btn{margin-top:16px;background:rgba(255,255,255,.07);color:#fff;font-size:12px;font-weight:600;padding:10px 28px;border:1px solid rgba(255,255,255,.18);border-radius:3px;cursor:pointer}
+.pow{margin-top:16px;font-size:10px;color:rgba(255,255,255,.18)}
+.pow span{color:rgba(249,115,22,.5);font-weight:700}
+</style>
+</head>
+<body>
+<div id="sp" class="screen active">
+  <div class="sp-badge">Demo Interativo · Dominant RPA</div>
+  <div class="sp-title">Automação de<br><span>Emissão de CT-e</span></div>
+  <div class="sp-sub">O robô busca os pedidos no sistema, verifica as rotas, calcula o frete, emite os CT-es automaticamente e envia o tracking para os destinatários — sem intervenção humana.</div>
+  <button class="sp-btn" onclick="startDemo()">▶ Iniciar demonstração</button>
+  <div class="sp-hint">Duração aproximada: 45 segundos</div>
+  <div class="pow">Tecnologia <span>DOMINANT</span></div>
+</div>
+
+<div id="s1" class="screen">
+  <div class="hdr">
+    <div style="display:flex;align-items:center">
+      <div class="hdr-icon">🚛</div>
+      <div style="margin-left:10px"><div class="hdr-name">Log<span>Tech TMS</span></div><div class="hdr-sub">Sistema de Gestão de Transporte</div></div>
+    </div>
+    <div class="hdr-nav"><div class="hdr-tab on">Login</div></div>
+    <div class="hdr-usr" style="margin-left:auto">Versão 4.2.1<strong>Módulo Documentos</strong></div>
+  </div>
+  <div class="bg">
+    <div class="card">
+      <div class="card-hdr"><div class="card-hdr-t">Acesso ao Sistema TMS</div><div class="card-hdr-s">Informe suas credenciais de operador</div></div>
+      <div class="card-body">
+        <div class="lf"><label>Usuário</label><input id="f-usr" type="text" placeholder="operador@empresa.com.br" readonly></div>
+        <div class="lf"><label>Senha</label><input id="f-pass" type="password" placeholder="••••••••" readonly></div>
+        <div class="lf"><label>Filial</label><input id="f-fil" type="text" placeholder="Selecione a filial" readonly></div>
+        <button class="btn-main" id="f-btn" disabled>Entrar no Sistema</button>
+      </div>
+    </div>
+  </div>
+  <div class="cursor" id="cur"></div>
+</div>
+
+<div id="s2" class="screen">
+  <div class="hdr">
+    <div style="display:flex;align-items:center"><div class="hdr-icon">🚛</div><div style="margin-left:10px"><div class="hdr-name">Log<span>Tech TMS</span></div><div class="hdr-sub">Sistema de Gestão de Transporte</div></div></div>
+    <div class="hdr-nav">
+      <div class="hdr-tab">Dashboard</div><div class="hdr-tab on">Pedidos</div><div class="hdr-tab">CT-e</div><div class="hdr-tab">Rastreio</div>
+    </div>
+    <div class="hdr-badge">⚡ ROBÔ ATIVO</div>
+    <div class="hdr-usr" style="margin-left:10px"><strong>Operador TMS</strong>Filial SP Centro</div>
+  </div>
+  <div class="dash">
+    <div class="dash-top"><h2>Pedidos Aguardando Emissão de CT-e</h2></div>
+    <div class="dash-body">
+      <div class="sidebar">
+        <div class="sb-item on"><span>📦</span>Pedidos pendentes</div>
+        <div class="sb-item"><span>📋</span>CT-es emitidos</div>
+        <div class="sb-item"><span>🗺️</span>Rotas ativas</div>
+        <div class="sb-item"><span>🚛</span>Frota</div>
+        <div class="sb-item"><span>📊</span>Relatórios</div>
+        <div class="sb-item"><span>⚙️</span>Configurações</div>
+      </div>
+      <div class="main-area">
+        <div class="kpi-row">
+          <div class="kpi"><div class="kpi-lbl">Pedidos Pendentes</div><div class="kpi-val g">31</div><div class="kpi-sub">aguardando CT-e</div></div>
+          <div class="kpi"><div class="kpi-lbl">Emitidos Hoje</div><div class="kpi-val b">0</div><div class="kpi-sub">sendo processados...</div></div>
+          <div class="kpi"><div class="kpi-lbl">Valor Total</div><div class="kpi-val g">R$ 182.440</div><div class="kpi-sub">em mercadorias</div></div>
+          <div class="kpi"><div class="kpi-lbl">Entregas Previstas</div><div class="kpi-val b">31</div><div class="kpi-sub">para hoje e amanhã</div></div>
+        </div>
+        <div class="tbl-card">
+          <div class="tbl-hdr"><h3>Pedidos para Emissão Automática</h3><span class="cnt">31 registros</span></div>
+          <table class="tbl">
+            <thead><tr><th>Nº Pedido</th><th>Destinatário</th><th>Destino</th><th>Peso</th><th>Valor</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>PED-20261006-001</td><td>Distribuidora Norte Ltda</td><td>Campinas/SP</td><td>340 kg</td><td>R$ 18.500</td><td><span class="tag pend">Pendente</span></td></tr>
+              <tr><td>PED-20261006-002</td><td>Supermercado Bom Preço</td><td>Ribeirão Preto/SP</td><td>210 kg</td><td>R$ 9.200</td><td><span class="tag pend">Pendente</span></td></tr>
+              <tr><td>PED-20261006-003</td><td>Indústria Metal Forte S/A</td><td>São José/SC</td><td>850 kg</td><td>R$ 42.000</td><td><span class="tag pend">Pendente</span></td></tr>
+              <tr><td>PED-20261006-004</td><td>Farmácia Popular ME</td><td>Santos/SP</td><td>45 kg</td><td>R$ 6.800</td><td><span class="tag pend">Pendente</span></td></tr>
+              <tr><td>PED-20261006-005</td><td>Construmax Materiais</td><td>Curitiba/PR</td><td>1.200 kg</td><td>R$ 28.300</td><td><span class="tag pend">Pendente</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="s3" class="screen">
+  <div class="hdr">
+    <div style="display:flex;align-items:center"><div class="hdr-icon">🚛</div><div style="margin-left:10px"><div class="hdr-name">Log<span>Tech TMS</span></div><div class="hdr-sub">Sistema de Gestão de Transporte</div></div></div>
+    <div class="hdr-nav"><div class="hdr-tab">Pedidos</div><div class="hdr-tab on">Automação</div></div>
+    <div class="hdr-badge">⚡ ROBÔ ATIVO</div>
+  </div>
+  <div class="aut">
+    <div class="aut-left">
+      <div id="aut-content"></div>
+    </div>
+    <div class="aut-right">
+      <div class="aut-right-hdr"><h3>🚛 Robô Logístico</h3><p>Emissão automática de CT-e</p></div>
+      <div class="log-area" id="log-area"></div>
+      <div class="prog-area">
+        <div class="prog-lbl"><span>Progresso</span><span id="prog-pct">0%</span></div>
+        <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="cp" class="screen">
+  <div class="cp-icon">🚛</div>
+  <div class="cp-title">CT-es <span>Emitidos!</span></div>
+  <div class="cp-sub">O robô processou todos os pedidos, calculou fretes, emitiu os CT-es na SEFAZ e enviou o rastreamento automaticamente para os destinatários por e-mail e SMS.</div>
+  <div class="cp-stats">
+    <div class="cp-stat"><div class="cp-stat-v">31</div><div class="cp-stat-l">CT-es emitidos</div></div>
+    <div class="cp-stat"><div class="cp-stat-v">R$ 182k</div><div class="cp-stat-l">Em mercadorias</div></div>
+    <div class="cp-stat"><div class="cp-stat-v">38 seg</div><div class="cp-stat-l">Tempo total</div></div>
+  </div>
+  <button class="cp-btn" onclick="openReport()">Ver Relatório Completo →</button>
+  <div class="pow">Automação por <span>DOMINANT TECNOLOGIA</span></div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const screens=['sp','s1','s2','s3','cp'];
+function show(id){screens.forEach(s=>{$(s).classList.toggle('active',$(s).id===id)})}
+function wait(ms){return new Promise(r=>setTimeout(r,ms))}
+async function typeIn(el,text,ms=60){el.value='';for(const c of text){el.value+=c;await wait(ms)}}
+function addLog(text,type='ok'){
+  const a=$('log-area'),d=document.createElement('div');
+  d.className='log-entry';
+  d.innerHTML=`<div class="log-dot ${type}"></div><div class="log-text">${text}</div>`;
+  a.appendChild(d);a.scrollTop=a.scrollHeight;return d;
+}
+function setProgress(pct){$('prog-fill').style.width=pct+'%';$('prog-pct').textContent=pct+'%'}
+
+const pedidos=[
+  ['PED-001','Distribuidora Norte Ltda','Campinas/SP','340 kg','R$ 18.500','R$ 462,00'],
+  ['PED-002','Supermercado Bom Preço','Ribeirão Preto/SP','210 kg','R$ 9.200','R$ 298,50'],
+  ['PED-003','Indústria Metal Forte S/A','São José/SC','850 kg','R$ 42.000','R$ 1.140,00'],
+  ['PED-004','Farmácia Popular ME','Santos/SP','45 kg','R$ 6.800','R$ 92,30'],
+  ['PED-005','Construmax Materiais','Curitiba/PR','1.200 kg','R$ 28.300','R$ 1.580,00'],
+];
+
+const steps=[
+  {pct:18,title:'Buscando pedidos no sistema',html:`
+    <div style="background:#162533;border:1px solid rgba(249,115,22,.2);border-radius:6px;width:520px;overflow:hidden">
+      <div style="background:#0B1520;padding:10px 14px;border-bottom:2px solid #F97316;font-size:11px;font-weight:700;color:#fff">LogTech TMS — Fila de Pedidos</div>
+      <div style="padding:14px;font-size:11px;color:rgba(255,255,255,.6);line-height:2">
+        <span style="color:#F97316">▶</span> Conectando ao banco de dados TMS...<br>
+        <span style="color:#F97316">▶</span> Filtro: status = AGUARDANDO_CTE · data = hoje<br>
+        <span id="p-count" style="color:rgba(255,255,255,.3)">   Carregando pedidos...</span><br>
+        <span id="p-val" style="color:rgba(255,255,255,.3)">   Calculando valor total...</span>
+      </div>
+    </div>`,
+    action:async()=>{
+      await wait(500);$('p-count').textContent='   31 pedidos encontrados ✓';$('p-count').style.color='#F97316';
+      await wait(400);$('p-val').textContent='   Valor total: R$ 182.440,00 ✓';$('p-val').style.color='#F97316';
+    }
+  },
+  {pct:40,title:'Verificando rotas e calculando frete',html:`
+    <div style="background:#162533;border:1px solid rgba(249,115,22,.2);border-radius:6px;width:560px;overflow:hidden">
+      <div style="background:#0B1520;padding:10px 14px;border-bottom:2px solid #F97316;font-size:11px;font-weight:700;color:#fff">Cálculo Automático de Frete</div>
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr style="background:#0B1520">${['Pedido','Destino','Peso','Distância','Frete Calc.'].map(h=>`<th style="font-size:10px;color:rgba(255,255,255,.3);padding:7px 10px;text-align:left;border-bottom:1px solid rgba(255,255,255,.05)">${h}</th>`).join('')}</tr></thead>
+        <tbody>${pedidos.map(([p,d,dest,kg,,fr],i)=>`
+        <tr style="border-bottom:1px solid rgba(255,255,255,.04)">
+          <td style="font-size:10px;color:rgba(255,255,255,.5);padding:7px 10px">${p}</td>
+          <td style="font-size:11px;color:rgba(255,255,255,.65);padding:7px 10px">${dest}</td>
+          <td style="font-size:10px;color:rgba(255,255,255,.5);padding:7px 10px">${kg}</td>
+          <td id="dist${i}" style="font-size:10px;padding:7px 10px;color:rgba(255,255,255,.25)">calc...</td>
+          <td id="fr${i}" style="font-size:11px;font-weight:700;padding:7px 10px;color:rgba(255,255,255,.25)">${fr}</td>
+        </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`,
+    action:async()=>{
+      const dists=['91 km','318 km','708 km','72 km','408 km'];
+      for(let i=0;i<5;i++){$(`dist${i}`).textContent=dists[i];$(`dist${i}`).style.color='#63D9A0';$(`fr${i}`).style.color='#F97316';await wait(300);}
+    }
+  },
+  {pct:62,title:'Emitindo CT-es na SEFAZ',html:`
+    <div style="background:#162533;border:1px solid rgba(249,115,22,.2);border-radius:6px;width:540px;overflow:hidden">
+      <div style="background:#0B1520;padding:10px 14px;border-bottom:2px solid #F97316;font-size:11px;font-weight:700;color:#fff">Transmissão SEFAZ — CT-e 3.0</div>
+      <div style="padding:14px;display:flex;flex-direction:column;gap:8px">
+        ${pedidos.map(([p,d,dest],i)=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:#0B1520;border-radius:3px">
+          <span style="font-size:16px">📋</span>
+          <div style="flex:1">
+            <div style="font-size:11px;color:rgba(255,255,255,.75)">${p} — ${d.split(' ').slice(0,3).join(' ')}</div>
+            <div style="font-size:10px;color:rgba(255,255,255,.3);margin-top:2px">${dest}</div>
+          </div>
+          <span id="sefaz${i}" style="font-size:10px;color:rgba(255,255,255,.25)">transmitindo...</span>
+          <span id="chave${i}" style="font-size:9px;color:rgba(255,255,255,.2)"></span>
+        </div>`).join('')}
+      </div>
+    </div>`,
+    action:async()=>{
+      const chaves=['CTe-3526-0610-0001','CTe-3526-0610-0002','CTe-3526-0610-0003','CTe-3526-0610-0004','CTe-3526-0610-0005'];
+      for(let i=0;i<5;i++){
+        $(`sefaz${i}`).textContent='✓ Autorizado';$(`sefaz${i}`).style.color='#63D9A0';
+        $(`chave${i}`).textContent=chaves[i];$(`chave${i}`).style.color='#F97316';
+        await wait(350);
+      }
+    }
+  },
+  {pct:82,title:'Enviando tracking aos destinatários',html:`
+    <div style="background:#162533;border:1px solid rgba(249,115,22,.2);border-radius:6px;width:520px">
+      <div style="background:#0B1520;padding:10px 14px;border-bottom:2px solid #F97316;font-size:11px;font-weight:700;color:#fff">Notificações de Rastreio</div>
+      <div style="padding:14px;display:flex;flex-direction:column;gap:8px">
+        ${pedidos.map(([p,d,dest],i)=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:9px 10px;background:#0B1520;border-radius:3px;font-size:11px">
+          <span>📧</span>
+          <div style="flex:1"><div style="color:rgba(255,255,255,.75)">${d.split(' ').slice(0,3).join(' ')}</div><div style="font-size:10px;color:rgba(255,255,255,.3);margin-top:1px">E-mail + SMS de rastreio enviados</div></div>
+          <span id="trk${i}" style="font-size:10px;color:rgba(255,255,255,.25)">enviando...</span>
+        </div>`).join('')}
+      </div>
+    </div>`,
+    action:async()=>{for(let i=0;i<5;i++){$(`trk${i}`).textContent='✓ Enviado';$(`trk${i}`).style.color='#63D9A0';await wait(350);}}
+  },
+  {pct:95,title:'Atualizando status no sistema',html:`
+    <div style="background:#162533;border:1px solid rgba(249,115,22,.2);border-radius:6px;width:520px">
+      <div style="background:#0B1520;padding:10px 14px;border-bottom:2px solid #F97316;font-size:11px;font-weight:700;color:#fff">Atualização de Status — LogTech TMS</div>
+      <div style="padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        ${[['31','CT-es emitidos'],['R$ 182.440','Valor processado'],['R$ 3.572,80','Frete total'],['38 seg','Tempo de execução']].map(([v,l],i)=>`
+        <div style="background:#0B1520;border-radius:4px;padding:12px;text-align:center">
+          <div id="fin${i}" style="font-size:22px;font-weight:800;color:rgba(255,255,255,.25)">${v}</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.3);margin-top:4px">${l}</div>
+        </div>`).join('')}
+      </div>
+    </div>`,
+    action:async()=>{for(let i=0;i<4;i++){$(`fin${i}`).style.color='#F97316';await wait(300);}}
+  }
+];
+
+let stepIdx=0;
+async function runStep(){
+  if(stepIdx>=steps.length){show('cp');return;}
+  const s=steps[stepIdx];
+  setProgress(s.pct);
+  $('aut-content').innerHTML=s.html;
+  const entry=addLog(`<strong>${s.title}</strong>`,'run');
+  await wait(400);await s.action();
+  entry.querySelector('.log-dot').className='log-dot ok';
+  entry.querySelector('.log-text').innerHTML=`<strong>${s.title}</strong> — concluído`;
+  stepIdx++;await wait(900);runStep();
+}
+
+async function startDemo(){
+  show('s1');
+  const cur=$('cur');await wait(400);
+  cur.style.display='block';
+  cur.style.left='200px';cur.style.top='215px';
+  await typeIn($('f-usr'),'operador@logtech.com.br',55);
+  cur.style.top='255px';await wait(400);
+  await typeIn($('f-pass'),'••••••••',70);
+  cur.style.top='295px';await wait(400);
+  await typeIn($('f-fil'),'SP Centro — Filial 001',55);
+  cur.style.top='345px';await wait(500);
+  $('f-btn').disabled=false;$('f-btn').click();
+  await wait(300);show('s2');
+  await wait(1800);show('s3');
+  addLog('Robô iniciado','ok');addLog('Sistema TMS conectado','ok');
+  await wait(500);runStep();
+}
+function openReport(){window.open('RELATORIO_LOGISTICA.html','_blank');}
+</script>
+</body>
+</html>
