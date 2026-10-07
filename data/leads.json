@@ -648,9 +648,9 @@
     "ultimaInteracao": "30/09/2026",
     "observacoes": "Evidência: dados do site. Sem número de clientes ou funcionários.",
     "fonte": "https://eccocontabilidade.com.br/",
-    "cnpj": "não encontrado",
+    "cnpj": "67.178.061/0001-14",
     "segmento": "Atividades de contabilidade",
-    "porte": "não encontrado",
+    "porte": "EPP (21-50 funcionários)",
     "score": 7,
     "telefone": "(11) 4990-5177",
     "site": "https://eccocontabilidade.com.br/",
@@ -673,7 +673,7 @@
       }
     ],
     "createdAt": "2026-09-29T15:14:04.220Z",
-    "updatedAt": "2026-09-30T13:11:31.753Z",
+    "updatedAt": "2026-10-06T21:38:12.566404Z",
     "coluna": "email",
     "agendaData": "",
     "agendaHora": ""
@@ -5443,7 +5443,7 @@
     "nome": "D&P Contabilidade – Assessoria e Consultoria",
     "categoria": "Automação RPA",
     "localizacao": "Mogi das Cruzes – SP",
-    "perfil": "Escritório de contabilidade em Mogi das Cruzes (Vila Mogi Moderno).",
+    "perfil": "Escritório contábil com mais de 20 anos em Mogi das Cruzes. Sócias: Paula Meireles e Daiane Vedovotto. Serviços: contabilidade financeira, fiscal, trabalhista e societária.",
     "porqueFazSentido": "Evidência: setor contábil com rotina manual. Hipótese: obrigações acessórias repetitivas.",
     "contato": "Telefone institucional (11) 2312-2811",
     "prioridade": "2",
@@ -5454,17 +5454,17 @@
     "ultimaInteracao": "",
     "observacoes": "Av. Pedro Machado, 395, sala 15.",
     "fonte": "https://noticiasdemogi.com.br/escritorios-de-contabilidade-em-mogi-das-cruzes/",
-    "cnpj": "não encontrado",
+    "cnpj": "30.842.467/0001-40",
     "segmento": "6920-6/01 (setor contábil)",
-    "porte": "não encontrado",
+    "porte": "ME/EPP (20+ anos de mercado, reestruturação societária em 2024)",
     "score": 6,
-    "telefone": "(11) 2312-2811",
-    "site": "",
+    "telefone": "(11) 97461-8511",
+    "site": "https://contabildep.com.br",
     "dataInclusao": "30/09/2026",
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.156Z",
-    "updatedAt": "2026-09-30T12:43:47.156Z"
+    "updatedAt": "2026-10-06T21:56:24.085249+00:00"
   },
   {
     "id": "bae34b06-bb89-4756-8beb-72b31dd64cd5",
@@ -6592,7 +6592,7 @@
     "fonte": "http://www.juniorimobiliaria.com.br/",
     "cnpj": "não encontrado",
     "segmento": "Imobiliária / locação e administração de imóveis",
-    "porte": "não encontrado",
+    "porte": "Pequeno (estimativa: 2-5 funcionários, imobiliária de bairro)",
     "score": 6,
     "telefone": "(11) 5573-2620",
     "site": "http://www.juniorimobiliaria.com.br/",
@@ -6600,7 +6600,7 @@
     "notasLigacao": "",
     "chamadas": [],
     "createdAt": "2026-09-30T12:43:47.159Z",
-    "updatedAt": "2026-09-30T12:43:47.159Z"
+    "updatedAt": "2026-10-06T21:42:37.204386+00:00"
   },
   {
     "id": "7d48dda7-feee-4c2c-b2d1-6bd5a2323c06",
