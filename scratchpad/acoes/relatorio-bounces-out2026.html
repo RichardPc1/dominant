@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Relatório de Reenvio — Campanha out/2026</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #f8f9fa;
+    --border: #e2e8f0;
+    --text: #1a202c;
+    --muted: #64748b;
+    --accent: #1e40af;
+    --green: #15803d;
+    --red: #b91c1c;
+    --yellow: #b45309;
+    --green-bg: #f0fdf4;
+    --red-bg: #fef2f2;
+    --yellow-bg: #fffbeb;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Calibri, Arial, sans-serif;
+    font-size: 11pt;
+    color: var(--text);
+    background: var(--bg);
+    padding: 40px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  @media print {
+    body { padding: 20px; }
+    .no-print { display: none; }
+    @page { margin: 2cm; }
+  }
+  header {
+    border-bottom: 3px solid var(--accent);
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+  }
+  .logo-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .logo-dot { width: 32px; height: 32px; background: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; font-size: 14px; }
+  h1 { font-size: 18pt; color: var(--accent); font-weight: 700; }
+  .subtitle { color: var(--muted); font-size: 10pt; margin-top: 4px; }
+  .meta { display: flex; gap: 24px; margin-top: 12px; font-size: 9.5pt; color: var(--muted); }
+  .meta span strong { color: var(--text); }
+
+  h2 { font-size: 13pt; color: var(--accent); margin: 28px 0 10px; border-left: 4px solid var(--accent); padding-left: 10px; }
+  h3 { font-size: 11pt; color: var(--text); margin: 16px 0 8px; font-weight: 600; }
+
+  p { line-height: 1.6; margin-bottom: 8px; }
+
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0; }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+  }
+  .stat .num { font-size: 22pt; font-weight: 700; color: var(--accent); }
+  .stat .lbl { font-size: 9pt; color: var(--muted); margin-top: 4px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 10pt; }
+  th { background: var(--accent); color: #fff; padding: 8px 10px; text-align: left; font-weight: 600; }
+  td { padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: var(--surface); }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 9pt;
+    font-weight: 600;
+  }
+  .ok    { background: var(--green-bg); color: var(--green); }
+  .fail  { background: var(--red-bg); color: var(--red); }
+  .warn  { background: var(--yellow-bg); color: var(--yellow); }
+
+  .block-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+  .block-card .title { font-weight: 700; font-size: 10.5pt; margin-bottom: 4px; }
+  .block-card .code  { font-family: Courier New, monospace; font-size: 9pt; background: var(--surface); padding: 4px 8px; border-radius: 4px; margin: 6px 0; display: block; }
+  .block-card .action { color: var(--green); font-size: 9.5pt; }
+  .block-card .definitive { color: var(--accent); font-size: 9.5pt; margin-top: 4px; }
+
+  .kanban-moves { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .kmove {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 9.5pt;
+  }
+  .kmove .empresa { font-weight: 700; margin-bottom: 4px; }
+  .kmove .from { color: var(--muted); }
+  .kmove .to   { color: var(--accent); font-weight: 600; }
+
+  .scripts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .script {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 9pt;
+  }
+  .script .name { font-family: Courier New, monospace; font-weight: 700; color: var(--accent); }
+  .script .desc { color: var(--muted); margin-top: 3px; }
+
+  .path-box {
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-family: Courier New, monospace;
+    font-size: 9.5pt;
+    line-height: 1.8;
+    margin: 10px 0;
+  }
+
+  .alert {
+    background: var(--yellow-bg);
+    border: 1px solid #fde68a;
+    border-left: 4px solid var(--yellow);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin: 16px 0;
+    font-size: 10pt;
+  }
+
+  footer {
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 9pt;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+  }
+  .print-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 10pt;
+    cursor: pointer;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .print-btn:hover { background: #1d3a8a; }
+</style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">⬇ Salvar PDF</button>
+
+<header>
+  <div class="logo-bar">
+    <div class="logo-dot">D</div>
+    <div>
+      <h1>Relatório de Reenvio de Bounces</h1>
+      <div class="subtitle">Campanha de E-mail — Outubro/2026</div>
+    </div>
+  </div>
+  <div class="meta">
+    <span><strong>Data:</strong> 07/10/2026</span>
+    <span><strong>Remetente:</strong> servico@dominanttec.com.br</span>
+    <span><strong>Responsável:</strong> Richard Carvalho</span>
+    <span><strong>Ferramenta:</strong> Microsoft Graph API</span>
+  </div>
+</header>
+
+<!-- RESUMO EXECUTIVO -->
+<h2>Resumo Executivo</h2>
+<div class="stats">
+  <div class="stat"><div class="num">20</div><div class="lbl">NDRs encontrados</div></div>
+  <div class="stat"><div class="num">14</div><div class="lbl">Leads reenviados</div></div>
+  <div class="stat"><div class="num">9</div><div class="lbl">Confirmados entregues</div></div>
+  <div class="stat"><div class="num">5</div><div class="lbl">Bounces detectados</div></div>
+</div>
+<p>A campanha de e-mail de outubro/2026 resultou em 20 retornos (NDRs) na caixa de entrada. Após diagnóstico, o bloqueio principal foi desbloqueado no painel Microsoft e os leads foram reenviados um a um com intervalo de 2 minutos e verificação automática de bounce entre cada envio.</p>
+
+<!-- FASE 1: DIAGNÓSTICO -->
+<h2>Fase 1 — Diagnóstico dos Bounces</h2>
+<p>O script <code>ver_bounces.py</code> consultou a caixa de entrada via Graph API buscando termos "Undeliverable", "Non-Delivery" e "Mail Delivery". Foram encontrados <strong>20 NDRs</strong>:</p>
+<table>
+  <tr><th>#</th><th>Lead / Empresa</th><th>E-mail</th><th>Data</th></tr>
+  <tr><td>1</td><td>DEP Contabilidade</td><td>contato@depcontabil.com.br</td><td>07/10</td></tr>
+  <tr><td>2</td><td>Junior D'Imóveis</td><td>comercial@djuniorimobiliaria.com</td><td>07/10</td></tr>
+  <tr><td>3</td><td>Paulista Express</td><td>caique.paiva@paulistaexpress.com.br</td><td>06/10</td></tr>
+  <tr><td>4</td><td>Falavinha Contábil</td><td>brunonathan@falavinhacontabil.com.br</td><td>06/10</td></tr>
+  <tr><td>5</td><td>Centerconta</td><td>vera@centerconta.com.br</td><td>06/10</td></tr>
+  <tr><td>6</td><td>HTS Corretora</td><td>seguroshtscorretora@gmail.com</td><td>06/10</td></tr>
+  <tr><td>7</td><td>TRB Transporte</td><td>comercial@trb.log.br</td><td>06/10</td></tr>
+  <tr><td>8</td><td>Oliveira Ritzmann</td><td>carlos.fignorelli@oliveirar.com.br</td><td>06/10</td></tr>
+  <tr><td>9</td><td>Cavalcante Pereira</td><td>felipe.pereira@calvalcancepereira.adv.br</td><td>06/10</td></tr>
+  <tr><td>10</td><td>SALA Contabilidade</td><td>juridico@salacontabilidade.com.br</td><td>06/10</td></tr>
+  <tr><td>11</td><td>Classe A Contábil</td><td>marcketing@contabilidadeclassea.com.br</td><td>06/10</td></tr>
+  <tr><td>12</td><td>Aliança Imóveis</td><td>marcketing@aliancaimoveis.net</td><td>06/10</td></tr>
+  <tr><td>13</td><td>Escrilex</td><td>gdgerente@escrilex.com.br</td><td>06/10</td></tr>
+  <tr><td>14</td><td>CRSP Advogados</td><td>contato@csrpadvogados.com</td><td>06/10</td></tr>
+  <tr><td>15</td><td>Paulista Express (2ª)</td><td>caique.paiva@paulistaexpress.com.br</td><td>06/10</td></tr>
+  <tr><td colspan="4" style="color:#64748b;font-size:9pt;padding:6px 10px">+ 5 internos/testes (não campainha)</td></tr>
+</table>
+
+<!-- FASE 2: DESBLOQUEIO -->
+<h2>Fase 2 — Desbloqueio da Conta Microsoft</h2>
+<p>A conta remetente estava com status <strong>bloqueada</strong> por suspeita de spam (erro <code>550 5.1.8 AS(42004)</code>). Ação realizada:</p>
+<ul style="margin-left:20px;line-height:2">
+  <li>Acesso ao painel: <strong>security.microsoft.com/restrictedentities</strong></li>
+  <li>Solicitação de remoção do bloqueio</li>
+  <li>Conta liberada — confirmado com envio de teste para DEP Contabilidade</li>
+</ul>
+
+<!-- FASE 3: REENVIO -->
+<h2>Fase 3 — Reenvio em Massa com Verificação de Bounce</h2>
+<p>O script <code>reenviar_bounces.py</code> buscou cada e-mail original nos <em>Itens Enviados</em> e reenviou idêntico (mesmo HTML, assinatura e anexos), com 2 minutos de intervalo e verificação automática de bounce pós-envio. Leads reenviados em 2 rodadas:</p>
+
+<table>
+  <tr><th>#</th><th>Lead</th><th>E-mail</th><th>Resultado</th><th>Bounce?</th></tr>
+  <tr><td>0</td><td>DEP Contabilidade (teste)</td><td>contato@depcontabil.com.br</td><td><span class="badge ok">✓ Entregue</span></td><td>—</td></tr>
+  <tr><td>1</td><td>Junior D'Imóveis</td><td>comercial@djuniorimobiliaria.com</td><td><span class="badge ok">✓ Entregue</span></td><td>—</td></tr>
+  <tr><td>2</td><td>Paulista Express</td><td>caique.paiva@paulistaexpress.com.br</td><td><span class="badge fail">✗ Bounce</span></td><td>spamblock.cloud — DNS</td></tr>
+  <tr><td>3</td><td>Falavinha Contábil</td><td>brunonathan@falavinhacontabil.com.br</td><td><span class="badge fail">✗ Bounce</span></td><td>chkuser — sem MX</td></tr>
+  <tr><td>4</td><td>Centerconta</td><td>vera@centerconta.com.br</td><td><span class="badge warn">⚠ Enviado</span></td><td>SPFBL pendente</td></tr>
+  <tr><td>5</td><td>HTS Corretora</td><td>seguroshtscorretora@gmail.com</td><td><span class="badge ok">✓ Entregue</span></td><td>—</td></tr>
+  <tr><td>6</td><td>TRB Transporte</td><td>comercial@trb.log.br</td><td><span class="badge fail">✗ Bounce</span></td><td>PTR incorreto — tardio</td></tr>
+  <tr><td>7</td><td>Oliveira Ritzmann</td><td>carlos.fignorelli@oliveirar.com.br</td><td><span class="badge ok">✓ Entregue</span></td><td>—</td></tr>
+  <tr><td>8</td><td>Cavalcante Pereira</td><td>felipe.pereira@calvalcancepereira.adv.br</td><td><span class="badge ok">✓ Entregue</span></td><td>—</td></tr>
+  <tr><td>9</td><td>SALA Contabilidade</td><td>juridico@salacontabilidade.com.br</td><td><span class="badge fail">✗ Bounce</span></td><td>MagicSpam — DNS</td></tr>
+  <tr><td>10</td><td>Classe A Contábil</td><td>marcketing@contabilidadeclassea.com.br</td><td><span class="badge ok">✓ Entregue</span></td><td>—</td></tr>
+  <tr><td>11</td><td>Aliança Imóveis</td><td>marcketing@aliancaimoveis.net</td><td><span class="badge ok">✓ Entregue</span></td><td>—</td></tr>
+  <tr><td>12</td><td>Escrilex</td><td>gdgerente@escrilex.com.br</td><td><span class="badge ok">✓ Entregue</span></td><td>—</td></tr>
+  <tr><td>13</td><td>CRSP Advogados</td><td>contato@csrpadvogados.com</td><td><span class="badge ok">✓ Entregue</span></td><td>—</td></tr>
+</table>
+
+<!-- FASE 4: TIPOS DE BLOQUEIO -->
+<h2>Fase 4 — Tipos de Bloqueio Identificados</h2>
+
+<div class="block-card">
+  <div class="title">Tipo 1 — Conta bloqueada Microsoft (AS42004)</div>
+  <code class="code">550 5.1.8 Access denied, bad outbound sender AS(42004)</code>
+  <div class="action">✓ Ação imediata: security.microsoft.com/restrictedentities → solicitar remoção</div>
+  <div class="definitive">→ Prevenção: rate limit 5 min + serviço dedicado para campanhas</div>
+</div>
+
+<div class="block-card">
+  <div class="title">Tipo 2 — Blacklist SPFBL</div>
+  <code class="code">550 5.7.1 (via spfbl.net)</code>
+  <div class="action">✓ Ação: http://spfbl.net/en/feedback → solicitar remoção do domínio</div>
+  <div class="definitive">→ Pendente para dominanttec.com.br</div>
+</div>
+
+<div class="block-card">
+  <div class="title">Tipo 3 — DNS sem registros A/MX (spamblock.cloud, MagicSpam)</div>
+  <code class="code">550 Sender (dominanttec.com.br) has no A, AAAA, or MX DNS records</code>
+  <div class="action">✓ Ação: configurar registros A, MX, SPF e DKIM no painel do registro.br</div>
+  <div class="definitive">→ Verificar em: mxtoolbox.com — digitar dominanttec.com.br</div>
+</div>
+
+<div class="block-card">
+  <div class="title">Tipo 4 — MX remetente ausente (chkuser)</div>
+  <code class="code">sorry, can't find a valid MX for sender domain (chkuser)</code>
+  <div class="action">✓ Ação: mesma do Tipo 3 — configurar MX no DNS</div>
+</div>
+
+<div class="block-card">
+  <div class="title">Tipo 5 — PTR incorreto (rDNS)</div>
+  <code class="code">550 5.7.363 Verification failed — PTR record misconfigured</code>
+  <div class="action">⚠ Ação imediata: sem solução pelo Office 365 (IP é da Microsoft)</div>
+  <div class="definitive">→ Solução definitiva: migrar para Resend, Brevo ou SendGrid (IP dedicado com PTR configurável)</div>
+</div>
+
+<!-- FASE 5: KANBAN -->
+<h2>Fase 5 — Movimentações no Kanban (CRM)</h2>
+
+<div class="kanban-moves">
+  <div class="kmove">
+    <div class="empresa">Paulista Express Transportes</div>
+    <div class="from">Contatado</div>
+    <div class="to">→ 🔎 Achar contato</div>
+    <div style="font-size:9pt;color:#64748b;margin-top:4px">Bounce: spamblock.cloud (DNS)</div>
+  </div>
+  <div class="kmove">
+    <div class="empresa">Falavinha Inteligência Contábil</div>
+    <div class="from">Contatado</div>
+    <div class="to">→ 🔎 Achar contato</div>
+    <div style="font-size:9pt;color:#64748b;margin-top:4px">Bounce: chkuser (sem MX)</div>
+  </div>
+  <div class="kmove">
+    <div class="empresa">TRB Transporte e Logística</div>
+    <div class="from">Contatado</div>
+    <div class="to">→ 🔎 Achar contato</div>
+    <div style="font-size:9pt;color:#64748b;margin-top:4px">Bounce: PTR incorreto</div>
+  </div>
+  <div class="kmove">
+    <div class="empresa">SALA Contabilidade</div>
+    <div class="from">Contatado</div>
+    <div class="to">→ 🔎 Achar contato</div>
+    <div style="font-size:9pt;color:#64748b;margin-top:4px">Bounce: MagicSpam (DNS)</div>
+  </div>
+  <div class="kmove" style="border-color:#1e40af">
+    <div class="empresa">Cavalcante, Pereira &amp; Advogados</div>
+    <div class="from">E-mail entregue com sucesso</div>
+    <div class="to" style="color:#15803d">→ 📞 Ligar</div>
+    <div style="font-size:9pt;color:#64748b;margin-top:4px">Contato: <strong>Felipe Pereira</strong> | (91) 4009-1288</div>
+  </div>
+</div>
+
+<!-- FASE 6: SCRIPTS -->
+<h2>Fase 6 — Scripts Entregues</h2>
+<div class="path-box">
+C:\Projetos\dominant\scratchpad\enviar-emails\<br>
+├── enviar.py              ← campanha com rate limit 5 min<br>
+├── reenviar_bounces.py    ← reenvio com verificação de bounce<br>
+├── ver_bounces.py         ← lista NDRs da caixa<br>
+├── limpar_bounces.py      ← apaga NDRs + enviados que voltaram<br>
+├── teste_envio.py         ← testa 1 envio<br>
+└── BLOQUEIOS_EMAIL.md     ← doc dos 5 tipos de bloqueio
+</div>
+
+<div class="scripts">
+  <div class="script"><div class="name">enviar.py</div><div class="desc">Envio de campanha. Rate limit: 5 min. Autenticação via MSAL device flow.</div></div>
+  <div class="script"><div class="name">reenviar_bounces.py</div><div class="desc">Busca original nos Itens Enviados e reenvia idêntico. Verifica bounce após 3 min.</div></div>
+  <div class="script"><div class="name">ver_bounces.py</div><div class="desc">Lista todos NDRs na caixa. Mostra destinatário original e data.</div></div>
+  <div class="script"><div class="name">limpar_bounces.py</div><div class="desc">Apaga NDRs da entrada E o enviado original correspondente. Limpeza completa.</div></div>
+</div>
+
+<!-- FASE 7: AJUSTES -->
+<h2>Fase 7 — Ajustes Realizados nos Scripts</h2>
+<table>
+  <tr><th>Parâmetro</th><th>Antes</th><th>Depois</th><th>Motivo</th></tr>
+  <tr><td>Rate limit entre envios</td><td>2 minutos</td><td><strong>5 minutos</strong></td><td>Reduz risco de bloqueio por volume</td></tr>
+  <tr><td>Espera pós-envio (bounce check)</td><td>90 segundos</td><td><strong>3 minutos</strong></td><td>Alguns bounces chegavam após 90s</td></tr>
+</table>
+
+<!-- FASE 8: AÇÃO PRIORITÁRIA -->
+<div class="alert">
+  <strong>⚠ Ação Prioritária — DNS do dominanttec.com.br</strong><br>
+  A causa raiz de 4 dos 5 bounces é que múltiplos filtros de spam não encontram registros A/MX válidos para <code>dominanttec.com.br</code>. Verificar e corrigir no painel do registrador (registro.br) garante entregabilidade para a maioria dos servidores. Verificação rápida: <strong>mxtoolbox.com/SuperTool.aspx</strong>
+</div>
+
+<!-- FASE 9: GITHUB -->
+<h2>Fase 8 — Versionamento no GitHub</h2>
+<p>Commit <strong>76ad471</strong> enviado para <code>master</code> em <strong>github.com/RichardPc1/dominant</strong> com todos os scripts e o documento <code>BLOQUEIOS_EMAIL.md</code>.</p>
+
+<footer>
+  <span>Dominant Tecnologia — Richard Carvalho</span>
+  <span>Gerado em 07/10/2026 | Campanha out/2026</span>
+</footer>
+
+</body>
+</html>
