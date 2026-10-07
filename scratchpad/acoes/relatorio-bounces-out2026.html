@@ -349,13 +349,24 @@ C:\Projetos\dominant\scratchpad\enviar-emails\<br>
   A causa raiz de 4 dos 5 bounces é que múltiplos filtros de spam não encontram registros A/MX válidos para <code>dominanttec.com.br</code>. Verificar e corrigir no painel do registrador (registro.br) garante entregabilidade para a maioria dos servidores. Verificação rápida: <strong>mxtoolbox.com/SuperTool.aspx</strong>
 </div>
 
-<!-- FASE 9: GITHUB -->
-<h2>Fase 8 — Versionamento no GitHub</h2>
+<!-- FASE 9: LIMPEZA FINAL -->
+<h2>Fase 9 — Limpeza Final da Caixa de Entrada</h2>
+<p>Script <code>limpar_bounces.py</code> executado em <strong>07/10/2026</strong> via Microsoft Graph API. Resultado:</p>
+<table>
+  <tr><th>Item</th><th>Quantidade</th><th>Ação</th></tr>
+  <tr><td>NDRs na Caixa de Entrada</td><td><strong>51</strong></td><td>Todos apagados</td></tr>
+  <tr><td>Enviados originais encontrados e apagados</td><td><strong>10</strong></td><td>Apagados dos Itens Enviados</td></tr>
+  <tr><td>Enviados "não encontrados"</td><td><strong>41</strong></td><td>Normal — eram re-envios (nova entrada nos Itens Enviados)</td></tr>
+</table>
+<p style="margin-top:8px;color:var(--green)"><strong>Caixa de Entrada limpa.</strong> Nenhum NDR remanescente.</p>
+
+<!-- FASE 10: GITHUB -->
+<h2>Fase 10 — Versionamento no GitHub</h2>
 <p>Commit <strong>76ad471</strong> enviado para <code>master</code> em <strong>github.com/RichardPc1/dominant</strong> com todos os scripts e o documento <code>BLOQUEIOS_EMAIL.md</code>.</p>
 
 <footer>
   <span>Dominant Tecnologia — Richard Carvalho</span>
-  <span>Gerado em 07/10/2026 | Campanha out/2026</span>
+  <span>Atualizado em 07/10/2026 | Campanha out/2026</span>
 </footer>
 
 </body>
