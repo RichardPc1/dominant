@@ -18,6 +18,9 @@ PDF_DIR     = r"."                         # pasta padrão para PDFs (pode ser a
 LOGO_PATH   = r"logo.png"                  # deixe "" para não usar logo
 LOGO_CID    = "logo-dominant-inline"       # ID interno do logo no e-mail (qualquer string única)
 
+# Rate limit — 5 minutos entre cada envio (seguro pro Exchange Online)
+INTERVALO_SEG = 300
+
 # Assinatura HTML — lida do arquivo assinatura.html se existir, senão vazia
 _sig_file = Path(__file__).parent / "assinatura.html"
 ASSINATURA_HTML = _sig_file.read_text(encoding="utf-8") if _sig_file.exists() else ""
@@ -173,17 +176,28 @@ def main():
     # Autentica
     token = autenticar()
 
+    # Informa tempo estimado
+    if not modo_teste and len(fila) > 1:
+        minutos = (len(fila) - 1) * INTERVALO_SEG / 60
+        print(f"Rate limit: 2 min entre envios  →  tempo estimado: {minutos:.0f} min\n")
+
     # Envia
     ok, erros = 0, []
-    for c in fila:
+    for i, c in enumerate(fila):
         try:
             enviar(c, token, logo_b64, teste_para)
-            print(f"  ✓ {c['nome']} → {teste_para or c['para']}")
+            print(f"  ✓ [{i+1}/{len(fila)}] {c['nome']} → {teste_para or c['para']}")
             ok += 1
-            time.sleep(0.3)   # respeita rate limit do Graph API
         except Exception as e:
-            print(f"  ✗ {c['nome']} — {e}")
+            print(f"  ✗ [{i+1}/{len(fila)}] {c['nome']} — {e}")
             erros.append(c["nome"])
+
+        # Aguarda entre envios (exceto após o último)
+        if i < len(fila) - 1 and not modo_teste:
+            for restando in range(int(INTERVALO_SEG), 0, -1):
+                print(f"    próximo em {restando}s...   ", end="\r")
+                time.sleep(1)
+            print(" " * 30, end="\r")
 
     print(f"\n{'='*50}")
     print(f"Enviados: {ok}  |  Erros: {len(erros)}")
