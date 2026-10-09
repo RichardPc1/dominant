@@ -23,6 +23,115 @@ export interface Roteiro {
 
 export const ROTEIROS: Roteiro[] = [
   {
+    id: 'apresentacao-poc',
+    categoria: 'Apresentação de POC',
+    tagline: 'Mostrar o robô funcionando e sair com o mapeamento marcado — sem dar preço no escuro',
+    duracao: '20–30 min',
+    canal: 'Reunião presencial ou call',
+    alvo: 'Dono(a) / decisor que já fechou a POC (e, no próximo passo, alguém do operacional)',
+    sections: [
+      {
+        id: 'contexto',
+        icon: '🎯',
+        title: 'Contexto — onde você está',
+        items: [
+          { type: 'text', text: 'A POC já está fechada e construída. Hoje NÃO é reunião de venda do robô final — é mostrar a prova de conceito funcionando e engatar o próximo passo. O robô não tem preço de tabela: o valor é calculado pelo escopo (o quanto de trabalho é customizar e deixar o robô redondo no processo do cliente). Por isso o objetivo da reunião não é orçar — é fechar a data do mapeamento de processos.' },
+          { type: 'tip', text: '🏆 Objetivo único da reunião: sair com uma DATA de mapeamento marcada e o nome de quem vive o operacional no dia a dia. Tudo o resto é consequência.' },
+          { type: 'warning', text: 'Não dê número de preço hoje. Dar valor antes do escopo mapeado é a forma nº1 de matar um negócio de automação. Preço = escopo, e o escopo sai do mapeamento.' },
+        ],
+      },
+      {
+        id: 'abertura',
+        icon: '🚀',
+        title: 'Abra pelo resultado, não pelo robô',
+        items: [
+          { type: 'tip', text: 'Nada de introdução longa. O "uau" vem de ver acontecendo, não de slide. Primeiros 30 segundos:' },
+          { type: 'script', text: '"Antes de qualquer coisa, deixa eu te mostrar funcionando. Isso aqui é o que eu construí pra vocês — é a prova de conceito do que a gente conversou."' },
+        ],
+      },
+      {
+        id: 'demo',
+        icon: '▶️',
+        title: 'Rode a POC ao vivo',
+        items: [
+          { type: 'text', text: 'Abra o portal, dê o play e deixe os e-mails saírem na frente dela. Mostre a pasta com os recibos ANTES, pra ela entender que o robô leu aquilo sozinho.' },
+          { type: 'list', items: [
+            'Mostre a pasta com os recibos (o "antes" — o material cru).',
+            'Dê o play e narre o que está acontecendo enquanto roda.',
+            'Mostre o e-mail final montado, bonitinho, chegando no destino.',
+          ]},
+          { type: 'tip', text: '💡 Deixe o silêncio trabalhar enquanto roda. Não precisa preencher cada segundo — ver os e-mails saindo vale mais que qualquer explicação.' },
+        ],
+      },
+      {
+        id: 'traduzir',
+        icon: '🧠',
+        title: 'Traduza o que ela viu (RPA + IA)',
+        items: [
+          { type: 'script', text: '"O que aconteceu aqui: o robô leu os recibos da pasta sozinho, entendeu qual cliente é cada um, montou o e-mail bonitinho e mandou pra pessoa certa. Zero digitação, zero conferência manual. Isso que o time de vocês faz na mão, ele faz em minutos."' },
+          { type: 'tip', text: '🔑 Reforce o diferencial que tira o medo: "E ele não troca nenhum sistema que vocês já usam — roda por cima do que já existe, como um funcionário usando o mouse e o teclado."' },
+        ],
+      },
+      {
+        id: 'ampliar',
+        icon: '🌱',
+        title: 'Amplie a visão — plante o escopo maior',
+        items: [
+          { type: 'script', text: '"E isso é só o envio. Esse mesmo tipo de robô resolve qualquer rotina repetitiva de escritório aí — conciliação, lançamento, cobrança, relatório. Seja qual for a rotina que mais pesa no dia a dia de vocês, dá pra automatizar."' },
+          { type: 'tip', text: '🎣 Pergunte e ANOTE (isso vira munição pro mapeamento):' },
+          { type: 'list', items: [
+            '"Fora esse envio, qual rotina hoje mais consome tempo do time?"',
+            '"Tem alguma tarefa que todo mundo odeia fazer todo mês?"',
+            '"Onde é que mais acontece erro ou retrabalho por ser manual?"',
+          ]},
+          { type: 'tip', text: '💰 Você entra vendendo 1 robô e sai com 3 no radar. O mapeamento não é só pra precificar o robô de e-mails — é pra descobrir as outras dores.' },
+        ],
+      },
+      {
+        id: 'preco',
+        icon: '🏷️',
+        title: 'Enquadre o preço SEM dar preço',
+        items: [
+          { type: 'script', text: '"Sobre valor: robô não tem preço de tabela, porque cada um é sob medida — o preço sai do escopo, de quanto trabalho é pra deixar ele redondo no processo de vocês. Por isso o próximo passo não é um orçamento no escuro, é a gente mapear direitinho."' },
+          { type: 'tip', text: '🩹 Se insistir em "quanto custa, mais ou menos?": "Depende do escopo, e é isso que o mapeamento define. O que eu te garanto é que a gente calcula o payback junto — robô que não se paga, eu nem proponho."' },
+        ],
+      },
+      {
+        id: 'fechamento',
+        icon: '✅',
+        title: 'Feche o próximo passo — com data na hora',
+        items: [
+          { type: 'warning', text: 'Não deixe "a gente marca depois" no ar. "A gente marca" vira "depois eu te falo" vira sumiço. Saia da reunião com dia e hora.' },
+          { type: 'script', text: '"Então faz o seguinte: a gente marca uma call de uns 40 minutos pra mapear os processos. Não precisa ser você — pode ser alguém do time que vive o operacional no dia a dia. Me indica a pessoa e a gente já cola uma data. Semana que vem, terça ou quinta, funciona?"' },
+          { type: 'tip', text: '🙋 Peça o nome de quem vai no mapeamento ainda hoje. Quem conhece o processo no detalhe é ouro — é com essa pessoa que o escopo real aparece.' },
+        ],
+      },
+      {
+        id: 'objecoes',
+        icon: '🛡️',
+        title: 'Falas de bolso',
+        items: [
+          { type: 'tip', text: '"Deixa eu ver internamente e te falo."' },
+          { type: 'script', text: '"Perfeito. Pra não esfriar, já deixa a call do mapeamento marcada — se não fizer sentido depois, a gente cancela numa boa. Combinado?"' },
+          { type: 'tip', text: '"E se eu não gostar do robô depois do mapeamento?"' },
+          { type: 'script', text: '"Aí a gente não avança, sem compromisso. O mapeamento é justamente pra você decidir com informação na mão, não no escuro."' },
+          { type: 'tip', text: '"Quanto tempo leva pra ficar pronto de verdade?"' },
+          { type: 'script', text: '"Depende do escopo, mas processo simples como esse fica pronto em poucas semanas. O mapeamento me dá o número exato."' },
+        ],
+      },
+      {
+        id: 'pos-agendamento',
+        icon: '📅',
+        title: 'Depois de marcar — mantenha quente',
+        items: [
+          { type: 'tip', text: 'Mande no mesmo dia que confirmou a reunião. Não deixe esfriar entre hoje e o mapeamento.' },
+          { type: 'script', text: '"[Nome], ótimo papo hoje! Confirmando: mapeamento dia [dia] às [hora] com [pessoa do operacional]. Pra gente aproveitar a call, vale já ir pensando nas 2 ou 3 rotinas que mais tomam tempo do time — a gente mapeia tudo de uma vez."' },
+          { type: 'tip', text: '📲 No dia anterior: "Oi [Nome], só confirmando o mapeamento amanhã às [hora]. Se a [pessoa do operacional] puder separar como o processo funciona hoje (quem faz, em qual sistema, quanto tempo leva), a gente adianta bastante."' },
+        ],
+      },
+    ],
+  },
+  {
     id: 'gatekeeper',
     categoria: 'Passar pelo Gatekeeper',
     tagline: 'Chegar no decisor sem cair no email — por porte de empresa',

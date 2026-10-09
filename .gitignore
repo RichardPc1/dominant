@@ -43,3 +43,6 @@ next-env.d.ts
 
 # slides e propostas (PDFs/PPTXs de clientes)
 /slides/
+
+# POC local — não versionar
+/POC/
