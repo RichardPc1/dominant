@@ -44,5 +44,6 @@ next-env.d.ts
 # slides e propostas (PDFs/PPTXs de clientes)
 /slides/
 
-# POC local — não versionar
-/POC/
+# POC — código versionado, mas nunca credenciais nem cache
+POC/**/credenciais.json
+POC/**/__pycache__/

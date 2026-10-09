@@ -1,0 +1,99 @@
+════════════════════════════════════════════════════════
+  PORTAL DE MENSALIDADES — D&P CONTABILIDADE
+  Como usar
+════════════════════════════════════════════════════════
+
+PRÉ-REQUISITO: SENHA DE APP DO GOOGLE (uma vez só)
+────────────────────────────────────────────────────────
+Você precisa de uma "Senha de app" do Google para o
+remetente (o Gmail que vai enviar os e-mails).
+
+1. Acesse: https://myaccount.google.com
+2. Vá em "Segurança"
+3. Certifique que "Verificação em 2 etapas" está ATIVA
+4. Na barra de busca da conta, pesquise "Senhas de app"
+5. Clique em "Senhas de app" → crie uma nova
+   (nome: "D&P Portal" ou qualquer coisa)
+6. Copie os 16 caracteres gerados (ex: abcd efgh ijkl mnop)
+
+Guarde essa senha — use ela toda vez no campo do portal.
+
+
+USANDO O PORTAL
+────────────────────────────────────────────────────────
+1. Dois cliques em "Abrir Portal.bat"
+   → Uma janela preta vai aparecer (não feche!)
+   → O navegador abre em http://localhost:5000
+
+2. Preencha os 4 campos:
+
+   • Gmail do remetente
+     Ex: seugmail@gmail.com
+     (a conta que vai mandar os e-mails)
+
+   • Senha de app do Google
+     Os 16 caracteres que você gerou acima
+     (não é a senha normal do Gmail!)
+
+   • E-mail para envios (POC)
+     Todos os recibos chegam AQUI durante o teste
+     Ex: carvalhorichard.rp@gmail.com
+
+   • E-mail para relatório de erros
+     Recibe o resumo de falhas (se houver)
+     Pode ser o mesmo e-mail de cima
+
+3. Clique em ▶ Enviar mensalidades
+
+4. Acompanhe o log que aparece na tela:
+   → Verde  (✓): e-mail enviado com sucesso
+   → Amarelo (⚠): aviso (ex: sem recibo numerado, usou histórico)
+   → Vermelho (✗): falha no envio
+   → Linha final mostra total enviados / falhas / órfãos
+
+5. Ao final, verifique o e-mail de erros (se tiver falhas).
+
+
+O QUE CADA CLIENTE RECEBE
+────────────────────────────────────────────────────────
+• Assunto: "Empresa - Assessoria Contábil Mensal - venc. DD/MM/AAAA - R$ X"
+• Corpo:   Saudação com nome completo do pagador
+           Tabela de histórico de pagamentos (✓ Pago / ⏳ Aguardando)
+           Dados bancários para pagamento (PIX + PagSeguro)
+• Anexo:   PDF do recibo (41xxx_Mensalidade_Empresa.pdf)
+
+
+RELATÓRIO DE ERROS (e-mail automático)
+────────────────────────────────────────────────────────
+Se algum cliente falhar OU se tiver recibo na pasta sem
+empresa correspondente na planilha, você recebe um e-mail
+com tabela detalhada:
+
+  Seção 1: Clientes não processados (empresa, pagador, valor, motivo)
+  Seção 2: Recibos sem empresa na planilha (nome do arquivo PDF)
+
+
+USO MENSAL (todo mês)
+────────────────────────────────────────────────────────
+1. Coloque os novos PDFs em:
+   C:\Users\richa\Downloads\POC\POC\
+
+2. Troque a planilha por:
+   Lista_Pagamentos_Assessoria_ em MM.AAAA.xlsx
+   (atualize o caminho em portal.py se o nome mudar)
+
+3. Abra o portal e dê play normalmente.
+
+
+ARQUIVOS DO PROJETO
+────────────────────────────────────────────────────────
+  portal.py              → Código principal do robô
+  Abrir Portal.bat       → Abre o portal (double-click aqui)
+  COMO USAR.txt          → Este arquivo
+
+  PDFs e planilha ficam em:
+  C:\Users\richa\Downloads\POC\POC\
+
+  Pasta excluída do Git (não vai pro repositório).
+
+════════════════════════════════════════════════════════
