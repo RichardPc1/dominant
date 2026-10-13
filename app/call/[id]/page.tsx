@@ -7,6 +7,8 @@ import { colunaPorChamada } from '@/lib/kanban';
 import { DEFAULT_CONFIG, OutcomesConfig } from '@/lib/outcomes';
 import LiveCall from '@/app/components/LiveCall';
 import EmailPanel from '@/app/components/EmailPanel';
+import FunilCliente from '@/app/components/FunilCliente';
+import { estaNoFunil } from '@/lib/funil';
 import { ROTEIROS } from '@/lib/roteiros-data';
 import { PriorityBadge, StatusBadge, CategoriaBadge } from '@/app/components/Badges';
 
@@ -273,6 +275,8 @@ export default function CallPage() {
       {/* Top bar */}
       <div className="bg-white border-b border-gray-200 px-6 py-3 flex items-center gap-4">
         <Link href="/" className="text-sm text-gray-500 hover:text-gray-900">← Voltar</Link>
+        <Link href="/kanban" className="text-sm text-gray-500 hover:text-gray-900">Kanban</Link>
+        <Link href="/clientes" className="text-sm font-semibold text-indigo-600 hover:text-indigo-800">🏆 Clientes</Link>
         <span className="text-xs text-gray-400">{idx + 1} / {leads.length}</span>
         {saved && <span className="text-xs text-green-600 font-medium">Salvo ✓</span>}
         <div className="ml-auto flex gap-2">
@@ -314,6 +318,33 @@ export default function CallPage() {
 
         <LiveCall lead={lead} config={config} onSaved={u => setLead(prev => prev ? { ...prev, ...u } : prev)} />
         <EmailPanel key={lead.emailRascunho?.atualizadoEm ?? 'sem'} lead={lead} followUpDias={config.followUpDias} onChange={u => setLead(prev => prev ? { ...prev, ...u } : prev)} />
+
+        {/* FUNIL DE CLIENTES — fase de fechamento + reuniões (camada paralela ao kanban) */}
+        <div className="bg-white rounded-2xl border border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
+            <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              🏆 Funil de clientes
+              <span className="ml-2 text-gray-300 normal-case font-normal tracking-normal">não mexe no kanban</span>
+            </h2>
+            {estaNoFunil(lead)
+              ? <Link href="/clientes" className="text-xs font-semibold text-indigo-600 hover:text-indigo-800">ver no quadro →</Link>
+              : null}
+          </div>
+          {estaNoFunil(lead) ? (
+            <FunilCliente lead={lead} onPatch={async u => { await patch(u); setLead(prev => prev ? { ...prev, ...u } : prev); }} />
+          ) : (
+            <div className="text-center py-4">
+              <p className="text-sm text-gray-500 mb-3">Este lead ainda não está no funil de fechamento.</p>
+              <button
+                onClick={async () => { const u = { etapaFunil: 'poc-marcada' as const }; await patch(u); setLead(prev => prev ? { ...prev, ...u } : prev); }}
+                className="text-sm font-semibold bg-gray-900 text-white rounded-lg px-4 py-2 hover:bg-gray-700"
+              >
+                🎯 Colocar no funil (POC marcada)
+              </button>
+              <p className="text-[11px] text-gray-400 mt-2">Isso só marca a fase de fechamento — o lead continua onde está no kanban.</p>
+            </div>
+          )}
+        </div>
 
         {/* CALL LOG */}
         <div className="bg-white rounded-2xl border border-gray-200 p-6">

@@ -92,6 +92,32 @@ export interface Mensagem {
   notas: string;
 }
 
+/** Fase do funil de fechamento (depois que o lead virou negócio quente). */
+export type EtapaFunil =
+  | 'poc-marcada'       // reunião de POC agendada
+  | 'poc-feita'         // demonstrou a POC; marcar reunião de proposta
+  | 'reuniao-proposta'  // reunião de proposta: mapeia o processo
+  | 'proposta-enviada'  // proposta enviada, em negociação
+  | 'cliente'           // fechou — virou cliente
+  | 'perdido';          // não fechou
+
+export type TipoReuniao = 'POC' | 'Proposta' | 'Follow-up' | 'Outra';
+
+export type StatusReuniao = 'Agendada' | 'Realizada' | 'Não compareceu' | 'Remarcada' | 'Cancelada';
+
+export interface Reuniao {
+  id: string;
+  tipo: TipoReuniao;
+  /** Data da reunião (YYYY-MM-DD). */
+  data: string;
+  /** Hora: "14:30" ou texto livre. */
+  hora?: string;
+  status: StatusReuniao;
+  notas: string;
+  /** Carimbo de quando foi registrada. */
+  registradaEm?: string;
+}
+
 export interface Lead {
   id: string;
   nome: string;
@@ -131,6 +157,13 @@ export interface Lead {
   followUpEm?: string;
   /** Histórico de mensagens enviadas (WhatsApp, e-mail, LinkedIn). */
   mensagens?: Mensagem[];
+  /**
+   * Fase no funil de clientes (pós-prospecção). Ausente = não está no funil.
+   * Camada 100% paralela ao kanban: NUNCA deriva nem altera `coluna`/`status`.
+   */
+  etapaFunil?: EtapaFunil;
+  /** Histórico de reuniões do fechamento (POC, proposta, follow-up). */
+  reunioes?: Reuniao[];
   createdAt: string;
   updatedAt: string;
 }

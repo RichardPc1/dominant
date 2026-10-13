@@ -151,7 +151,7 @@ function Card({
 }
 
 function ColunaBoard({
-  grupo, leads, colunaDoLead, over, setOver, onDropLead, onMove, onAgenda, largura = 'w-80',
+  grupo, leads, colunaDoLead, over, setOver, onDropLead, onMove, onAgenda,
 }: {
   grupo: GrupoBoard;
   leads: Lead[];
@@ -161,7 +161,6 @@ function ColunaBoard({
   onDropLead: (id: string, grupo: GrupoBoard) => void;
   onMove: (id: string, c: Coluna) => void;
   onAgenda: (id: string, data: string, hora: string) => void;
-  largura?: string;
 }) {
   const [mostrar, setMostrar] = useState(grupo.limite ?? Infinity);
   const visiveis = leads.slice(0, mostrar);
@@ -175,14 +174,14 @@ function ColunaBoard({
         const id = e.dataTransfer.getData('text/plain');
         if (id) onDropLead(id, grupo);
       }}
-      className={`${largura} shrink-0 rounded-xl bg-gray-100 border ${over === grupo.id ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'}`}
+      className={`w-full flex flex-col rounded-xl bg-gray-100 border ${over === grupo.id ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'}`}
     >
       <div className={`${grupo.header} rounded-t-xl px-3 py-2 flex items-center justify-between`} title={grupo.dica}>
         <h2 className="text-sm font-bold">{grupo.icone} {grupo.titulo}</h2>
         <span className="text-xs font-bold bg-white/25 rounded-full px-2 py-0.5">{leads.length}</span>
       </div>
       <p className="px-3 pt-2 text-[11px] text-gray-400 leading-snug">{grupo.dica}</p>
-      <div className="p-2 space-y-2 max-h-[calc(100vh-11rem)] overflow-y-auto">
+      <div className="p-2 space-y-2 min-h-[5rem] lg:max-h-[calc(100vh-13rem)] lg:overflow-y-auto">
         {leads.length === 0 && <p className="text-xs text-gray-300 text-center py-4">vazio</p>}
         {visiveis.map(l => (
           <Card key={l.id} lead={l} coluna={colunaDoLead.get(l.id)!} onMove={onMove} onAgenda={onAgenda} />
@@ -298,6 +297,7 @@ export default function KanbanPage() {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center gap-4 flex-wrap">
         <Link href="/" className="text-sm text-gray-500 hover:text-gray-900">← Lista</Link>
+        <Link href="/clientes" className="text-sm font-semibold text-indigo-600 hover:text-indigo-800">🏆 Clientes</Link>
         <h1 className="text-lg font-bold text-gray-900">Kanban de leads</h1>
         <div className="flex gap-2 text-xs font-semibold">
           {atrasados > 0 && <span className="bg-red-600 text-white rounded px-2 py-1">{atrasados} atrasado{atrasados > 1 ? 's' : ''}</span>}
@@ -329,8 +329,8 @@ export default function KanbanPage() {
       {loading ? (
         <div className="py-20 text-center text-gray-400">Carregando...</div>
       ) : (
-        <div className="flex-1 overflow-x-auto p-4 space-y-4">
-          <div className="flex gap-3 items-start min-w-max">
+        <div className="flex-1 p-3 sm:p-4 space-y-4">
+          <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 items-start">
             {BOARD.map(g => <ColunaBoard key={g.id} grupo={g} leads={doGrupo(g)} {...propsComuns} />)}
           </div>
 
@@ -342,7 +342,7 @@ export default function KanbanPage() {
               {gavetaAberta ? '▼' : '▶'} Fora de jogo ({foraDeJogo}) — {GAVETA.map(g => `${g.titulo} ${doGrupo(g).length}`).join(' · ')}
             </button>
             {gavetaAberta && (
-              <div className="flex gap-3 items-start min-w-max mt-3">
+              <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mt-3 items-start">
                 {GAVETA.map(g => <ColunaBoard key={g.id} grupo={{ ...g, limite: 25 }} leads={doGrupo(g)} {...propsComuns} />)}
               </div>
             )}

@@ -178,6 +178,9 @@ export default function Home() {
             <Link href="/kanban" className="px-4 py-2 text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors">
               Kanban
             </Link>
+            <Link href="/clientes" className="px-4 py-2 text-sm font-semibold text-indigo-600 hover:text-indigo-800 transition-colors">
+              🏆 Clientes
+            </Link>
             <Link href="/config" className="px-4 py-2 text-sm text-gray-500 hover:text-gray-900 transition-colors">
               Classificação
             </Link>
