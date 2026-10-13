@@ -31,7 +31,7 @@ export default function ConfigPage() {
   const inp = 'border border-gray-300 rounded px-2 py-1 text-sm w-full';
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-full">
       <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center gap-4">
         <h1 className="text-lg font-bold text-gray-900">Classificação das ligações</h1>
         {msg && <span className="text-sm text-green-600 font-medium">{msg}</span>}

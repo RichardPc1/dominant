@@ -54,7 +54,7 @@ function Card({
     <div
       draggable
       onDragStart={e => { e.dataTransfer.setData('text/plain', lead.id); e.dataTransfer.effectAllowed = 'move'; }}
-      className={`bg-white border border-gray-200 border-l-4 ${def.faixa} rounded-lg p-3 shadow-sm hover:shadow cursor-grab active:cursor-grabbing`}
+      className={`bg-white border border-gray-200/70 border-l-4 ${def.faixa} rounded-xl p-3 shadow-sm hover:shadow-md transition-shadow cursor-grab active:cursor-grabbing`}
     >
       {chip && (
         <div className={`-mt-1 mb-2 inline-block rounded px-2 py-0.5 text-xs font-bold tracking-wide ${chip.classes}`}>
@@ -62,7 +62,7 @@ function Card({
         </div>
       )}
       <div className="flex items-start justify-between gap-2">
-        <Link href={`/call/${lead.id}`} className="text-sm font-semibold text-gray-900 hover:text-blue-600 leading-snug">
+        <Link href={`/call/${lead.id}`} className="min-w-0 text-sm font-semibold text-gray-900 hover:text-blue-600 leading-snug [overflow-wrap:anywhere]">
           {lead.nome}
         </Link>
         <PriorityBadge p={lead.prioridade} />
@@ -175,14 +175,15 @@ function ColunaBoard({
         const id = e.dataTransfer.getData('text/plain');
         if (id) onDropLead(id, grupo);
       }}
-      className={`w-full flex flex-col rounded-xl bg-gray-100 border ${over === grupo.id ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'}`}
+      className={`w-full flex flex-col rounded-2xl bg-slate-200/50 border transition-colors ${over === grupo.id ? 'border-blue-500 ring-4 ring-blue-100 bg-blue-50/60' : 'border-transparent'}`}
     >
-      <div className={`${grupo.header} rounded-t-xl px-3 py-2 flex items-center justify-between`} title={grupo.dica}>
-        <h2 className="text-sm font-bold">{grupo.icone} {grupo.titulo}</h2>
-        <span className="text-xs font-bold bg-white/25 rounded-full px-2 py-0.5">{leads.length}</span>
+      <div className="px-3 pt-3 pb-1 flex items-center gap-2.5" title={grupo.dica}>
+        <span className={`${grupo.header} grid place-items-center w-8 h-8 rounded-xl text-sm shadow-sm shrink-0`}>{grupo.icone}</span>
+        <h2 className="text-sm font-bold text-gray-800 leading-tight min-w-0 flex-1 [overflow-wrap:anywhere]">{grupo.titulo}</h2>
+        <span className="text-xs font-bold text-gray-600 bg-white rounded-full px-2 py-0.5 shadow-sm tabular">{leads.length}</span>
       </div>
-      <p className="px-3 pt-2 text-[11px] text-gray-400 leading-snug">{grupo.dica}</p>
-      <div className="p-2 space-y-2 min-h-[5rem] lg:max-h-[calc(100vh-16rem)] lg:overflow-y-auto">
+      <p className="px-3 pt-1 text-[11px] text-gray-500 leading-snug">{grupo.dica}</p>
+      <div className="p-2 space-y-2 min-h-[5rem] max-h-[70dvh] @6xl:max-h-[calc(100dvh-17rem)] overflow-y-auto">
         {leads.length === 0 && <p className="text-xs text-gray-300 text-center py-4">vazio</p>}
         {visiveis.map(l => (
           <Card key={l.id} lead={l} coluna={colunaDoLead.get(l.id)!} onMove={onMove} onAgenda={onAgenda} />
@@ -300,9 +301,12 @@ export default function KanbanPage() {
   const propsComuns = { colunaDoLead, over, setOver, onDropLead: soltar, onMove: move, onAgenda: agenda };
 
   return (
-    <div className="bg-gray-50 flex flex-col">
-      <header className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 flex items-center gap-3 sm:gap-4 flex-wrap">
-        <h1 className="text-lg font-bold text-gray-900">Kanban de leads</h1>
+    <div className="min-h-full flex flex-col">
+      <header className="px-4 sm:px-6 lg:px-8 pt-6 pb-2 flex items-center gap-3 flex-wrap">
+        <div className="mr-2">
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900">Kanban</h1>
+          <p className="text-sm text-gray-500 mt-0.5">O trabalho do dia, coluna por coluna</p>
+        </div>
         <div className="flex gap-2 text-xs font-semibold">
           {atrasados > 0 && <span className="bg-red-600 text-white rounded px-2 py-1">{atrasados} atrasado{atrasados > 1 ? 's' : ''}</span>}
           {hoje > 0 && <span className="bg-amber-400 text-amber-950 rounded px-2 py-1">{hoje} pra hoje</span>}
@@ -310,7 +314,7 @@ export default function KanbanPage() {
         </div>
         <select
           value={filtroLigacao} onChange={e => setFiltroLigacao(e.target.value as FiltroLigacao)}
-          className={`ml-auto text-sm border rounded-lg px-2 py-1.5 outline-none bg-white ${filtroLigacao === 'todos' ? 'border-gray-300 text-gray-700' : 'border-blue-500 text-blue-700 font-semibold'}`}
+          className={`ml-auto h-10 text-sm border rounded-xl px-3 outline-none bg-white shadow-sm ${filtroLigacao === 'todos' ? 'border-gray-200 text-gray-700' : 'border-blue-500 text-blue-700 font-semibold'}`}
           title="Filtrar por ligação registrada"
         >
           <option value="todos">Todos os leads</option>
@@ -319,34 +323,34 @@ export default function KanbanPage() {
         </select>
         <button
           onClick={atualizarAgora} disabled={atualizando}
-          className="text-sm border border-gray-300 rounded-lg px-3 py-1.5 bg-white hover:bg-gray-50 text-gray-700 disabled:opacity-60"
+          className="h-10 text-sm border border-gray-200 rounded-xl px-3.5 bg-white hover:bg-gray-50 text-gray-700 shadow-sm disabled:opacity-60"
           title={atualizadoEm ? `Atualizado às ${atualizadoEm}` : 'Atualizar'}
         >
           <span className={atualizando ? 'inline-block animate-spin' : 'inline-block'}>🔄</span> Atualizar{atualizadoEm && <span className="text-gray-400 text-xs"> · {atualizadoEm}</span>}
         </button>
         <input
           type="text" value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar empresa..."
-          className="text-sm border border-gray-300 rounded-lg px-3 py-1.5 outline-none focus:border-blue-400 w-56"
+          className="h-10 text-sm border border-gray-200 rounded-xl px-3 outline-none focus:border-blue-400 w-56 bg-white shadow-sm"
         />
       </header>
 
       {loading ? (
         <div className="py-20 text-center text-gray-400">Carregando...</div>
       ) : (
-        <div className="flex-1 p-3 sm:p-4 space-y-4">
-          <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 items-start">
+        <div className="@container flex-1 px-4 sm:px-6 lg:px-8 py-4 space-y-4">
+          <div className="grid gap-3 grid-cols-1 @lg:grid-cols-2 @3xl:grid-cols-3 @6xl:grid-cols-6 items-start">
             {BOARD.map(g => <ColunaBoard key={g.id} grupo={g} leads={doGrupo(g)} {...propsComuns} />)}
           </div>
 
           <div>
             <button
               onClick={() => setGavetaAberta(a => !a)}
-              className="text-sm text-gray-600 hover:text-gray-900 border border-gray-300 bg-white rounded-lg px-3 py-1.5"
+              className="text-sm text-gray-600 hover:text-gray-900 border border-gray-200 bg-white rounded-xl px-3.5 py-2 shadow-sm"
             >
               {gavetaAberta ? '▼' : '▶'} Fora de jogo ({foraDeJogo}) — {GAVETA.map(g => `${g.titulo} ${doGrupo(g).length}`).join(' · ')}
             </button>
             {gavetaAberta && (
-              <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mt-3 items-start">
+              <div className="grid gap-3 grid-cols-1 @lg:grid-cols-2 @3xl:grid-cols-3 mt-3 items-start">
                 {GAVETA.map(g => <ColunaBoard key={g.id} grupo={{ ...g, limite: 25 }} leads={doGrupo(g)} {...propsComuns} />)}
               </div>
             )}

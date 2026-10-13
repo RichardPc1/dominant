@@ -265,7 +265,7 @@ export default function CallPage() {
 
   if (!lead) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-gray-400">
+      <div className="min-h-full flex items-center justify-center text-gray-400 py-20">
         Carregando...
       </div>
     );
@@ -274,9 +274,9 @@ export default function CallPage() {
   const chamadas = lead.chamadas ?? [];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-full">
       {/* Top bar */}
-      <div className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 flex items-center gap-4">
+      <div className="sticky top-0 z-20 bg-white/85 backdrop-blur border-b border-gray-200 px-4 sm:px-6 lg:px-8 py-2.5 flex items-center gap-4">
         <Link href="/" className="text-sm text-gray-500 hover:text-gray-900">← Leads</Link>
         <span className="text-xs text-gray-400">{idx + 1} / {leads.length}</span>
         {saved && <span className="text-xs text-green-600 font-medium">Salvo ✓</span>}
@@ -294,14 +294,19 @@ export default function CallPage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-5">
+      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-5">
 
         {/* Company header */}
-        <div className="bg-white rounded-2xl border border-gray-200 p-6">
+        <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-6">
           <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">{lead.nome}</h1>
-              <p className="text-sm text-gray-500 mt-1">{[lead.localizacao, lead.segmento].filter(Boolean).join(' · ')}</p>
+            <div className="flex items-center gap-4 min-w-0">
+              <span className="grid place-items-center w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-lg font-bold shadow-lg shadow-blue-600/25 shrink-0">
+                {lead.nome.slice(0, 2).toUpperCase()}
+              </span>
+              <div className="min-w-0">
+                <h1 className="text-2xl font-bold tracking-tight text-gray-900">{lead.nome}</h1>
+                <p className="text-sm text-gray-500 mt-0.5">{[lead.localizacao, lead.segmento].filter(Boolean).join(' · ')}</p>
+              </div>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
               <PriorityBadge p={lead.prioridade} />
@@ -324,7 +329,7 @@ export default function CallPage() {
             <EmailPanel key={lead.emailRascunho?.atualizadoEm ?? 'sem'} lead={lead} followUpDias={config.followUpDias} onChange={u => { atualizarLeadEmCache(id, u); setLead(prev => prev ? { ...prev, ...u } : prev); }} />
 
             {/* CALL LOG */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-6">
+            <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
                   Histórico de ligações
@@ -418,7 +423,7 @@ export default function CallPage() {
             </div>
 
             {/* MESSAGES LOG */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-6">
+            <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
                   Histórico de mensagens
@@ -504,7 +509,7 @@ export default function CallPage() {
             </div>
 
             {/* Notes */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-6">
+            <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-6">
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Observações gerais</h2>
                 <button
@@ -525,7 +530,7 @@ export default function CallPage() {
             </div>
 
             {/* QUICK EDIT / CORRECTION */}
-            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+            <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
               <button
                 onClick={() => setEditOpen(!editOpen)}
                 className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors"
@@ -656,7 +661,7 @@ export default function CallPage() {
           {/* Coluna lateral: quem é, como falar, em que pé está */}
           <div className="space-y-5 min-w-0">
             {/* Contact */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-6">
+            <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-6">
               <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Contato / canal de entrada</h2>
               <p className="text-gray-800 text-sm leading-relaxed whitespace-pre-line">{lead.contato || 'Não encontrado'}</p>
               <div className="flex flex-col gap-2 mt-3 pt-3 border-t border-gray-100">
@@ -680,7 +685,7 @@ export default function CallPage() {
             </div>
 
             {/* Emails */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-6">
+            <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-6">
               <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
                 E-mails
                 {emailsList.length > 0 && (
@@ -740,7 +745,7 @@ export default function CallPage() {
             </div>
 
             {/* Status actions */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-6">
+            <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-6">
               <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Status comercial</h2>
               <div className="flex flex-wrap gap-2">
                 {STATUS_ACTIONS.map(a => (
@@ -761,7 +766,7 @@ export default function CallPage() {
             </div>
 
             {/* FUNIL DE CLIENTES — fase de fechamento + reuniões (camada paralela ao kanban) */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-6">
+            <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-6">
               <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
                 <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
                   🏆 Funil de clientes
@@ -788,7 +793,7 @@ export default function CallPage() {
             </div>
 
             {/* Sobre a empresa */}
-            <div className="bg-white rounded-2xl border border-gray-200 p-6 space-y-4">
+            <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-6 space-y-4">
               <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Sobre a empresa</h2>
               <div>
                 <p className="text-xs font-medium text-gray-400 mb-0.5">O que fazem</p>

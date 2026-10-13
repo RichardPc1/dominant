@@ -1,13 +1,15 @@
 'use client';
 import { useEffect, useState, useMemo, useRef } from 'react';
 import Link from 'next/link';
-import { Lead, Categoria, Prioridade, Status } from '@/lib/types';
+import { Lead, Categoria, Status } from '@/lib/types';
 import { PriorityBadge, StatusBadge, CategoriaBadge } from './components/Badges';
-import RunRoundModal from './components/RunRoundModal';
+import Icon, { IconName } from './components/Icon';
+import { EVENTO_LEADS, EVENTO_RODADA } from './components/AppShell';
 import { guardarLeadsEmCache, leadsEmCache } from '@/lib/leads-cache';
 
 const FILTERS_KEY = 'dominant-filters';
 const POR_PAGINA = 50;
+const PALAVRA_CONFIRMACAO = 'APAGAR';
 
 const CATEGORIAS: Categoria[] = [
   'ERP / PCP', 'Integrador de automação', 'Fabricante de máquinas',
@@ -19,6 +21,17 @@ const STATUS_LIST: Status[] = [
   'Piloto', 'Parceiro ativo', 'Fechado',
 ];
 
+function baixar(conteudo: string, nome: string, tipo: string) {
+  const url = URL.createObjectURL(new Blob([conteudo], { type: tipo }));
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = nome;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+const hojeISO = () => new Date().toISOString().slice(0, 10);
+
 function exportCSV(leads: Lead[]) {
   const header = 'Nome;Categoria;Localização;Perfil / o que faz;Por que faz sentido;Contato / canal de entrada;Prioridade;Status;Próximo passo;Responsável;Data próx. passo;Última interação;Observações;Fonte;CNPJ;Segmento / CNAE;Porte;Score;Telefone;Site;Data de inclusão';
   const rows = leads.map(l =>
@@ -29,23 +42,24 @@ function exportCSV(leads: Lead[]) {
     .map(v => `"${String(v ?? '').replace(/"/g, '""')}"`)
     .join(';')
   );
-  const csv = '﻿' + [header, ...rows].join('\r\n');
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `funil-dominant-${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
+  baixar('﻿' + [header, ...rows].join('\r\n'), `funil-dominant-${hojeISO()}.csv`, 'text/csv;charset=utf-8');
 }
+
+/** Cópia completa (todos os campos, históricos e reuniões) — é o que permite restaurar. */
+function baixarBackup(leads: Lead[]) {
+  baixar(JSON.stringify(leads, null, 2), `backup-leads-dominant-${hojeISO()}.json`, 'application/json');
+}
+
+const selectCls = 'h-10 text-sm border border-gray-200 rounded-xl px-3 outline-none focus:border-blue-400 bg-white text-gray-700';
 
 export default function Home() {
   const [leads, setLeads] = useState<Lead[]>(() => leadsEmCache() ?? []);
   const [loading, setLoading] = useState(() => !leadsEmCache());
   const [pag, setPag] = useState({ assinatura: '', n: 1 });
-  const [showModal, setShowModal] = useState(false);
   const [toast, setToast] = useState('');
-  const [confirmClear, setConfirmClear] = useState(false);
+  const [menuMais, setMenuMais] = useState(false);
+  const [apagarAberto, setApagarAberto] = useState(false);
+  const [textoConfirmacao, setTextoConfirmacao] = useState('');
 
   const [search, setSearch] = useState('');
   const [filterCat, setFilterCat] = useState('');
@@ -58,6 +72,7 @@ export default function Home() {
   const filtersReady = useRef(false);
 
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
     try {
       const saved = localStorage.getItem(FILTERS_KEY);
       if (saved) {
@@ -73,6 +88,7 @@ export default function Home() {
       }
     } catch {}
     filtersReady.current = true;
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
 
   useEffect(() => {
@@ -90,7 +106,13 @@ export default function Home() {
     setLoading(false);
   }
 
-  useEffect(() => { fetchLeads(); }, []);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchLeads();
+    // a barra superior avisa quando uma rodada termina
+    window.addEventListener(EVENTO_LEADS, fetchLeads);
+    return () => window.removeEventListener(EVENTO_LEADS, fetchLeads);
+  }, []);
 
   function showToast(msg: string) {
     setToast(msg);
@@ -102,12 +124,18 @@ export default function Home() {
     showToast('Lista atualizada.');
   }
 
+  const pedirRodada = () => window.dispatchEvent(new Event(EVENTO_RODADA));
+
+  // Apagar tudo: exige digitar a palavra e baixa um backup antes, sempre.
   async function clearLeads() {
+    if (textoConfirmacao.trim().toUpperCase() !== PALAVRA_CONFIRMACAO) return;
+    baixarBackup(leads);
     await fetch('/api/leads', { method: 'DELETE' });
     setLeads([]);
     guardarLeadsEmCache([]);
-    setConfirmClear(false);
-    showToast('Todos os leads foram removidos.');
+    setApagarAberto(false);
+    setTextoConfirmacao('');
+    showToast('Leads removidos. O backup foi baixado para o seu computador.');
   }
 
   function toggleSort(col: typeof sortBy) {
@@ -169,151 +197,164 @@ export default function Home() {
       .slice(0, 10),
   [leads]);
 
-  function SortBtn({ col, label }: { col: typeof sortBy; label: string }) {
+  const temFiltro = !!(search || filterCat || filterPrio || filterStatus || filterLigacao || filterLoc);
+
+  const cabecalhoOrdenavel = (col: typeof sortBy, label: string) => {
     const active = sortBy === col;
     return (
-      <button onClick={() => toggleSort(col)} className={`flex items-center gap-1 text-xs font-semibold uppercase tracking-wide ${active ? 'text-blue-600' : 'text-gray-500 hover:text-gray-800'}`}>
+      <button onClick={() => toggleSort(col)} className={`flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider ${active ? 'text-blue-600' : 'text-gray-500 hover:text-gray-800'}`}>
         {label}
         <span>{active ? (sortDir === 'desc' ? '↓' : '↑') : '↕'}</span>
       </button>
     );
-  }
+  };
+  const th = 'text-left px-4 py-3 text-[11px] font-semibold text-gray-500 uppercase tracking-wider';
+
+  const cartoes: { label: string; value: number; icone: IconName; cor: string }[] = [
+    { label: 'Total de leads', value: stats.total, icone: 'leads', cor: 'from-slate-700 to-slate-900' },
+    { label: 'Prioridade 1', value: stats.p1, icone: 'alvo', cor: 'from-rose-500 to-red-600' },
+    { label: 'Prioridade 2', value: stats.p2, icone: 'raio', cor: 'from-amber-400 to-orange-500' },
+    { label: 'A contatar', value: stats.aContatar, icone: 'telefone', cor: 'from-emerald-500 to-green-600' },
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-4 sm:px-6 py-4">
-        <div className="max-w-screen-xl mx-auto flex items-center justify-between gap-3 flex-wrap">
+    <div className="min-h-full">
+      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        {/* Cabeçalho da página */}
+        <div className="flex items-end justify-between gap-3 flex-wrap">
           <div>
-            <h1 className="text-xl font-bold text-gray-900">Leads</h1>
-            <p className="text-sm text-gray-500">Funil de prospecção · {stats.total} empresas</p>
+            <h1 className="text-2xl font-bold tracking-tight text-gray-900">Leads</h1>
+            <p className="text-sm text-gray-500 mt-0.5">Funil de prospecção · {stats.total} empresas</p>
           </div>
-          <div className="flex gap-2 flex-wrap items-center">
-            <button
-              onClick={() => exportCSV(filtered)}
-              className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              Exportar CSV
+          <div className="flex gap-2 items-center">
+            <button onClick={handleRefresh} className="inline-flex items-center gap-2 h-10 px-3.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 shadow-sm">
+              <Icon name="atualizar" className="w-4 h-4" /> Atualizar
             </button>
-            {leads.length > 0 && !confirmClear && (
+            <button onClick={() => exportCSV(filtered)} className="inline-flex items-center gap-2 h-10 px-3.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 shadow-sm">
+              <Icon name="download" className="w-4 h-4" /> Exportar CSV
+            </button>
+            <div className="relative">
               <button
-                onClick={() => setConfirmClear(true)}
-                className="px-4 py-2 text-sm text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
+                onClick={() => setMenuMais(m => !m)}
+                onBlur={() => setTimeout(() => setMenuMais(false), 150)}
+                title="Mais opções" aria-label="Mais opções"
+                className="grid place-items-center w-10 h-10 text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-50 shadow-sm"
               >
-                Limpar leads
+                <Icon name="pontos" />
               </button>
-            )}
-            {confirmClear && (
-              <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-lg px-3 py-1.5">
-                <span className="text-xs text-red-700 font-medium">Apagar tudo?</span>
-                <button onClick={clearLeads} className="text-xs text-white bg-red-600 hover:bg-red-700 px-2 py-1 rounded">Sim</button>
-                <button onClick={() => setConfirmClear(false)} className="text-xs text-red-600 hover:text-red-800">Não</button>
-              </div>
-            )}
-            <button
-              onClick={() => setShowModal(true)}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors"
-            >
-              + Pedir rodada
-            </button>
+              {menuMais && (
+                <div className="surgir absolute right-0 z-30 mt-2 w-64 rounded-2xl bg-white border border-gray-200 shadow-xl p-1.5">
+                  <button onMouseDown={() => baixarBackup(leads)} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-700 hover:bg-gray-50 text-left">
+                    <Icon name="download" className="w-4 h-4 text-gray-400" />
+                    <span>Baixar backup completo<span className="block text-xs text-gray-400">todos os dados, em JSON</span></span>
+                  </button>
+                  {leads.length > 0 && (
+                    <>
+                      <div className="my-1 border-t border-gray-100" />
+                      <button onMouseDown={() => { setApagarAberto(true); setTextoConfirmacao(''); }} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-red-600 hover:bg-red-50 text-left">
+                        <Icon name="lixeira" className="w-4 h-4" />
+                        <span>Apagar todos os leads…<span className="block text-xs text-red-400">pede confirmação por escrito</span></span>
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </header>
 
-      <main className="max-w-screen-xl mx-auto px-6 py-6">
-        {/* Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-          {[
-            { label: 'Total de leads', value: stats.total, color: 'text-gray-900' },
-            { label: 'Prioridade 1', value: stats.p1, color: 'text-red-600' },
-            { label: 'Prioridade 2', value: stats.p2, color: 'text-amber-600' },
-            { label: 'A contatar', value: stats.aContatar, color: 'text-green-600' },
-          ].map(s => (
-            <div key={s.label} className="bg-white rounded-xl border border-gray-200 px-5 py-4">
-              <p className="text-xs text-gray-500 font-medium">{s.label}</p>
-              <p className={`text-3xl font-bold mt-1 ${s.color}`}>{s.value}</p>
+        {/* Indicadores */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          {cartoes.map(s => (
+            <div key={s.label} className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-4 sm:p-5 flex items-center gap-4">
+              <span className={`grid place-items-center w-11 h-11 rounded-xl bg-gradient-to-br ${s.cor} text-white shadow-md shrink-0`}>
+                <Icon name={s.icone} />
+              </span>
+              <div className="min-w-0">
+                <p className="text-xs text-gray-500 font-medium truncate">{s.label}</p>
+                <p className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 tabular">{s.value}</p>
+              </div>
             </div>
           ))}
         </div>
 
         {/* Top 10 */}
         {top10.length > 0 && (
-          <div className="mb-6">
-            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2 px-1">Top {top10.length} — melhores leads ativos</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+          <section>
+            <h2 className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2 px-1">Top {top10.length} — melhores leads ativos</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
               {top10.map((l, i) => (
                 <Link
                   key={l.id}
                   href={`/call/${l.id}`}
-                  className="bg-white border border-gray-200 rounded-xl px-4 py-3 hover:border-blue-400 hover:shadow-sm transition-all group"
+                  className="group bg-white border border-gray-200/80 rounded-2xl px-4 py-3 shadow-sm hover:border-blue-300 hover:shadow-md hover:-translate-y-0.5 transition-all"
                 >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs text-gray-400 font-medium">#{i + 1}</span>
-                    <span className={`text-xs font-bold ${l.score >= 8 ? 'text-red-600' : l.score >= 5 ? 'text-amber-600' : 'text-gray-400'}`}>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-[11px] text-gray-400 font-semibold">#{i + 1}</span>
+                    <span className={`text-[11px] font-bold rounded-full px-2 py-0.5 ${l.score >= 8 ? 'bg-red-50 text-red-600' : l.score >= 5 ? 'bg-amber-50 text-amber-600' : 'bg-gray-100 text-gray-500'}`}>
                       {l.score} pts
                     </span>
                   </div>
                   <p className="text-sm font-semibold text-gray-900 truncate group-hover:text-blue-600 leading-snug">{l.nome}</p>
-                  <p className="text-xs text-gray-400 truncate mt-0.5">{l.localizacao}</p>
+                  <p className="text-xs text-gray-400 truncate mt-0.5 mb-2">{l.localizacao}</p>
                   <StatusBadge s={l.status} />
                 </Link>
               ))}
             </div>
-          </div>
+          </section>
         )}
 
-        {/* Filters */}
-        <div className="bg-white border border-gray-200 rounded-xl px-4 py-3 mb-4 flex flex-wrap gap-3 items-center">
-          <input
-            type="text"
-            placeholder="Buscar empresa, cidade..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="flex-1 min-w-48 text-sm border border-gray-300 rounded-lg px-3 py-1.5 outline-none focus:border-blue-400"
-          />
-          <select value={filterCat} onChange={e => setFilterCat(e.target.value)} className="text-sm border border-gray-300 rounded-lg px-3 py-1.5 outline-none focus:border-blue-400 bg-white">
-            <option value="">Todas as categorias</option>
-            {CATEGORIAS.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
-          <select value={filterPrio} onChange={e => setFilterPrio(e.target.value)} className="text-sm border border-gray-300 rounded-lg px-3 py-1.5 outline-none focus:border-blue-400 bg-white">
-            <option value="">Todas as prioridades</option>
-            <option value="1">Prioridade 1</option>
-            <option value="2">Prioridade 2</option>
-            <option value="3">Prioridade 3</option>
-          </select>
-          <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="text-sm border border-gray-300 rounded-lg px-3 py-1.5 outline-none focus:border-blue-400 bg-white">
-            <option value="">Todos os status</option>
-            {STATUS_LIST.map(s => <option key={s} value={s}>{s}</option>)}
-          </select>
-          <select value={filterLigacao} onChange={e => setFilterLigacao(e.target.value as '' | 'nao' | 'sim')} className="text-sm border border-gray-300 rounded-lg px-3 py-1.5 outline-none focus:border-blue-400 bg-white">
-            <option value="">📞 Todas as ligações</option>
-            <option value="nao">📵 Ainda não liguei</option>
-            <option value="sim">✅ Já liguei</option>
-          </select>
-          <select value={filterLoc} onChange={e => setFilterLoc(e.target.value)} className="text-sm border border-gray-300 rounded-lg px-3 py-1.5 outline-none focus:border-blue-400 bg-white">
-            <option value="">📍 Todas as cidades</option>
-            {locations.map(loc => <option key={loc} value={loc}>{loc}</option>)}
-          </select>
-          {(search || filterCat || filterPrio || filterStatus || filterLigacao || filterLoc) && (
-            <button onClick={() => { setSearch(''); setFilterCat(''); setFilterPrio(''); setFilterStatus(''); setFilterLigacao(''); setFilterLoc(''); }} className="text-sm text-gray-500 hover:text-gray-900">
-              Limpar filtros
-            </button>
-          )}
-          <button onClick={handleRefresh} className="text-sm px-3 py-1.5 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors" title="Atualizar lista">
-            ↻
-          </button>
-          <span className="text-xs text-gray-400">{filtered.length} resultado{filtered.length !== 1 ? 's' : ''}</span>
-        </div>
+        {/* Tabela com filtros */}
+        <section className="bg-white border border-gray-200/80 rounded-2xl shadow-sm overflow-hidden">
+          <div className="px-4 py-3 flex flex-wrap gap-2.5 items-center border-b border-gray-100">
+            <div className="relative flex-1 min-w-52">
+              <Icon name="busca" className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Filtrar empresa, cidade…"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="w-full h-10 text-sm border border-gray-200 rounded-xl pl-9 pr-3 outline-none focus:border-blue-400"
+              />
+            </div>
+            <select value={filterCat} onChange={e => setFilterCat(e.target.value)} className={selectCls}>
+              <option value="">Todas as categorias</option>
+              {CATEGORIAS.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+            <select value={filterPrio} onChange={e => setFilterPrio(e.target.value)} className={selectCls}>
+              <option value="">Todas as prioridades</option>
+              <option value="1">Prioridade 1</option>
+              <option value="2">Prioridade 2</option>
+              <option value="3">Prioridade 3</option>
+            </select>
+            <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className={selectCls}>
+              <option value="">Todos os status</option>
+              {STATUS_LIST.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+            <select value={filterLigacao} onChange={e => setFilterLigacao(e.target.value as '' | 'nao' | 'sim')} className={selectCls}>
+              <option value="">Todas as ligações</option>
+              <option value="nao">Ainda não liguei</option>
+              <option value="sim">Já liguei</option>
+            </select>
+            <select value={filterLoc} onChange={e => setFilterLoc(e.target.value)} className={`${selectCls} max-w-52`}>
+              <option value="">Todas as cidades</option>
+              {locations.map(loc => <option key={loc} value={loc}>{loc}</option>)}
+            </select>
+            {temFiltro && (
+              <button onClick={() => { setSearch(''); setFilterCat(''); setFilterPrio(''); setFilterStatus(''); setFilterLigacao(''); setFilterLoc(''); }} className="h-10 px-3 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-xl">
+                Limpar filtros
+              </button>
+            )}
+            <span className="ml-auto text-xs text-gray-400 tabular">{filtered.length} resultado{filtered.length !== 1 ? 's' : ''}</span>
+          </div>
 
-        {/* Table */}
-        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
           {loading ? (
             <div className="py-20 text-center text-gray-400">Carregando...</div>
           ) : filtered.length === 0 ? (
             <div className="py-20 text-center">
               <p className="text-gray-400 mb-3">{leads.length === 0 ? 'Nenhum lead ainda.' : 'Nenhum resultado para os filtros.'}</p>
               {leads.length === 0 && (
-                <button onClick={() => setShowModal(true)} className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700">
+                <button onClick={pedirRodada} className="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700">
                   Pedir primeira rodada
                 </button>
               )}
@@ -321,17 +362,16 @@ export default function Home() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b border-gray-200">
+                <thead className="bg-gray-50/80 border-b border-gray-200">
                   <tr>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide w-8">#</th>
-                    <th className="text-left px-4 py-3"><SortBtn col="nome" label="Empresa" /></th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Categoria</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Localização</th>
-                    <th className="text-left px-4 py-3"><SortBtn col="score" label="Score" /></th>
-                    <th className="text-left px-4 py-3"><SortBtn col="prioridade" label="Prior." /></th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Ligações</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Próximo passo</th>
+                    <th className={`${th} w-8`}>#</th>
+                    <th className="text-left px-4 py-3">{cabecalhoOrdenavel('nome', 'Empresa')}</th>
+                    <th className={th}>Categoria</th>
+                    <th className="text-left px-4 py-3">{cabecalhoOrdenavel('score', 'Score')}</th>
+                    <th className="text-left px-4 py-3">{cabecalhoOrdenavel('prioridade', 'Prior.')}</th>
+                    <th className={th}>Status</th>
+                    <th className={th}>Ligações</th>
+                    <th className={th}>Próximo passo</th>
                     <th className="px-4 py-3 w-24"></th>
                   </tr>
                 </thead>
@@ -340,14 +380,19 @@ export default function Home() {
                     <tr key={lead.id} className="hover:bg-blue-50/40 transition-colors">
                       <td className="px-4 py-3 text-gray-400 text-xs">{inicio + idx + 1}</td>
                       <td className="px-4 py-3">
-                        <Link href={`/call/${lead.id}`} className="font-medium text-gray-900 hover:text-blue-600 transition-colors">
-                          {lead.nome}
+                        <Link href={`/call/${lead.id}`} className="flex items-center gap-3 group min-w-48">
+                          <span className="grid place-items-center w-9 h-9 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 text-slate-600 text-xs font-bold shrink-0">
+                            {lead.nome.slice(0, 2).toUpperCase()}
+                          </span>
+                          <span className="min-w-0">
+                            <span className="block font-semibold text-gray-900 group-hover:text-blue-600 transition-colors leading-snug">{lead.nome}</span>
+                            <span className="block text-xs text-gray-400">{lead.localizacao}</span>
+                          </span>
                         </Link>
                       </td>
                       <td className="px-4 py-3"><CategoriaBadge c={lead.categoria} /></td>
-                      <td className="px-4 py-3 text-gray-600 text-xs">{lead.localizacao}</td>
                       <td className="px-4 py-3">
-                        <span className={`font-bold text-sm ${lead.score >= 8 ? 'text-red-600' : lead.score >= 5 ? 'text-amber-600' : 'text-gray-400'}`}>
+                        <span className={`inline-grid place-items-center min-w-8 h-7 px-1.5 rounded-lg font-bold text-sm ${lead.score >= 8 ? 'bg-red-50 text-red-600' : lead.score >= 5 ? 'bg-amber-50 text-amber-600' : 'bg-gray-100 text-gray-400'}`}>
                           {lead.score}
                         </span>
                       </td>
@@ -355,17 +400,17 @@ export default function Home() {
                       <td className="px-4 py-3"><StatusBadge s={lead.status} /></td>
                       <td className="px-4 py-3">
                         {(lead.chamadas ?? []).length === 0 ? (
-                          <span className="text-xs text-gray-400">—</span>
+                          <span className="text-xs text-gray-300">—</span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 text-xs font-medium text-gray-700">
-                            📞 {lead.chamadas.length}
+                          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-600">
+                            <Icon name="telefone" className="w-3.5 h-3.5 text-gray-400" /> {lead.chamadas.length}
                           </span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-gray-600 max-w-xs truncate text-xs">{lead.proximoPasso}</td>
-                      <td className="px-4 py-3">
-                        <Link href={`/call/${lead.id}`} className="px-3 py-1.5 bg-blue-50 text-blue-700 text-xs font-medium rounded-lg hover:bg-blue-100 transition-colors">
-                          Ligar
+                      <td className="px-4 py-3 text-gray-500 max-w-xs truncate text-xs">{lead.proximoPasso}</td>
+                      <td className="px-4 py-3 text-right">
+                        <Link href={`/call/${lead.id}`} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 text-xs font-semibold rounded-lg hover:bg-blue-600 hover:text-white transition-colors">
+                          <Icon name="telefone" className="w-3.5 h-3.5" /> Ligar
                         </Link>
                       </td>
                     </tr>
@@ -375,34 +420,64 @@ export default function Home() {
             </div>
           )}
           {!loading && filtered.length > POR_PAGINA && (
-            <div className="flex items-center justify-between gap-3 flex-wrap px-4 py-3 border-t border-gray-200 bg-gray-50 text-sm">
-              <span className="text-xs text-gray-500">
+            <div className="flex items-center justify-between gap-3 flex-wrap px-4 py-3 border-t border-gray-100 bg-gray-50/60 text-sm">
+              <span className="text-xs text-gray-500 tabular">
                 {inicio + 1}–{Math.min(inicio + POR_PAGINA, filtered.length)} de {filtered.length}
               </span>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setPagina(paginaAtual - 1)} disabled={paginaAtual <= 1}
-                  className="px-3 py-1.5 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-40"
+                  className="h-9 px-3 rounded-xl border border-gray-200 bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-40"
                 >
                   ← Anterior
                 </button>
-                <span className="text-xs text-gray-500">página {paginaAtual} de {totalPaginas}</span>
+                <span className="text-xs text-gray-500 tabular">página {paginaAtual} de {totalPaginas}</span>
                 <button
                   onClick={() => setPagina(paginaAtual + 1)} disabled={paginaAtual >= totalPaginas}
-                  className="px-3 py-1.5 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-40"
+                  className="h-9 px-3 rounded-xl border border-gray-200 bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-40"
                 >
                   Próxima →
                 </button>
               </div>
             </div>
           )}
-        </div>
-      </main>
+        </section>
+      </div>
 
-      {showModal && <RunRoundModal onClose={() => setShowModal(false)} onRefresh={handleRefresh} />}
+      {/* Confirmação para apagar tudo */}
+      {apagarAberto && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 backdrop-blur-sm p-4" onClick={() => setApagarAberto(false)}>
+          <div className="surgir bg-white rounded-2xl shadow-2xl w-full max-w-md p-6" onClick={e => e.stopPropagation()}>
+            <span className="grid place-items-center w-12 h-12 rounded-2xl bg-red-100 text-red-600 mb-4"><Icon name="lixeira" className="w-6 h-6" /></span>
+            <h2 className="text-lg font-bold text-gray-900">Apagar todos os {leads.length} leads?</h2>
+            <p className="text-sm text-gray-600 mt-2 leading-relaxed">
+              Isso remove <strong>todas as empresas</strong>, com históricos de ligações, mensagens, e-mails e reuniões. Não dá para desfazer pelo sistema.
+              Um backup completo será baixado para o seu computador antes de apagar.
+            </p>
+            <label className="block text-xs font-semibold text-gray-500 mt-4 mb-1.5">
+              Para confirmar, digite <span className="text-red-600">{PALAVRA_CONFIRMACAO}</span>
+            </label>
+            <input
+              autoFocus value={textoConfirmacao} onChange={e => setTextoConfirmacao(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && clearLeads()}
+              className="w-full h-11 border border-gray-300 rounded-xl px-3 text-sm outline-none focus:border-red-400 uppercase tracking-widest"
+            />
+            <div className="flex gap-2 justify-end mt-5">
+              <button onClick={() => setApagarAberto(false)} className="h-10 px-4 text-sm font-medium text-gray-700 rounded-xl hover:bg-gray-100">Cancelar</button>
+              <button
+                onClick={clearLeads}
+                disabled={textoConfirmacao.trim().toUpperCase() !== PALAVRA_CONFIRMACAO}
+                className="h-10 px-4 text-sm font-semibold text-white bg-red-600 rounded-xl hover:bg-red-700 disabled:opacity-40"
+              >
+                Baixar backup e apagar tudo
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {toast && (
-        <div className="fixed bottom-6 right-6 bg-gray-900 text-white text-sm px-5 py-3 rounded-xl shadow-lg animate-in fade-in slide-in-from-bottom-2">
+        <div className="surgir fixed bottom-6 right-6 z-50 bg-slate-900 text-white text-sm px-5 py-3 rounded-2xl shadow-xl">
           {toast}
         </div>
       )}

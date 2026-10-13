@@ -110,16 +110,15 @@ function ColunaFunil({
       onDragOver={e => { e.preventDefault(); setOver(etapa.id); }}
       onDragLeave={() => setOver(null)}
       onDrop={e => { e.preventDefault(); setOver(null); const id = e.dataTransfer.getData('text/plain'); if (id) onDrop(id, etapa.id); }}
-      className={`flex flex-col rounded-2xl bg-gray-100/70 border transition-colors ${over === etapa.id ? 'border-indigo-500 ring-2 ring-indigo-200' : 'border-gray-200'}`}
+      className={`flex flex-col rounded-2xl bg-slate-200/50 border transition-colors ${over === etapa.id ? 'border-indigo-500 ring-4 ring-indigo-100 bg-indigo-50/60' : 'border-transparent'}`}
     >
-      <div className={`rounded-t-2xl px-3 py-2.5 bg-gradient-to-r ${etapa.header} text-white`}>
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-bold">{etapa.icone} {etapa.titulo}</h2>
-          <span className="text-xs font-bold bg-white/25 rounded-full px-2 py-0.5">{leads.length}</span>
-        </div>
-        <p className="text-[11px] text-white/80 leading-snug mt-0.5">{etapa.dica}</p>
+      <div className="px-3 pt-3 pb-1 flex items-center gap-2.5">
+        <span className={`grid place-items-center w-8 h-8 rounded-xl text-sm shadow-sm shrink-0 bg-gradient-to-br ${etapa.header}`}>{etapa.icone}</span>
+        <h2 className="text-sm font-bold text-gray-800 leading-tight min-w-0 flex-1 [overflow-wrap:anywhere]">{etapa.titulo}</h2>
+        <span className="text-xs font-bold text-gray-600 bg-white rounded-full px-2 py-0.5 shadow-sm tabular">{leads.length}</span>
       </div>
-      <div className="p-2 space-y-2 min-h-[6rem] lg:max-h-[calc(100vh-16rem)] lg:overflow-y-auto">
+      <p className="px-3 pt-1 text-[11px] text-gray-500 leading-snug">{etapa.dica}</p>
+      <div className="p-2 space-y-2 min-h-[6rem] max-h-[70dvh] @6xl:max-h-[calc(100dvh-17rem)] overflow-y-auto">
         {leads.length === 0 && <p className="text-xs text-gray-300 text-center py-6">vazio</p>}
         {leads.map(l => (
           <CardFunil key={l.id} lead={l} onAbrir={() => onAbrir(l)} onMover={e => onMover(l.id, e)} />
@@ -133,8 +132,8 @@ function Modal({ lead, onClose, onPatch, onSair }: {
   lead: Lead; onClose: () => void; onPatch: (u: Partial<Lead>) => void; onSair: () => void;
 }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 p-4 overflow-y-auto" onClick={onClose}>
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg my-8" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex items-start justify-center bg-slate-950/50 backdrop-blur-sm p-4 overflow-y-auto" onClick={onClose}>
+      <div className="surgir bg-white rounded-2xl shadow-2xl w-full max-w-lg my-8" onClick={e => e.stopPropagation()}>
         <div className="flex items-start justify-between gap-3 p-5 border-b border-gray-100">
           <div>
             <h2 className="text-xl font-bold text-gray-900">{lead.nome}</h2>
@@ -236,11 +235,13 @@ export default function ClientesPage() {
   const aberto = leads.find(l => l.id === abertoId) ?? null;
 
   return (
-    <div className="min-h-[calc(100vh-3rem)] bg-gray-50 flex flex-col">
-      <header className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3">
+    <div className="min-h-full flex flex-col">
+      <header className="px-4 sm:px-6 lg:px-8 pt-6 pb-2">
         <div className="flex items-center gap-3 flex-wrap">
-          <h1 className="text-lg font-bold text-gray-900">Clientes</h1>
-          <span className="text-xs text-gray-400 hidden sm:inline">funil de fechamento · pós-prospecção</span>
+          <div className="mr-2">
+            <h1 className="text-2xl font-bold tracking-tight text-gray-900">Clientes</h1>
+            <p className="text-sm text-gray-500 mt-0.5">Funil de fechamento · da POC ao contrato</p>
+          </div>
 
           <div className="flex gap-1.5 text-xs font-semibold ml-auto flex-wrap">
             {reunioesAtrasadas > 0 && <span className="bg-red-600 text-white rounded px-2 py-1">{reunioesAtrasadas} reunião atrasada</span>}
@@ -250,14 +251,14 @@ export default function ClientesPage() {
           </div>
           <button
             onClick={() => setAddOpen(o => !o)}
-            className="text-sm font-semibold bg-gray-900 text-white rounded-lg px-3 py-1.5 hover:bg-gray-700"
+            className="h-10 text-sm font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl px-4 shadow-md shadow-blue-600/25 hover:brightness-110"
           >
             + Adicionar negócio
           </button>
         </div>
 
         {addOpen && (
-          <div className="mt-3 rounded-xl border border-gray-200 bg-gray-50 p-3">
+          <div className="surgir mt-3 rounded-2xl border border-gray-200 bg-white shadow-sm p-3">
             <input
               autoFocus type="text" value={buscaAdd} onChange={e => setBuscaAdd(e.target.value)}
               placeholder="Buscar lead pra puxar pro funil (nome ou cidade)..."
@@ -287,11 +288,11 @@ export default function ClientesPage() {
           <p className="text-5xl mb-3">🏆</p>
           <h2 className="text-lg font-bold text-gray-800">Seu funil de clientes está vazio</h2>
           <p className="text-sm text-gray-500 mt-1 max-w-sm">Quando um lead avança pra reunião de POC, clique em <strong>+ Adicionar negócio</strong> e acompanhe cada fase e reunião aqui — sem tirar ele da coluna do kanban.</p>
-          <button onClick={() => setAddOpen(true)} className="mt-4 text-sm font-semibold bg-gray-900 text-white rounded-lg px-4 py-2 hover:bg-gray-700">+ Adicionar primeiro negócio</button>
+          <button onClick={() => setAddOpen(true)} className="mt-5 h-10 text-sm font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl px-5 shadow-md shadow-blue-600/25 hover:brightness-110">+ Adicionar primeiro negócio</button>
         </div>
       ) : (
-        <div className="flex-1 p-3 sm:p-4">
-          <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 items-start">
+        <div className="@container flex-1 px-4 sm:px-6 lg:px-8 py-4">
+          <div className="grid gap-3 grid-cols-1 @lg:grid-cols-2 @3xl:grid-cols-3 @6xl:grid-cols-6 items-start">
             {ETAPAS.map(e => (
               <ColunaFunil
                 key={e.id} etapa={e} leads={porEtapa[e.id]}

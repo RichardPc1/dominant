@@ -74,10 +74,10 @@ export default function EmailsPage() {
     navigator.clipboard?.writeText(emails);
   }
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center text-gray-400">Carregando...</div>;
+  if (loading) return <div className="min-h-full py-20 flex items-center justify-center text-gray-400">Carregando...</div>;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-full">
       <div className="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-10">
         <div className="max-w-4xl mx-auto flex items-center gap-4">
           <h1 className="text-lg font-bold text-gray-900">E-mails para Prospecção</h1>
