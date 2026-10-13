@@ -1,7 +1,6 @@
 'use client';
 import { Suspense, useState, useRef, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import Link from 'next/link';
 import { ROTEIROS, ScriptItem, ScriptSection } from '@/lib/roteiros-data';
 
 const CAT_COLORS: Record<string, string> = {
@@ -117,7 +116,6 @@ function RoteirosConteudo() {
       <header className="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-10">
         <div className="max-w-screen-xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link href="/" className="text-sm text-gray-500 hover:text-gray-900">← Funil</Link>
             <h1 className="text-lg font-bold text-gray-900">Roteiros de Abordagem</h1>
           </div>
           <div className="flex items-center gap-3 text-xs text-gray-400">

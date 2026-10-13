@@ -80,7 +80,6 @@ export default function EmailsPage() {
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-10">
         <div className="max-w-4xl mx-auto flex items-center gap-4">
-          <Link href="/" className="text-sm text-gray-500 hover:text-gray-900">← Funil</Link>
           <h1 className="text-lg font-bold text-gray-900">E-mails para Prospecção</h1>
           <span className="text-sm text-gray-400">{rows.length} e-mails</span>
           <input

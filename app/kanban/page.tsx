@@ -7,6 +7,7 @@ import {
   linkWhatsApp, semRespostaSeguidas, telefoneDe, ultimaChamada,
 } from '@/lib/kanban';
 import { PriorityBadge } from '../components/Badges';
+import { guardarLeadsEmCache, leadsEmCache } from '@/lib/leads-cache';
 
 type FiltroLigacao = 'todos' | 'com' | 'sem';
 
@@ -69,8 +70,8 @@ function Card({
       <p className="text-[11px] text-gray-400 mt-0.5">{lead.categoria}{lead.localizacao ? ` · ${lead.localizacao}` : ''}</p>
 
       {fone ? (
-        <div className="mt-1.5 flex items-center gap-1.5">
-          <a href={`tel:${fone.replace(/\D/g, '')}`} className="text-sm font-medium text-blue-700 hover:underline">📞 {fone}</a>
+        <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
+          <a href={`tel:${fone.replace(/\D/g, '')}`} className="text-sm font-medium text-blue-700 hover:underline whitespace-nowrap">📞 {fone}</a>
           <CopyBtn value={fone} />
           {linkWhatsApp(fone) && (
             <a href={linkWhatsApp(fone)} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()} className="shrink-0 text-[10px] px-1.5 py-0.5 rounded bg-green-100 hover:bg-green-200 text-green-800 font-semibold">💬 WhatsApp</a>
@@ -110,8 +111,8 @@ function Card({
         </p>
       )}
 
-      <div className="mt-2 flex items-center justify-between gap-2 text-[11px] text-gray-400">
-        <span>{nChamadas && ult ? `${nChamadas}× · últ. ${ult.data.slice(0, 5)} ${ult.hora}` : 'nunca ligado'}</span>
+      <div className="mt-2 flex items-center justify-between gap-x-2 gap-y-1 flex-wrap text-[11px] text-gray-400">
+        <span className="whitespace-nowrap">{nChamadas && ult ? `${nChamadas}× · últ. ${ult.data.slice(0, 5)} ${ult.hora}` : 'nunca ligado'}</span>
         <select
           value={coluna}
           onChange={e => onMove(lead.id, e.target.value as Coluna)}
@@ -181,7 +182,7 @@ function ColunaBoard({
         <span className="text-xs font-bold bg-white/25 rounded-full px-2 py-0.5">{leads.length}</span>
       </div>
       <p className="px-3 pt-2 text-[11px] text-gray-400 leading-snug">{grupo.dica}</p>
-      <div className="p-2 space-y-2 min-h-[5rem] lg:max-h-[calc(100vh-13rem)] lg:overflow-y-auto">
+      <div className="p-2 space-y-2 min-h-[5rem] lg:max-h-[calc(100vh-16rem)] lg:overflow-y-auto">
         {leads.length === 0 && <p className="text-xs text-gray-300 text-center py-4">vazio</p>}
         {visiveis.map(l => (
           <Card key={l.id} lead={l} coluna={colunaDoLead.get(l.id)!} onMove={onMove} onAgenda={onAgenda} />
@@ -200,8 +201,8 @@ function ColunaBoard({
 }
 
 export default function KanbanPage() {
-  const [leads, setLeads] = useState<Lead[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [leads, setLeads] = useState<Lead[]>(() => leadsEmCache() ?? []);
+  const [loading, setLoading] = useState(() => !leadsEmCache());
   const [busca, setBusca] = useState('');
   const [over, setOver] = useState<string | null>(null);
   const [filtroLigacao, setFiltroLigacao] = useState<FiltroLigacao>('todos');
@@ -232,6 +233,7 @@ export default function KanbanPage() {
       const d: Lead[] = await fetch('/api/leads', { cache: 'no-store' }).then(r => r.json());
       if (Array.isArray(d)) {
         setLeads(d);
+        guardarLeadsEmCache(d);
         setAtualizadoEm(new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
       }
     } catch {}
@@ -247,7 +249,11 @@ export default function KanbanPage() {
   }, [carregar]);
 
   async function patch(id: string, updates: Partial<Lead>) {
-    setLeads(prev => prev.map(l => (l.id === id ? { ...l, ...updates } : l)));
+    setLeads(prev => {
+      const novo = prev.map(l => (l.id === id ? { ...l, ...updates } : l));
+      guardarLeadsEmCache(novo);
+      return novo;
+    });
     await fetch(`/api/leads/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
@@ -294,10 +300,8 @@ export default function KanbanPage() {
   const propsComuns = { colunaDoLead, over, setOver, onDropLead: soltar, onMove: move, onAgenda: agenda };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center gap-4 flex-wrap">
-        <Link href="/" className="text-sm text-gray-500 hover:text-gray-900">← Lista</Link>
-        <Link href="/clientes" className="text-sm font-semibold text-indigo-600 hover:text-indigo-800">🏆 Clientes</Link>
+    <div className="bg-gray-50 flex flex-col">
+      <header className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 flex items-center gap-3 sm:gap-4 flex-wrap">
         <h1 className="text-lg font-bold text-gray-900">Kanban de leads</h1>
         <div className="flex gap-2 text-xs font-semibold">
           {atrasados > 0 && <span className="bg-red-600 text-white rounded px-2 py-1">{atrasados} atrasado{atrasados > 1 ? 's' : ''}</span>}

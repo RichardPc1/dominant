@@ -8,7 +8,7 @@ export function PriorityBadge({ p }: { p: Prioridade }) {
     '3': 'bg-gray-100 text-gray-600 border-gray-200',
   } as const;
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold border ${map[p]}`}>
+    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold border whitespace-nowrap ${map[p]}`}>
       P{p}
     </span>
   );
@@ -29,7 +29,7 @@ export function StatusBadge({ s }: { s: Status }) {
     'Fechado': 'bg-red-100 text-red-600',
   };
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${map[s] ?? 'bg-gray-100 text-gray-600'}`}>
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${map[s] ?? 'bg-gray-100 text-gray-600'}`}>
       {s}
     </span>
   );
@@ -47,7 +47,7 @@ export function CategoriaBadge({ c }: { c: Categoria }) {
     'Concorrente': 'bg-red-50 text-red-600',
   };
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${map[c] ?? 'bg-gray-50 text-gray-600'}`}>
+    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium whitespace-nowrap ${map[c] ?? 'bg-gray-50 text-gray-600'}`}>
       {c}
     </span>
   );

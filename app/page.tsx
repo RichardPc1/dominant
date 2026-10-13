@@ -4,8 +4,10 @@ import Link from 'next/link';
 import { Lead, Categoria, Prioridade, Status } from '@/lib/types';
 import { PriorityBadge, StatusBadge, CategoriaBadge } from './components/Badges';
 import RunRoundModal from './components/RunRoundModal';
+import { guardarLeadsEmCache, leadsEmCache } from '@/lib/leads-cache';
 
 const FILTERS_KEY = 'dominant-filters';
+const POR_PAGINA = 50;
 
 const CATEGORIAS: Categoria[] = [
   'ERP / PCP', 'Integrador de automação', 'Fabricante de máquinas',
@@ -38,8 +40,9 @@ function exportCSV(leads: Lead[]) {
 }
 
 export default function Home() {
-  const [leads, setLeads] = useState<Lead[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [leads, setLeads] = useState<Lead[]>(() => leadsEmCache() ?? []);
+  const [loading, setLoading] = useState(() => !leadsEmCache());
+  const [pag, setPag] = useState({ assinatura: '', n: 1 });
   const [showModal, setShowModal] = useState(false);
   const [toast, setToast] = useState('');
   const [confirmClear, setConfirmClear] = useState(false);
@@ -83,6 +86,7 @@ export default function Home() {
     const res = await fetch('/api/leads', { cache: 'no-store' });
     const data = await res.json();
     setLeads(data);
+    guardarLeadsEmCache(data);
     setLoading(false);
   }
 
@@ -101,6 +105,7 @@ export default function Home() {
   async function clearLeads() {
     await fetch('/api/leads', { method: 'DELETE' });
     setLeads([]);
+    guardarLeadsEmCache([]);
     setConfirmClear(false);
     showToast('Todos os leads foram removidos.');
   }
@@ -137,6 +142,15 @@ export default function Home() {
     return list;
   }, [leads, search, filterCat, filterPrio, filterStatus, filterLigacao, filterLoc, sortBy, sortDir]);
 
+  // A tabela mostra uma página por vez: renderizar centenas de linhas de uma vez deixava a tela pesada.
+  // Mudou filtro ou ordenação → volta pra página 1 (a página guardada só vale pro mesmo conjunto).
+  const assinatura = [search, filterCat, filterPrio, filterStatus, filterLigacao, filterLoc, sortBy, sortDir].join('|');
+  const setPagina = (n: number) => setPag({ assinatura, n });
+  const totalPaginas = Math.max(1, Math.ceil(filtered.length / POR_PAGINA));
+  const paginaAtual = Math.min(pag.assinatura === assinatura ? pag.n : 1, totalPaginas);
+  const inicio = (paginaAtual - 1) * POR_PAGINA;
+  const visiveis = filtered.slice(inicio, inicio + POR_PAGINA);
+
   const locations = useMemo(() =>
     [...new Set(leads.map(l => l.localizacao).filter(Boolean))].sort(),
   [leads]);
@@ -168,31 +182,13 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="max-w-screen-xl mx-auto flex items-center justify-between">
+      <header className="bg-white border-b border-gray-200 px-4 sm:px-6 py-4">
+        <div className="max-w-screen-xl mx-auto flex items-center justify-between gap-3 flex-wrap">
           <div>
-            <h1 className="text-xl font-bold text-gray-900">Dominant</h1>
-            <p className="text-sm text-gray-500">Funil de Prospecção – Coletor</p>
+            <h1 className="text-xl font-bold text-gray-900">Leads</h1>
+            <p className="text-sm text-gray-500">Funil de prospecção · {stats.total} empresas</p>
           </div>
-          <div className="flex gap-3 flex-wrap">
-            <Link href="/kanban" className="px-4 py-2 text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors">
-              Kanban
-            </Link>
-            <Link href="/clientes" className="px-4 py-2 text-sm font-semibold text-indigo-600 hover:text-indigo-800 transition-colors">
-              🏆 Clientes
-            </Link>
-            <Link href="/config" className="px-4 py-2 text-sm text-gray-500 hover:text-gray-900 transition-colors">
-              Classificação
-            </Link>
-            <Link href="/roteiros" className="px-4 py-2 text-sm text-gray-500 hover:text-gray-900 transition-colors">
-              Roteiros
-            </Link>
-            <Link href="/emails" className="px-4 py-2 text-sm text-gray-500 hover:text-gray-900 transition-colors">
-              E-mails
-            </Link>
-            <Link href="/guia" className="px-4 py-2 text-sm text-gray-500 hover:text-gray-900 transition-colors">
-              Guia
-            </Link>
+          <div className="flex gap-2 flex-wrap items-center">
             <button
               onClick={() => exportCSV(filtered)}
               className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
@@ -340,9 +336,9 @@ export default function Home() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {filtered.map((lead, idx) => (
-                    <tr key={lead.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-4 py-3 text-gray-400 text-xs">{idx + 1}</td>
+                  {visiveis.map((lead, idx) => (
+                    <tr key={lead.id} className="hover:bg-blue-50/40 transition-colors">
+                      <td className="px-4 py-3 text-gray-400 text-xs">{inicio + idx + 1}</td>
                       <td className="px-4 py-3">
                         <Link href={`/call/${lead.id}`} className="font-medium text-gray-900 hover:text-blue-600 transition-colors">
                           {lead.nome}
@@ -376,6 +372,28 @@ export default function Home() {
                   ))}
                 </tbody>
               </table>
+            </div>
+          )}
+          {!loading && filtered.length > POR_PAGINA && (
+            <div className="flex items-center justify-between gap-3 flex-wrap px-4 py-3 border-t border-gray-200 bg-gray-50 text-sm">
+              <span className="text-xs text-gray-500">
+                {inicio + 1}–{Math.min(inicio + POR_PAGINA, filtered.length)} de {filtered.length}
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setPagina(paginaAtual - 1)} disabled={paginaAtual <= 1}
+                  className="px-3 py-1.5 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-40"
+                >
+                  ← Anterior
+                </button>
+                <span className="text-xs text-gray-500">página {paginaAtual} de {totalPaginas}</span>
+                <button
+                  onClick={() => setPagina(paginaAtual + 1)} disabled={paginaAtual >= totalPaginas}
+                  className="px-3 py-1.5 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-40"
+                >
+                  Próxima →
+                </button>
+              </div>
             </div>
           )}
         </div>

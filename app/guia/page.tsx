@@ -1,4 +1,3 @@
-import Link from 'next/link';
 
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
   return (
@@ -51,7 +50,6 @@ export default function GuiaPage() {
       <header className="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-10">
         <div className="max-w-screen-lg mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link href="/" className="text-sm text-gray-500 hover:text-gray-900">← Voltar ao funil</Link>
             <h1 className="text-lg font-bold text-gray-900">Guia completo do sistema</h1>
           </div>
         </div>

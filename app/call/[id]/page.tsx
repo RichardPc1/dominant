@@ -9,6 +9,7 @@ import LiveCall from '@/app/components/LiveCall';
 import EmailPanel from '@/app/components/EmailPanel';
 import FunilCliente from '@/app/components/FunilCliente';
 import { estaNoFunil } from '@/lib/funil';
+import { atualizarLeadEmCache, guardarLeadsEmCache } from '@/lib/leads-cache';
 import { ROTEIROS } from '@/lib/roteiros-data';
 import { PriorityBadge, StatusBadge, CategoriaBadge } from '@/app/components/Badges';
 
@@ -134,6 +135,7 @@ export default function CallPage() {
   useEffect(() => {
     fetch('/api/leads').then(r => r.json()).then((data: Lead[]) => {
       setLeads(data);
+      guardarLeadsEmCache(data);
       const found = data.find(l => l.id === id) ?? null;
       setLead(found);
       if (found) {
@@ -160,6 +162,7 @@ export default function CallPage() {
   const nextLead = idx < leads.length - 1 ? leads[idx + 1] : null;
 
   async function patch(updates: Partial<Lead>) {
+    atualizarLeadEmCache(id, updates);
     await fetch(`/api/leads/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
@@ -273,10 +276,8 @@ export default function CallPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Top bar */}
-      <div className="bg-white border-b border-gray-200 px-6 py-3 flex items-center gap-4">
-        <Link href="/" className="text-sm text-gray-500 hover:text-gray-900">← Voltar</Link>
-        <Link href="/kanban" className="text-sm text-gray-500 hover:text-gray-900">Kanban</Link>
-        <Link href="/clientes" className="text-sm font-semibold text-indigo-600 hover:text-indigo-800">🏆 Clientes</Link>
+      <div className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 flex items-center gap-4">
+        <Link href="/" className="text-sm text-gray-500 hover:text-gray-900">← Leads</Link>
         <span className="text-xs text-gray-400">{idx + 1} / {leads.length}</span>
         {saved && <span className="text-xs text-green-600 font-medium">Salvo ✓</span>}
         <div className="ml-auto flex gap-2">
@@ -293,7 +294,7 @@ export default function CallPage() {
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-6 py-8 space-y-5">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-5">
 
         {/* Company header */}
         <div className="bg-white rounded-2xl border border-gray-200 p-6">
@@ -316,502 +317,510 @@ export default function CallPage() {
           {lead.cnpj && <p className="text-xs text-gray-400 mt-2">CNPJ: {lead.cnpj}</p>}
         </div>
 
-        <LiveCall lead={lead} config={config} onSaved={u => setLead(prev => prev ? { ...prev, ...u } : prev)} />
-        <EmailPanel key={lead.emailRascunho?.atualizadoEm ?? 'sem'} lead={lead} followUpDias={config.followUpDias} onChange={u => setLead(prev => prev ? { ...prev, ...u } : prev)} />
+        <div className="grid gap-5 lg:grid-cols-3 items-start">
+          {/* Coluna principal: a conversa (ligação, e-mail, históricos, anotações) */}
+          <div className="lg:col-span-2 space-y-5 min-w-0">
+            <LiveCall lead={lead} config={config} onSaved={u => { atualizarLeadEmCache(id, u); setLead(prev => prev ? { ...prev, ...u } : prev); }} />
+            <EmailPanel key={lead.emailRascunho?.atualizadoEm ?? 'sem'} lead={lead} followUpDias={config.followUpDias} onChange={u => { atualizarLeadEmCache(id, u); setLead(prev => prev ? { ...prev, ...u } : prev); }} />
 
-        {/* FUNIL DE CLIENTES — fase de fechamento + reuniões (camada paralela ao kanban) */}
-        <div className="bg-white rounded-2xl border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
-            <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              🏆 Funil de clientes
-              <span className="ml-2 text-gray-300 normal-case font-normal tracking-normal">não mexe no kanban</span>
-            </h2>
-            {estaNoFunil(lead)
-              ? <Link href="/clientes" className="text-xs font-semibold text-indigo-600 hover:text-indigo-800">ver no quadro →</Link>
-              : null}
-          </div>
-          {estaNoFunil(lead) ? (
-            <FunilCliente lead={lead} onPatch={async u => { await patch(u); setLead(prev => prev ? { ...prev, ...u } : prev); }} />
-          ) : (
-            <div className="text-center py-4">
-              <p className="text-sm text-gray-500 mb-3">Este lead ainda não está no funil de fechamento.</p>
-              <button
-                onClick={async () => { const u = { etapaFunil: 'poc-marcada' as const }; await patch(u); setLead(prev => prev ? { ...prev, ...u } : prev); }}
-                className="text-sm font-semibold bg-gray-900 text-white rounded-lg px-4 py-2 hover:bg-gray-700"
-              >
-                🎯 Colocar no funil (POC marcada)
-              </button>
-              <p className="text-[11px] text-gray-400 mt-2">Isso só marca a fase de fechamento — o lead continua onde está no kanban.</p>
-            </div>
-          )}
-        </div>
+            {/* CALL LOG */}
+            <div className="bg-white rounded-2xl border border-gray-200 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  Histórico de ligações
+                  {chamadas.length > 0 && (
+                    <span className="ml-2 bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs font-normal">
+                      {chamadas.length}
+                    </span>
+                  )}
+                </h2>
+                {!registering && (
+                  <button
+                    onClick={() => setRegistering(true)}
+                    className="px-3 py-1.5 bg-gray-900 text-white text-xs font-medium rounded-lg hover:bg-gray-700 transition-colors"
+                  >
+                    + Registrar ligação
+                  </button>
+                )}
+              </div>
 
-        {/* CALL LOG */}
-        <div className="bg-white rounded-2xl border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              Histórico de ligações
+              {chamadas.length === 0 && !registering && (
+                <p className="text-sm text-gray-400 italic">Nenhuma ligação registrada ainda.</p>
+              )}
+
               {chamadas.length > 0 && (
-                <span className="ml-2 bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs font-normal">
-                  {chamadas.length}
-                </span>
-              )}
-            </h2>
-            {!registering && (
-              <button
-                onClick={() => setRegistering(true)}
-                className="px-3 py-1.5 bg-gray-900 text-white text-xs font-medium rounded-lg hover:bg-gray-700 transition-colors"
-              >
-                + Registrar ligação
-              </button>
-            )}
-          </div>
-
-          {chamadas.length === 0 && !registering && (
-            <p className="text-sm text-gray-400 italic">Nenhuma ligação registrada ainda.</p>
-          )}
-
-          {chamadas.length > 0 && (
-            <div className="space-y-2 mb-4">
-              {[...chamadas].reverse().map(c => (
-                <div key={c.id} className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className={`text-xs font-semibold px-2 py-0.5 rounded ${RESULTADO_COLORS[c.resultado]}`}>
-                        {c.resultado}
-                      </span>
-                      <span className="text-xs text-gray-400">{c.data} às {c.hora}</span>
+                <div className="space-y-2 mb-4">
+                  {[...chamadas].reverse().map(c => (
+                    <div key={c.id} className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className={`text-xs font-semibold px-2 py-0.5 rounded ${RESULTADO_COLORS[c.resultado]}`}>
+                            {c.resultado}
+                          </span>
+                          <span className="text-xs text-gray-400">{c.data} às {c.hora}</span>
+                        </div>
+                        {c.classificacao && (() => { const o = config.outcomes.find(x => x.id === c.classificacao); return o ? <span className="text-xs text-gray-500">{o.emoji} {o.label} → {o.proximaAcao}</span> : null; })()}
+                        {c.notas && <p className="text-sm text-gray-700 mt-1">{c.notas}</p>}
+                        {c.transcricao && (
+                          <details className="mt-1">
+                            <summary className="text-xs text-blue-600 cursor-pointer">ver transcrição</summary>
+                            <p className="text-xs text-gray-600 mt-1 whitespace-pre-line">{c.transcricao}</p>
+                          </details>
+                        )}
+                      </div>
                     </div>
-                    {c.classificacao && (() => { const o = config.outcomes.find(x => x.id === c.classificacao); return o ? <span className="text-xs text-gray-500">{o.emoji} {o.label} → {o.proximaAcao}</span> : null; })()}
-                    {c.notas && <p className="text-sm text-gray-700 mt-1">{c.notas}</p>}
-                    {c.transcricao && (
-                      <details className="mt-1">
-                        <summary className="text-xs text-blue-600 cursor-pointer">ver transcrição</summary>
-                        <p className="text-xs text-gray-600 mt-1 whitespace-pre-line">{c.transcricao}</p>
-                      </details>
-                    )}
+                  ))}
+                </div>
+              )}
+
+              {registering && (
+                <div className="border border-gray-200 rounded-xl p-4 space-y-3 bg-gray-50">
+                  <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide">O que aconteceu?</p>
+                  <div className="flex flex-wrap gap-2">
+                    {RESULTADOS.map(r => (
+                      <button
+                        key={r.value}
+                        onClick={() => setCallResultado(r.value)}
+                        className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors ${
+                          callResultado === r.value
+                            ? r.color + ' ring-2 ring-offset-1 ring-gray-400'
+                            : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-100'
+                        }`}
+                      >
+                        {r.label}
+                      </button>
+                    ))}
+                  </div>
+                  <textarea
+                    value={callNota}
+                    onChange={e => setCallNota(e.target.value)}
+                    placeholder="Nota rápida (opcional): o que foi dito, quem atendeu, próximo passo..."
+                    rows={2}
+                    className="w-full text-sm border border-gray-300 rounded-lg p-2.5 resize-none outline-none focus:border-blue-400"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={registrarChamada}
+                      disabled={!callResultado}
+                      className="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700 disabled:opacity-40 transition-colors"
+                    >
+                      Salvar
+                    </button>
+                    <button
+                      onClick={() => { setRegistering(false); setCallNota(''); setCallResultado(null); }}
+                      className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900"
+                    >
+                      Cancelar
+                    </button>
                   </div>
                 </div>
-              ))}
+              )}
             </div>
-          )}
 
-          {registering && (
-            <div className="border border-gray-200 rounded-xl p-4 space-y-3 bg-gray-50">
-              <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide">O que aconteceu?</p>
-              <div className="flex flex-wrap gap-2">
-                {RESULTADOS.map(r => (
+            {/* MESSAGES LOG */}
+            <div className="bg-white rounded-2xl border border-gray-200 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  Histórico de mensagens
+                  {mensagensList.length > 0 && (
+                    <span className="ml-2 bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs font-normal">
+                      {mensagensList.length}
+                    </span>
+                  )}
+                </h2>
+                {!registrandoMsg && (
                   <button
-                    key={r.value}
-                    onClick={() => setCallResultado(r.value)}
-                    className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors ${
-                      callResultado === r.value
-                        ? r.color + ' ring-2 ring-offset-1 ring-gray-400'
-                        : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-100'
-                    }`}
+                    onClick={() => setRegistrandoMsg(true)}
+                    className="px-3 py-1.5 bg-gray-900 text-white text-xs font-medium rounded-lg hover:bg-gray-700 transition-colors"
                   >
-                    {r.label}
+                    + Registrar mensagem
                   </button>
-                ))}
+                )}
               </div>
-              <textarea
-                value={callNota}
-                onChange={e => setCallNota(e.target.value)}
-                placeholder="Nota rápida (opcional): o que foi dito, quem atendeu, próximo passo..."
-                rows={2}
-                className="w-full text-sm border border-gray-300 rounded-lg p-2.5 resize-none outline-none focus:border-blue-400"
-              />
-              <div className="flex gap-2">
-                <button
-                  onClick={registrarChamada}
-                  disabled={!callResultado}
-                  className="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700 disabled:opacity-40 transition-colors"
-                >
-                  Salvar
-                </button>
-                <button
-                  onClick={() => { setRegistering(false); setCallNota(''); setCallResultado(null); }}
-                  className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900"
-                >
-                  Cancelar
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
 
-        {/* MESSAGES LOG */}
-        <div className="bg-white rounded-2xl border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              Histórico de mensagens
+              {mensagensList.length === 0 && !registrandoMsg && (
+                <p className="text-sm text-gray-400 italic">Nenhuma mensagem registrada ainda.</p>
+              )}
+
               {mensagensList.length > 0 && (
-                <span className="ml-2 bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs font-normal">
-                  {mensagensList.length}
-                </span>
-              )}
-            </h2>
-            {!registrandoMsg && (
-              <button
-                onClick={() => setRegistrandoMsg(true)}
-                className="px-3 py-1.5 bg-gray-900 text-white text-xs font-medium rounded-lg hover:bg-gray-700 transition-colors"
-              >
-                + Registrar mensagem
-              </button>
-            )}
-          </div>
-
-          {mensagensList.length === 0 && !registrandoMsg && (
-            <p className="text-sm text-gray-400 italic">Nenhuma mensagem registrada ainda.</p>
-          )}
-
-          {mensagensList.length > 0 && (
-            <div className="space-y-2 mb-4">
-              {[...mensagensList].reverse().map(m => (
-                <div key={m.id} className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-xs font-semibold px-2 py-0.5 rounded bg-green-100 text-green-800">
-                        {m.canal === 'WhatsApp' ? '💬' : m.canal === 'E-mail' ? '✉️' : m.canal === 'LinkedIn' ? '🔗' : '📩'} {m.canal}
-                      </span>
-                      <span className="text-xs text-gray-400">{m.data} às {m.hora}</span>
+                <div className="space-y-2 mb-4">
+                  {[...mensagensList].reverse().map(m => (
+                    <div key={m.id} className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-xs font-semibold px-2 py-0.5 rounded bg-green-100 text-green-800">
+                            {m.canal === 'WhatsApp' ? '💬' : m.canal === 'E-mail' ? '✉️' : m.canal === 'LinkedIn' ? '🔗' : '📩'} {m.canal}
+                          </span>
+                          <span className="text-xs text-gray-400">{m.data} às {m.hora}</span>
+                        </div>
+                        {m.notas && <p className="text-sm text-gray-700 mt-1">{m.notas}</p>}
+                      </div>
                     </div>
-                    {m.notas && <p className="text-sm text-gray-700 mt-1">{m.notas}</p>}
+                  ))}
+                </div>
+              )}
+
+              {registrandoMsg && (
+                <div className="border border-gray-200 rounded-xl p-4 space-y-3 bg-gray-50">
+                  <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Canal</p>
+                  <div className="flex flex-wrap gap-2">
+                    {(['WhatsApp', 'E-mail', 'LinkedIn', 'Outro'] as CanalMensagem[]).map(c => (
+                      <button
+                        key={c}
+                        onClick={() => setMsgCanal(c)}
+                        className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors ${
+                          msgCanal === c
+                            ? 'bg-gray-900 text-white border-gray-900'
+                            : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-100'
+                        }`}
+                      >
+                        {c === 'WhatsApp' ? '💬' : c === 'E-mail' ? '✉️' : c === 'LinkedIn' ? '🔗' : '📩'} {c}
+                      </button>
+                    ))}
+                  </div>
+                  <textarea
+                    value={msgNota}
+                    onChange={e => setMsgNota(e.target.value)}
+                    placeholder="O que foi enviado? (opcional)"
+                    rows={2}
+                    className="w-full text-sm border border-gray-300 rounded-lg p-2.5 resize-none outline-none focus:border-blue-400"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={registrarMensagem}
+                      className="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors"
+                    >
+                      Salvar
+                    </button>
+                    <button
+                      onClick={() => { setRegistrandoMsg(false); setMsgNota(''); }}
+                      className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900"
+                    >
+                      Cancelar
+                    </button>
                   </div>
                 </div>
-              ))}
+              )}
             </div>
-          )}
 
-          {registrandoMsg && (
-            <div className="border border-gray-200 rounded-xl p-4 space-y-3 bg-gray-50">
-              <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Canal</p>
+            {/* Notes */}
+            <div className="bg-white rounded-2xl border border-gray-200 p-6">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Observações gerais</h2>
+                <button
+                  onClick={saveNotes}
+                  disabled={saving}
+                  className="px-3 py-1 text-xs bg-gray-900 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors"
+                >
+                  {saving ? 'Salvando...' : 'Salvar'}
+                </button>
+              </div>
+              <textarea
+                value={notes}
+                onChange={e => setNotes(e.target.value)}
+                placeholder="Contexto da empresa, informações extras, objeções frequentes..."
+                rows={4}
+                className="w-full text-sm border border-gray-300 rounded-lg p-3 resize-none outline-none focus:border-blue-400 transition-colors"
+              />
+            </div>
+
+            {/* QUICK EDIT / CORRECTION */}
+            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+              <button
+                onClick={() => setEditOpen(!editOpen)}
+                className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Corrigir dados do lead</span>
+                  <span className="text-xs text-gray-400">— o agente errou algo? Edite aqui</span>
+                </div>
+                <span className="text-gray-400 text-sm">{editOpen ? '▲' : '▼'}</span>
+              </button>
+
+              {editOpen && (
+                <div className="px-6 pb-6 space-y-4 border-t border-gray-100 pt-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Nome da empresa</label>
+                      <input
+                        type="text"
+                        value={editFields.nome ?? ''}
+                        onChange={e => setEditFields(p => ({ ...p, nome: e.target.value }))}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Localização</label>
+                      <input
+                        type="text"
+                        value={editFields.localizacao ?? ''}
+                        onChange={e => setEditFields(p => ({ ...p, localizacao: e.target.value }))}
+                        placeholder="Cidade – UF"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Categoria</label>
+                    <select
+                      value={editFields.categoria ?? lead.categoria}
+                      onChange={e => setEditFields(p => ({ ...p, categoria: e.target.value as Categoria }))}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      {CATEGORIAS.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Contato / canal de entrada</label>
+                    <input
+                      type="text"
+                      value={editFields.contato ?? ''}
+                      onChange={e => setEditFields(p => ({ ...p, contato: e.target.value }))}
+                      placeholder="site, LinkedIn, telefone, e-mail..."
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Telefone</label>
+                      <input
+                        type="text"
+                        value={editFields.telefone ?? lead.telefone ?? ''}
+                        onChange={e => setEditFields(p => ({ ...p, telefone: e.target.value }))}
+                        placeholder="(41) 3333-4444"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Site</label>
+                      <input
+                        type="text"
+                        value={editFields.site ?? lead.site ?? ''}
+                        onChange={e => setEditFields(p => ({ ...p, site: e.target.value }))}
+                        placeholder="https://www.empresa.com.br"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">O que fazem (perfil)</label>
+                    <textarea
+                      value={editFields.perfil ?? ''}
+                      onChange={e => setEditFields(p => ({ ...p, perfil: e.target.value }))}
+                      rows={2}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Por que faz sentido</label>
+                    <textarea
+                      value={editFields.porqueFazSentido ?? ''}
+                      onChange={e => setEditFields(p => ({ ...p, porqueFazSentido: e.target.value }))}
+                      rows={2}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Próximo passo</label>
+                    <input
+                      type="text"
+                      value={editFields.proximoPasso ?? ''}
+                      onChange={e => setEditFields(p => ({ ...p, proximoPasso: e.target.value }))}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div className="flex gap-3 pt-1">
+                    <button
+                      onClick={saveEdit}
+                      disabled={editSaving}
+                      className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg disabled:opacity-50 transition-colors"
+                    >
+                      {editSaving ? 'Salvando...' : 'Salvar correções'}
+                    </button>
+                    <button onClick={() => setEditOpen(false)} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900">
+                      Cancelar
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Coluna lateral: quem é, como falar, em que pé está */}
+          <div className="space-y-5 min-w-0">
+            {/* Contact */}
+            <div className="bg-white rounded-2xl border border-gray-200 p-6">
+              <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Contato / canal de entrada</h2>
+              <p className="text-gray-800 text-sm leading-relaxed whitespace-pre-line">{lead.contato || 'Não encontrado'}</p>
+              <div className="flex flex-col gap-2 mt-3 pt-3 border-t border-gray-100">
+                {formatPhone(lead.telefone) ? (
+                  <CopyLine icon="📞" value={formatPhone(lead.telefone)} />
+                ) : (
+                  <span className="flex items-center gap-2 text-sm text-amber-600">
+                    <span className="text-base">📞</span>
+                    <span className="italic">Telefone — capturar manualmente</span>
+                  </span>
+                )}
+                {lead.site ? (
+                  <CopyLine icon="🌐" value={normalizeSite(lead.site)} />
+                ) : (
+                  <span className="flex items-center gap-2 text-sm text-amber-600">
+                    <span className="text-base">🌐</span>
+                    <span className="italic">Site — capturar manualmente</span>
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Emails */}
+            <div className="bg-white rounded-2xl border border-gray-200 p-6">
+              <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                E-mails
+                {emailsList.length > 0 && (
+                  <span className="ml-2 bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs font-normal">{emailsList.length}</span>
+                )}
+              </h2>
+
+              {emailsList.length > 0 && (
+                <div className="space-y-2 mb-3">
+                  {emailsList.map((e, i) => (
+                    <div key={i} className="flex items-center gap-2 p-2.5 rounded-xl bg-gray-50 border border-gray-100">
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded bg-blue-50 text-blue-700 shrink-0">{e.classificacao}</span>
+                      <span className="text-sm text-gray-800 flex-1 break-all select-all">{e.endereco}</span>
+                      <button
+                        onClick={() => { navigator.clipboard?.writeText(e.endereco); }}
+                        className="shrink-0 text-xs px-2 py-0.5 rounded bg-gray-100 hover:bg-gray-200 text-gray-500"
+                      >
+                        copiar
+                      </button>
+                      <button
+                        onClick={() => removeEmail(i)}
+                        className="shrink-0 text-xs px-2 py-0.5 rounded bg-red-50 hover:bg-red-100 text-red-500"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex gap-2 items-end">
+                <div className="flex-1">
+                  <input
+                    type="email"
+                    value={newEmailAddr}
+                    onChange={e => setNewEmailAddr(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && addEmail()}
+                    placeholder="novo@email.com.br"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400"
+                  />
+                </div>
+                <select
+                  value={newEmailTipo}
+                  onChange={e => setNewEmailTipo(e.target.value as TipoEmail)}
+                  className="border border-gray-300 rounded-lg px-2 py-2 text-sm outline-none focus:border-blue-400 bg-white"
+                >
+                  {TIPOS_EMAIL.map(t => <option key={t} value={t}>{t}</option>)}
+                </select>
+                <button
+                  onClick={addEmail}
+                  disabled={!newEmailAddr.trim() || emailSaving}
+                  className="px-3 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700 disabled:opacity-40 transition-colors"
+                >
+                  {emailSaving ? '...' : '+ Add'}
+                </button>
+              </div>
+            </div>
+
+            {/* Status actions */}
+            <div className="bg-white rounded-2xl border border-gray-200 p-6">
+              <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Status comercial</h2>
               <div className="flex flex-wrap gap-2">
-                {(['WhatsApp', 'E-mail', 'LinkedIn', 'Outro'] as CanalMensagem[]).map(c => (
+                {STATUS_ACTIONS.map(a => (
                   <button
-                    key={c}
-                    onClick={() => setMsgCanal(c)}
-                    className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors ${
-                      msgCanal === c
-                        ? 'bg-gray-900 text-white border-gray-900'
-                        : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-100'
-                    }`}
+                    key={a.status}
+                    onClick={() => updateStatus(a.status)}
+                    disabled={lead.status === a.status}
+                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-40 ${a.color}`}
                   >
-                    {c === 'WhatsApp' ? '💬' : c === 'E-mail' ? '✉️' : c === 'LinkedIn' ? '🔗' : '📩'} {c}
+                    {a.label}
                   </button>
                 ))}
               </div>
-              <textarea
-                value={msgNota}
-                onChange={e => setMsgNota(e.target.value)}
-                placeholder="O que foi enviado? (opcional)"
-                rows={2}
-                className="w-full text-sm border border-gray-300 rounded-lg p-2.5 resize-none outline-none focus:border-blue-400"
-              />
-              <div className="flex gap-2">
-                <button
-                  onClick={registrarMensagem}
-                  className="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors"
-                >
-                  Salvar
-                </button>
-                <button
-                  onClick={() => { setRegistrandoMsg(false); setMsgNota(''); }}
-                  className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900"
-                >
-                  Cancelar
-                </button>
-              </div>
+              <p className="text-xs text-gray-400 mt-3">
+                Status atual: <strong className="text-gray-600">{lead.status}</strong>
+                {lead.ultimaInteracao && ` · Última interação: ${lead.ultimaInteracao}`}
+              </p>
             </div>
-          )}
-        </div>
 
-        {/* Contact */}
-        <div className="bg-white rounded-2xl border border-gray-200 p-6">
-          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Contato / canal de entrada</h2>
-          <p className="text-gray-800 text-sm leading-relaxed whitespace-pre-line">{lead.contato || 'Não encontrado'}</p>
-          <div className="flex flex-col gap-2 mt-3 pt-3 border-t border-gray-100">
-            {formatPhone(lead.telefone) ? (
-              <CopyLine icon="📞" value={formatPhone(lead.telefone)} />
-            ) : (
-              <span className="flex items-center gap-2 text-sm text-amber-600">
-                <span className="text-base">📞</span>
-                <span className="italic">Telefone — capturar manualmente</span>
-              </span>
-            )}
-            {lead.site ? (
-              <CopyLine icon="🌐" value={normalizeSite(lead.site)} />
-            ) : (
-              <span className="flex items-center gap-2 text-sm text-amber-600">
-                <span className="text-base">🌐</span>
-                <span className="italic">Site — capturar manualmente</span>
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Emails */}
-        <div className="bg-white rounded-2xl border border-gray-200 p-6">
-          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
-            E-mails
-            {emailsList.length > 0 && (
-              <span className="ml-2 bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs font-normal">{emailsList.length}</span>
-            )}
-          </h2>
-
-          {emailsList.length > 0 && (
-            <div className="space-y-2 mb-3">
-              {emailsList.map((e, i) => (
-                <div key={i} className="flex items-center gap-2 p-2.5 rounded-xl bg-gray-50 border border-gray-100">
-                  <span className="text-xs font-semibold px-2 py-0.5 rounded bg-blue-50 text-blue-700 shrink-0">{e.classificacao}</span>
-                  <span className="text-sm text-gray-800 flex-1 break-all select-all">{e.endereco}</span>
+            {/* FUNIL DE CLIENTES — fase de fechamento + reuniões (camada paralela ao kanban) */}
+            <div className="bg-white rounded-2xl border border-gray-200 p-6">
+              <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
+                <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  🏆 Funil de clientes
+                  <span className="ml-2 text-gray-300 normal-case font-normal tracking-normal">não mexe no kanban</span>
+                </h2>
+                {estaNoFunil(lead)
+                  ? <Link href="/clientes" className="text-xs font-semibold text-indigo-600 hover:text-indigo-800">ver no quadro →</Link>
+                  : null}
+              </div>
+              {estaNoFunil(lead) ? (
+                <FunilCliente lead={lead} onPatch={async u => { await patch(u); setLead(prev => prev ? { ...prev, ...u } : prev); }} />
+              ) : (
+                <div className="text-center py-4">
+                  <p className="text-sm text-gray-500 mb-3">Este lead ainda não está no funil de fechamento.</p>
                   <button
-                    onClick={() => { navigator.clipboard?.writeText(e.endereco); }}
-                    className="shrink-0 text-xs px-2 py-0.5 rounded bg-gray-100 hover:bg-gray-200 text-gray-500"
+                    onClick={async () => { const u = { etapaFunil: 'poc-marcada' as const }; await patch(u); setLead(prev => prev ? { ...prev, ...u } : prev); }}
+                    className="text-sm font-semibold bg-gray-900 text-white rounded-lg px-4 py-2 hover:bg-gray-700"
                   >
-                    copiar
+                    🎯 Colocar no funil (POC marcada)
                   </button>
-                  <button
-                    onClick={() => removeEmail(i)}
-                    className="shrink-0 text-xs px-2 py-0.5 rounded bg-red-50 hover:bg-red-100 text-red-500"
-                  >
-                    ✕
-                  </button>
+                  <p className="text-[11px] text-gray-400 mt-2">Isso só marca a fase de fechamento — o lead continua onde está no kanban.</p>
                 </div>
-              ))}
+              )}
             </div>
-          )}
 
-          <div className="flex gap-2 items-end">
-            <div className="flex-1">
-              <input
-                type="email"
-                value={newEmailAddr}
-                onChange={e => setNewEmailAddr(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && addEmail()}
-                placeholder="novo@email.com.br"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-400"
-              />
-            </div>
-            <select
-              value={newEmailTipo}
-              onChange={e => setNewEmailTipo(e.target.value as TipoEmail)}
-              className="border border-gray-300 rounded-lg px-2 py-2 text-sm outline-none focus:border-blue-400 bg-white"
-            >
-              {TIPOS_EMAIL.map(t => <option key={t} value={t}>{t}</option>)}
-            </select>
-            <button
-              onClick={addEmail}
-              disabled={!newEmailAddr.trim() || emailSaving}
-              className="px-3 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700 disabled:opacity-40 transition-colors"
-            >
-              {emailSaving ? '...' : '+ Add'}
-            </button>
-          </div>
-        </div>
-
-        {/* Sobre a empresa */}
-        <div className="bg-white rounded-2xl border border-gray-200 p-6 space-y-4">
-          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Sobre a empresa</h2>
-          <div>
-            <p className="text-xs font-medium text-gray-400 mb-0.5">O que fazem</p>
-            <p className="text-gray-800 text-sm leading-relaxed">{lead.perfil || '—'}</p>
-          </div>
-          <div>
-            <p className="text-xs font-medium text-blue-500 mb-0.5">Por que faz sentido</p>
-            <p className="text-gray-800 text-sm leading-relaxed">{lead.porqueFazSentido || '—'}</p>
-          </div>
-          {lead.proximoPasso && (
-            <div className="bg-amber-50 border border-amber-100 rounded-xl p-3">
-              <p className="text-xs font-medium text-amber-600 mb-0.5">Próximo passo sugerido</p>
-              <p className="text-gray-800 text-sm leading-relaxed">{lead.proximoPasso}</p>
-            </div>
-          )}
-          {/^https?:\/\//i.test(lead.fonte) && (
-            <a href={lead.fonte} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline block truncate">
-              Fonte: {lead.fonte}
-            </a>
-          )}
-          {(() => {
-            const r = ROTEIROS.find(x => x.categoria === lead.categoria);
-            if (!r) return null;
-            return (
-              <Link href={`/roteiros?cat=${r.id}`} className="flex items-center justify-between bg-indigo-50 border border-indigo-200 rounded-xl p-3 hover:bg-indigo-100 transition-colors">
-                <span className="text-sm font-semibold text-indigo-800">Roteiro de abordagem: {r.categoria}</span>
-                <span className="text-indigo-400">→</span>
-              </Link>
-            );
-          })()}
-        </div>
-
-        {/* Notes */}
-        <div className="bg-white rounded-2xl border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Observações gerais</h2>
-            <button
-              onClick={saveNotes}
-              disabled={saving}
-              className="px-3 py-1 text-xs bg-gray-900 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors"
-            >
-              {saving ? 'Salvando...' : 'Salvar'}
-            </button>
-          </div>
-          <textarea
-            value={notes}
-            onChange={e => setNotes(e.target.value)}
-            placeholder="Contexto da empresa, informações extras, objeções frequentes..."
-            rows={4}
-            className="w-full text-sm border border-gray-300 rounded-lg p-3 resize-none outline-none focus:border-blue-400 transition-colors"
-          />
-        </div>
-
-        {/* Status actions */}
-        <div className="bg-white rounded-2xl border border-gray-200 p-6">
-          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Status comercial</h2>
-          <div className="flex flex-wrap gap-2">
-            {STATUS_ACTIONS.map(a => (
-              <button
-                key={a.status}
-                onClick={() => updateStatus(a.status)}
-                disabled={lead.status === a.status}
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-40 ${a.color}`}
-              >
-                {a.label}
-              </button>
-            ))}
-          </div>
-          <p className="text-xs text-gray-400 mt-3">
-            Status atual: <strong className="text-gray-600">{lead.status}</strong>
-            {lead.ultimaInteracao && ` · Última interação: ${lead.ultimaInteracao}`}
-          </p>
-        </div>
-
-        {/* QUICK EDIT / CORRECTION */}
-        <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
-          <button
-            onClick={() => setEditOpen(!editOpen)}
-            className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors"
-          >
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Corrigir dados do lead</span>
-              <span className="text-xs text-gray-400">— o agente errou algo? Edite aqui</span>
-            </div>
-            <span className="text-gray-400 text-sm">{editOpen ? '▲' : '▼'}</span>
-          </button>
-
-          {editOpen && (
-            <div className="px-6 pb-6 space-y-4 border-t border-gray-100 pt-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Nome da empresa</label>
-                  <input
-                    type="text"
-                    value={editFields.nome ?? ''}
-                    onChange={e => setEditFields(p => ({ ...p, nome: e.target.value }))}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+            {/* Sobre a empresa */}
+            <div className="bg-white rounded-2xl border border-gray-200 p-6 space-y-4">
+              <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Sobre a empresa</h2>
+              <div>
+                <p className="text-xs font-medium text-gray-400 mb-0.5">O que fazem</p>
+                <p className="text-gray-800 text-sm leading-relaxed">{lead.perfil || '—'}</p>
+              </div>
+              <div>
+                <p className="text-xs font-medium text-blue-500 mb-0.5">Por que faz sentido</p>
+                <p className="text-gray-800 text-sm leading-relaxed">{lead.porqueFazSentido || '—'}</p>
+              </div>
+              {lead.proximoPasso && (
+                <div className="bg-amber-50 border border-amber-100 rounded-xl p-3">
+                  <p className="text-xs font-medium text-amber-600 mb-0.5">Próximo passo sugerido</p>
+                  <p className="text-gray-800 text-sm leading-relaxed">{lead.proximoPasso}</p>
                 </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Localização</label>
-                  <input
-                    type="text"
-                    value={editFields.localizacao ?? ''}
-                    onChange={e => setEditFields(p => ({ ...p, localizacao: e.target.value }))}
-                    placeholder="Cidade – UF"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Categoria</label>
-                <select
-                  value={editFields.categoria ?? lead.categoria}
-                  onChange={e => setEditFields(p => ({ ...p, categoria: e.target.value as Categoria }))}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  {CATEGORIAS.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Contato / canal de entrada</label>
-                <input
-                  type="text"
-                  value={editFields.contato ?? ''}
-                  onChange={e => setEditFields(p => ({ ...p, contato: e.target.value }))}
-                  placeholder="site, LinkedIn, telefone, e-mail..."
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Telefone</label>
-                  <input
-                    type="text"
-                    value={editFields.telefone ?? lead.telefone ?? ''}
-                    onChange={e => setEditFields(p => ({ ...p, telefone: e.target.value }))}
-                    placeholder="(41) 3333-4444"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Site</label>
-                  <input
-                    type="text"
-                    value={editFields.site ?? lead.site ?? ''}
-                    onChange={e => setEditFields(p => ({ ...p, site: e.target.value }))}
-                    placeholder="https://www.empresa.com.br"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">O que fazem (perfil)</label>
-                <textarea
-                  value={editFields.perfil ?? ''}
-                  onChange={e => setEditFields(p => ({ ...p, perfil: e.target.value }))}
-                  rows={2}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Por que faz sentido</label>
-                <textarea
-                  value={editFields.porqueFazSentido ?? ''}
-                  onChange={e => setEditFields(p => ({ ...p, porqueFazSentido: e.target.value }))}
-                  rows={2}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Próximo passo</label>
-                <input
-                  type="text"
-                  value={editFields.proximoPasso ?? ''}
-                  onChange={e => setEditFields(p => ({ ...p, proximoPasso: e.target.value }))}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <div className="flex gap-3 pt-1">
-                <button
-                  onClick={saveEdit}
-                  disabled={editSaving}
-                  className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg disabled:opacity-50 transition-colors"
-                >
-                  {editSaving ? 'Salvando...' : 'Salvar correções'}
-                </button>
-                <button onClick={() => setEditOpen(false)} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900">
-                  Cancelar
-                </button>
-              </div>
+              )}
+              {/^https?:\/\//i.test(lead.fonte) && (
+                <a href={lead.fonte} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline block truncate">
+                  Fonte: {lead.fonte}
+                </a>
+              )}
+              {(() => {
+                const r = ROTEIROS.find(x => x.categoria === lead.categoria);
+                if (!r) return null;
+                return (
+                  <Link href={`/roteiros?cat=${r.id}`} className="flex items-center justify-between bg-indigo-50 border border-indigo-200 rounded-xl p-3 hover:bg-indigo-100 transition-colors">
+                    <span className="text-sm font-semibold text-indigo-800">Roteiro de abordagem: {r.categoria}</span>
+                    <span className="text-indigo-400">→</span>
+                  </Link>
+                );
+              })()}
             </div>
-          )}
+          </div>
         </div>
 
       </div>

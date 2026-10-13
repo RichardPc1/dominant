@@ -8,6 +8,7 @@ import {
 } from '@/lib/funil';
 import FunilCliente from '../components/FunilCliente';
 import { CategoriaBadge } from '../components/Badges';
+import { guardarLeadsEmCache, leadsEmCache } from '@/lib/leads-cache';
 
 function CopyBtn({ value }: { value: string }) {
   const [ok, setOk] = useState(false);
@@ -118,7 +119,7 @@ function ColunaFunil({
         </div>
         <p className="text-[11px] text-white/80 leading-snug mt-0.5">{etapa.dica}</p>
       </div>
-      <div className="p-2 space-y-2 min-h-[6rem] lg:max-h-[calc(100vh-13rem)] lg:overflow-y-auto">
+      <div className="p-2 space-y-2 min-h-[6rem] lg:max-h-[calc(100vh-16rem)] lg:overflow-y-auto">
         {leads.length === 0 && <p className="text-xs text-gray-300 text-center py-6">vazio</p>}
         {leads.map(l => (
           <CardFunil key={l.id} lead={l} onAbrir={() => onAbrir(l)} onMover={e => onMover(l.id, e)} />
@@ -176,8 +177,8 @@ function Modal({ lead, onClose, onPatch, onSair }: {
 }
 
 export default function ClientesPage() {
-  const [leads, setLeads] = useState<Lead[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [leads, setLeads] = useState<Lead[]>(() => leadsEmCache() ?? []);
+  const [loading, setLoading] = useState(() => !leadsEmCache());
   const [over, setOver] = useState<string | null>(null);
   const [abertoId, setAbertoId] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
@@ -186,7 +187,7 @@ export default function ClientesPage() {
   const carregar = useCallback(async () => {
     try {
       const d: Lead[] = await fetch('/api/leads', { cache: 'no-store' }).then(r => r.json());
-      if (Array.isArray(d)) setLeads(d);
+      if (Array.isArray(d)) { setLeads(d); guardarLeadsEmCache(d); }
     } catch {}
     setLoading(false);
   }, []);
@@ -197,7 +198,11 @@ export default function ClientesPage() {
   }, [carregar]);
 
   async function patch(id: string, updates: Partial<Lead>) {
-    setLeads(prev => prev.map(l => (l.id === id ? { ...l, ...updates } : l)));
+    setLeads(prev => {
+      const novo = prev.map(l => (l.id === id ? { ...l, ...updates } : l));
+      guardarLeadsEmCache(novo);
+      return novo;
+    });
     await fetch(`/api/leads/${id}`, {
       method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updates),
     });
@@ -231,12 +236,10 @@ export default function ClientesPage() {
   const aberto = leads.find(l => l.id === abertoId) ?? null;
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-[calc(100vh-3rem)] bg-gray-50 flex flex-col">
       <header className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3">
         <div className="flex items-center gap-3 flex-wrap">
-          <Link href="/" className="text-sm text-gray-500 hover:text-gray-900">← Lista</Link>
-          <Link href="/kanban" className="text-sm text-gray-500 hover:text-gray-900">Kanban</Link>
-          <h1 className="text-lg font-bold text-gray-900">🏆 Clientes</h1>
+          <h1 className="text-lg font-bold text-gray-900">Clientes</h1>
           <span className="text-xs text-gray-400 hidden sm:inline">funil de fechamento · pós-prospecção</span>
 
           <div className="flex gap-1.5 text-xs font-semibold ml-auto flex-wrap">
