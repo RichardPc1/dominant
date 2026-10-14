@@ -101,14 +101,14 @@ export type EtapaFunil =
   | 'cliente'           // fechou — virou cliente
   | 'perdido';          // não fechou
 
-export type TipoReuniao = 'POC' | 'Proposta' | 'Follow-up' | 'Outra';
+export type TipoReuniao = 'Apresentação' | 'POC' | 'Proposta' | 'Follow-up' | 'Outra';
 
 export type StatusReuniao = 'Agendada' | 'Realizada' | 'Não compareceu' | 'Remarcada' | 'Cancelada';
 
 export interface Reuniao {
   id: string;
   tipo: TipoReuniao;
-  /** Data da reunião (YYYY-MM-DD). */
+  /** Data da reunião (YYYY-MM-DD). Vazia = combinada, mas com data ainda a confirmar. */
   data: string;
   /** Hora: "14:30" ou texto livre. */
   hora?: string;

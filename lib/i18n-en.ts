@@ -240,6 +240,8 @@ export const EN: Record<string, string> = {
   'Salvar reunião': 'Save meeting',
   'Fase atual:': 'Current stage:',
   '· isto não mexe no kanban': '· this does not touch the kanban',
+  'Apresentação': 'Intro',
+  'data a confirmar': 'date to be confirmed',
   'POC': 'POC',
   'Proposta': 'Proposal',
   'Follow-up': 'Follow-up',

@@ -28,7 +28,7 @@ export default function FunilCliente({
   const atual = lead.etapaFunil;
 
   const [aberto, setAberto] = useState(false);
-  const [tipo, setTipo] = useState<TipoReuniao>('POC');
+  const [tipo, setTipo] = useState<TipoReuniao>('Apresentação');
   const [data, setData] = useState(hojeISO());
   const [hora, setHora] = useState('');
   const [status, setStatus] = useState<StatusReuniao>('Agendada');
@@ -46,7 +46,7 @@ export default function FunilCliente({
       registradaEm: new Date().toISOString(),
     };
     onPatch({ reunioes: [...reunioes, r] });
-    setAberto(false); setNota(''); setHora(''); setStatus('Agendada'); setTipo('POC'); setData(hojeISO());
+    setAberto(false); setNota(''); setHora(''); setStatus('Agendada'); setTipo('Apresentação'); setData(hojeISO());
   }
 
   function mudarStatusReuniao(id: string, novo: StatusReuniao) {
@@ -100,7 +100,7 @@ export default function FunilCliente({
             <div key={r.id} className="rounded-xl border border-gray-100 bg-gray-50 p-3">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-xs font-semibold text-gray-700">{TIPO_REUNIAO_ICONE[r.tipo]} {t(r.tipo)}</span>
-                <span className="text-xs text-gray-400">{r.data.split('-').reverse().join('/')}{r.hora ? ` · ${r.hora}` : ''}</span>
+                <span className="text-xs text-gray-400">{r.data ? r.data.split('-').reverse().join('/') : t('data a confirmar')}{r.hora ? ` · ${r.hora}` : ''}</span>
                 <select
                   value={r.status}
                   onChange={e => mudarStatusReuniao(r.id, e.target.value as StatusReuniao)}

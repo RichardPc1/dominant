@@ -64,12 +64,12 @@ export function patchSairDoFunil(): Partial<Lead> {
 
 // ---- Reuniões ---------------------------------------------------------------
 
-export const TIPOS_REUNIAO: TipoReuniao[] = ['POC', 'Proposta', 'Follow-up', 'Outra'];
+export const TIPOS_REUNIAO: TipoReuniao[] = ['Apresentação', 'POC', 'Proposta', 'Follow-up', 'Outra'];
 
 export const STATUS_REUNIAO: StatusReuniao[] = ['Agendada', 'Realizada', 'Não compareceu', 'Remarcada', 'Cancelada'];
 
 export const TIPO_REUNIAO_ICONE: Record<TipoReuniao, string> = {
-  'POC': '🧪', 'Proposta': '📋', 'Follow-up': '🔁', 'Outra': '📎',
+  'Apresentação': '👋', 'POC': '🧪', 'Proposta': '📋', 'Follow-up': '🔁', 'Outra': '📎',
 };
 
 export const STATUS_REUNIAO_COR: Record<StatusReuniao, string> = {
@@ -97,7 +97,7 @@ export function contarReunioes(lead: Lead): ContagemReunioes {
   };
 }
 
-const chave = (r: Reuniao) => `${r.data}T${(r.hora && /^\d{1,2}:\d{2}$/.test(r.hora) ? r.hora.padStart(5, '0') : '99:99')}`;
+const chave = (r: Reuniao) => `${r.data || '9999-99-99'}T${(r.hora && /^\d{1,2}:\d{2}$/.test(r.hora) ? r.hora.padStart(5, '0') : '99:99')}`;
 
 /** Reunião futura mais próxima (agendada/remarcada). */
 export function proximaReuniao(lead: Lead): Reuniao | undefined {
