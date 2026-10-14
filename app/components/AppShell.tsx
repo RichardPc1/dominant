@@ -1,4 +1,5 @@
 'use client';
+import { IDIOMA_KEY, Idioma, definirIdioma, t } from '@/lib/i18n';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -30,6 +31,8 @@ const GRUPOS: { titulo: string; itens: Item[] }[] = [
 ];
 
 const MENU_KEY = 'dominant-menu';
+const TEMA_KEY = 'dominant-tema';
+type Tema = 'claro' | 'escuro';
 type Modo = 'expandido' | 'recolhido' | 'oculto';
 
 /** Eventos globais: qualquer tela pode pedir a rodada ou avisar que a lista de leads mudou. */
@@ -91,15 +94,15 @@ function BuscaGlobal() {
           else if (e.key === 'Enter' && achados[sel]) ir(achados[sel]);
           else if (e.key === 'Escape') { setAberto(false); inputRef.current?.blur(); }
         }}
-        placeholder="Buscar empresa, cidade ou telefone…"
+        placeholder={t("Buscar empresa, cidade ou telefone…")}
         className="w-full h-10 pl-9 pr-16 rounded-xl bg-slate-100 border border-transparent text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-100 transition"
       />
-      <kbd className="hidden md:block absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-slate-400 border border-slate-300 rounded px-1.5 py-0.5 bg-white">Ctrl K</kbd>
+      <kbd className="hidden md:block absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-slate-400 border border-slate-300 rounded px-1.5 py-0.5 bg-white">{t("Ctrl K")}</kbd>
 
       {aberto && q.trim().length >= 2 && (
         <div className="absolute z-50 mt-2 w-full rounded-2xl bg-white border border-slate-200 shadow-xl overflow-hidden">
           {achados.length === 0 ? (
-            <p className="px-4 py-3 text-sm text-slate-400">Nenhuma empresa encontrada.</p>
+            <p className="px-4 py-3 text-sm text-slate-400">{t("Nenhuma empresa encontrada.")}</p>
           ) : achados.map((l, i) => (
             <button
               key={l.id}
@@ -112,7 +115,7 @@ function BuscaGlobal() {
                 <span className="block text-sm font-medium text-slate-900 truncate">{l.nome}</span>
                 <span className="block text-xs text-slate-400 truncate">{[l.categoria, l.localizacao].filter(Boolean).join(' · ')}</span>
               </span>
-              <span className="text-xs text-slate-400 shrink-0">{l.status}</span>
+              <span className="text-xs text-slate-400 shrink-0">{t(l.status)}</span>
             </button>
           ))}
         </div>
@@ -132,7 +135,7 @@ function Menu({ recolhido, pathname, onNavegar }: { recolhido: boolean; pathname
         <div key={g.titulo}>
           {recolhido
             ? <div className="mx-2 mb-2 border-t border-white/10" />
-            : <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">{g.titulo}</p>}
+            : <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">{t(g.titulo)}</p>}
           <ul className="space-y-1">
             {g.itens.map(i => {
               const on = ativo(i.href);
@@ -141,7 +144,7 @@ function Menu({ recolhido, pathname, onNavegar }: { recolhido: boolean; pathname
                   <Link
                     href={i.href}
                     onClick={onNavegar}
-                    title={recolhido ? `${i.label} — ${i.dica}` : i.dica}
+                    title={recolhido ? `${t(i.label)} — ${t(i.dica)}` : t(i.dica)}
                     aria-current={on ? 'page' : undefined}
                     className={`group relative flex items-center gap-3 rounded-xl text-sm transition-colors ${recolhido ? 'justify-center h-11' : 'px-3 h-10'} ${
                       on
@@ -150,7 +153,7 @@ function Menu({ recolhido, pathname, onNavegar }: { recolhido: boolean; pathname
                     }`}
                   >
                     <Icon name={i.icone} className="w-[18px] h-[18px]" />
-                    {!recolhido && <span className="truncate">{i.label}</span>}
+                    {!recolhido && <span className="truncate">{t(i.label)}</span>}
                   </Link>
                 </li>
               );
@@ -168,8 +171,8 @@ function Marca({ recolhido }: { recolhido: boolean }) {
       <span className="grid place-items-center w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-black shadow-lg shadow-blue-900/50">D</span>
       {!recolhido && (
         <span className="leading-tight">
-          <span className="block text-[15px] font-bold text-white tracking-tight">Dominant</span>
-          <span className="block text-[11px] text-slate-400">CRM de prospecção</span>
+          <span className="block text-[15px] font-bold text-white tracking-tight">{t("Dominant")}</span>
+          <span className="block text-[11px] text-slate-400">{t("CRM de prospecção")}</span>
         </span>
       )}
     </Link>
@@ -183,6 +186,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const [gaveta, setGaveta] = useState(false);
   const [rodada, setRodada] = useState(false);
   const [lido, setLido] = useState(false);
+  const [tema, setTema] = useState<Tema>('claro');
+  const [idioma, setIdioma] = useState<Idioma>('pt');
 
   // preferência do menu sobrevive ao F5
   useEffect(() => {
@@ -191,6 +196,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       const m = localStorage.getItem(MENU_KEY);
       if (m === 'expandido' || m === 'recolhido' || m === 'oculto') setModo(m);
       else if (window.innerWidth < 1536) setModo('recolhido');
+      // o tema já foi aplicado no <html> pelo script do layout (sem piscar); aqui só espelhamos
+      if (document.documentElement.classList.contains('dark')) setTema('escuro');
+      if (localStorage.getItem(IDIOMA_KEY) === 'en') { definirIdioma('en'); setIdioma('en'); document.documentElement.lang = 'en'; }
     } catch {}
     setLido(true);
     /* eslint-enable react-hooks/set-state-in-effect */
@@ -205,6 +213,22 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     window.addEventListener(EVENTO_RODADA, abrir);
     return () => window.removeEventListener(EVENTO_RODADA, abrir);
   }, []);
+
+  function trocarTema() {
+    const novo: Tema = tema === 'escuro' ? 'claro' : 'escuro';
+    document.documentElement.classList.toggle('dark', novo === 'escuro');
+    try { localStorage.setItem(TEMA_KEY, novo); } catch {}
+    setTema(novo);
+  }
+
+  // Trocar o idioma remonta as telas (a <main> usa o idioma como key), então tudo é redesenhado traduzido.
+  function trocarIdioma() {
+    const novo: Idioma = idioma === 'pt' ? 'en' : 'pt';
+    definirIdioma(novo);
+    document.documentElement.lang = novo === 'en' ? 'en' : 'pt-BR';
+    try { localStorage.setItem(IDIOMA_KEY, novo); } catch {}
+    setIdioma(novo);
+  }
 
   if (pathname.startsWith('/login')) return <>{children}</>;
 
@@ -221,17 +245,17 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     <div className="flex h-dvh overflow-hidden bg-[var(--fundo)]">
       {/* Menu lateral — computador */}
       {!oculto && (
-        <aside className={`hidden lg:flex flex-col shrink-0 bg-slate-950 transition-[width] duration-200 ${recolhido ? 'w-[4.5rem]' : 'w-60'}`}>
+        <aside className={`tema-fixo hidden lg:flex flex-col shrink-0 bg-slate-950 transition-[width] duration-200 ${recolhido ? 'w-[4.5rem]' : 'w-60'}`}>
           <Marca recolhido={recolhido} />
           <Menu recolhido={recolhido} pathname={pathname} />
           <div className="p-3 border-t border-white/10">
             <button
               onClick={() => setModo(recolhido ? 'expandido' : 'recolhido')}
-              title={recolhido ? 'Expandir menu' : 'Recolher menu'}
+              title={recolhido ? t("Expandir menu") : t("Recolher menu")}
               className={`w-full flex items-center gap-3 h-10 rounded-xl text-sm text-slate-400 hover:bg-white/10 hover:text-white transition-colors ${recolhido ? 'justify-center' : 'px-3'}`}
             >
               <Icon name={recolhido ? 'expandir' : 'recolher'} className="w-[18px] h-[18px]" />
-              {!recolhido && <span>Recolher menu</span>}
+              {!recolhido && <span>{t("Recolher menu")}</span>}
             </button>
           </div>
         </aside>
@@ -240,8 +264,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       {/* Menu lateral — celular (gaveta) */}
       {gaveta && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
-          <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onClick={() => setGaveta(false)} />
-          <aside className="relative flex flex-col w-64 max-w-[80vw] bg-slate-950 shadow-2xl">
+          <div className="tema-fixo absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onClick={() => setGaveta(false)} />
+          <aside className="tema-fixo relative flex flex-col w-64 max-w-[80vw] bg-slate-950 shadow-2xl">
             <Marca recolhido={false} />
             <Menu recolhido={false} pathname={pathname} onNavegar={() => setGaveta(false)} />
           </aside>
@@ -253,8 +277,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <header className="h-16 shrink-0 flex items-center gap-2 sm:gap-3 px-3 sm:px-5 bg-white/90 backdrop-blur border-b border-slate-200">
           <button
             onClick={waffle}
-            title="Mostrar ou esconder o menu"
-            aria-label="Mostrar ou esconder o menu"
+            title={t("Mostrar ou esconder o menu")}
+            aria-label={t("Mostrar ou esconder o menu")}
             className="grid place-items-center w-10 h-10 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors"
           >
             <Icon name="waffle" />
@@ -264,25 +288,42 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
           <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
             <button
+              onClick={trocarIdioma}
+              title={t("Mudar idioma (português / inglês)")}
+              aria-label={t("Mudar idioma (português / inglês)")}
+              className="flex items-center h-10 px-1 rounded-xl bg-slate-100 text-[11px] font-bold tracking-wide"
+            >
+              <span className={`px-2 py-1.5 rounded-lg transition-colors ${idioma === 'pt' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400'}`}>PT</span>
+              <span className={`px-2 py-1.5 rounded-lg transition-colors ${idioma === 'en' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400'}`}>EN</span>
+            </button>
+            <button
+              onClick={trocarTema}
+              title={tema === 'escuro' ? t("Mudar para tema claro") : t("Mudar para tema escuro")}
+              aria-label={tema === 'escuro' ? t("Mudar para tema claro") : t("Mudar para tema escuro")}
+              className="grid place-items-center w-10 h-10 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+            >
+              <Icon name={tema === 'escuro' ? 'sol' : 'lua'} />
+            </button>
+            <button
               onClick={() => setRodada(true)}
-              className="inline-flex items-center gap-2 h-10 px-3 sm:px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold shadow-md shadow-blue-600/25 hover:brightness-110 transition"
+              className="tema-fixo inline-flex items-center gap-2 h-10 px-3 sm:px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold shadow-md shadow-blue-600/25 hover:brightness-110 transition"
             >
               <Icon name="raio" className="w-4 h-4" />
-              <span className="hidden sm:inline">Pedir rodada</span>
+              <span className="hidden sm:inline">{t("Pedir rodada")}</span>
             </button>
-            <Link href="/kanban" title="Kanban — trabalho do dia" className="hidden md:grid place-items-center w-10 h-10 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors">
+            <Link href="/kanban" title={t("Kanban — trabalho do dia")} className="hidden md:grid place-items-center w-10 h-10 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors">
               <Icon name="kanban" />
             </Link>
-            <Link href="/clientes" title="Clientes — funil de fechamento" className="hidden md:grid place-items-center w-10 h-10 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors">
+            <Link href="/clientes" title={t("Clientes — funil de fechamento")} className="hidden md:grid place-items-center w-10 h-10 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors">
               <Icon name="clientes" />
             </Link>
-            <Link href="/guia" title="Guia do sistema" className="hidden md:grid place-items-center w-10 h-10 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors">
+            <Link href="/guia" title={t("Guia do sistema")} className="hidden md:grid place-items-center w-10 h-10 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors">
               <Icon name="guia" />
             </Link>
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto">{children}</main>
+        <main key={idioma} className="flex-1 overflow-y-auto">{children}</main>
       </div>
 
       {rodada && (

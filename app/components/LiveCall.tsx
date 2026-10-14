@@ -1,4 +1,5 @@
 'use client';
+import { t } from '@/lib/i18n';
 import { useEffect, useRef, useState } from 'react';
 import { Chamada, Lead } from '@/lib/types';
 import { classificar, gerarIcs, OutcomesConfig, sugerirAgenda } from '@/lib/outcomes';
@@ -200,7 +201,7 @@ export default function LiveCall({
         onClick={() => setAberto(true)}
         className="w-full bg-white rounded-2xl border-2 border-dashed border-blue-300 hover:border-blue-500 hover:bg-blue-50 text-blue-700 font-semibold text-sm py-4 transition-colors"
       >
-        🎙️ Ligação ao vivo: transcrever e classificar
+        {t("🎙️ Ligação ao vivo: transcrever e classificar")}
       </button>
     );
   }
@@ -210,22 +211,21 @@ export default function LiveCall({
   return (
     <div className="bg-white rounded-2xl border border-blue-200 p-6 space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-xs font-semibold text-blue-700 uppercase tracking-wide">🎙️ Ligação ao vivo</h2>
-        <button onClick={() => { pararTudo(); setGravando(false); setAberto(false); }} className="text-xs text-gray-400 hover:text-gray-700">fechar</button>
+        <h2 className="text-xs font-semibold text-blue-700 uppercase tracking-wide">{t("🎙️ Ligação ao vivo")}</h2>
+        <button onClick={() => { pararTudo(); setGravando(false); setAberto(false); }} className="text-xs text-gray-400 hover:text-gray-700">{t("fechar")}</button>
       </div>
 
       {!gravando && !revisando && (
         <div className="space-y-2">
           <p className="text-xs text-gray-500">
-            Ligue pelo celular/Phone Link e comece a transcrição. Para captar também a voz do cliente pelo PC, use a opção 2 e
-            marque <b>Compartilhar áudio do sistema</b> quando o Chrome perguntar.
+            {t("Ligue pelo celular/Phone Link e comece a transcrição. Para captar também a voz do cliente pelo PC, use a opção 2 e marque")} <b>{t("Compartilhar áudio do sistema")}</b> {t("quando o Chrome perguntar.")}
           </p>
           <div className="flex gap-2 flex-wrap">
             <button onClick={() => iniciar(false)} className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700">
-              1 · Só microfone (viva-voz)
+              {t("1 · Só microfone (viva-voz)")}
             </button>
             <button onClick={() => iniciar(true)} className="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700">
-              2 · Microfone + áudio do PC
+              {t("2 · Microfone + áudio do PC")}
             </button>
           </div>
         </div>
@@ -237,14 +237,14 @@ export default function LiveCall({
         <>
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-2 text-sm font-semibold text-red-600">
-              <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse" /> Transcrevendo...
+              <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse" /> {t("Transcrevendo...")}
             </span>
             <button onClick={parar} className="ml-auto px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700">
-              ⏹ Encerrar e classificar
+              {t("⏹ Encerrar e classificar")}
             </button>
           </div>
           <div className="h-56 overflow-y-auto bg-gray-50 border border-gray-200 rounded-xl p-3 space-y-1.5 text-sm">
-            {linhas.length === 0 && !Object.values(parcial).some(Boolean) && <p className="text-gray-400 italic">Aguardando fala...</p>}
+            {linhas.length === 0 && !Object.values(parcial).some(Boolean) && <p className="text-gray-400 italic">{t("Aguardando fala...")}</p>}
             {linhas.map((l, i) => (
               <p key={i}><b className={l.who === 'Cliente' ? 'text-emerald-700' : 'text-blue-700'}>{l.who}:</b> {l.text}</p>
             ))}
@@ -259,20 +259,20 @@ export default function LiveCall({
       {revisando && (
         <div className="space-y-4">
           <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Transcrição (edite se precisar)</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">{t("Transcrição (edite se precisar)")}</p>
             <textarea
               value={texto}
               onChange={e => setTexto(e.target.value)}
               onBlur={() => classificarAgora(texto)}
               rows={6}
-              placeholder="Sem transcrição. Você pode digitar o que foi dito."
+              placeholder={t("Sem transcrição. Você pode digitar o que foi dito.")}
               className="w-full text-sm border border-gray-300 rounded-lg p-2.5 outline-none focus:border-blue-400"
             />
           </div>
 
           <div>
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-              Classificação{acertos.length > 0 && <span className="normal-case font-normal text-gray-400"> · pegou: “{acertos.slice(0, 3).join('”, “')}”</span>}
+              {t("Classificação")}{acertos.length > 0 && <span className="normal-case font-normal text-gray-400"> {t("· pegou: “")}{acertos.slice(0, 3).join('”, “')}”</span>}
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {config.outcomes.map(o => (
@@ -281,7 +281,7 @@ export default function LiveCall({
                   onClick={() => setOutcomeId(o.id)}
                   className={`text-left rounded-lg px-3 py-2 text-xs font-semibold border transition ${outcomeId === o.id ? o.cor + ' ring-2 ring-offset-1 ring-gray-500' : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-50'}`}
                 >
-                  {o.emoji} {o.label}
+                  {o.emoji} {t(o.label)}
                 </button>
               ))}
             </div>
@@ -289,19 +289,19 @@ export default function LiveCall({
 
           {outcome && (
             <div className="rounded-xl border border-gray-200 bg-gray-50 p-3 space-y-3">
-              <p className="text-sm text-gray-800">Próxima ação: <b>{outcome.proximaAcao}</b> <span className="text-xs text-gray-400">→ coluna “{outcome.coluna}”</span></p>
+              <p className="text-sm text-gray-800">{t("Próxima ação:")} <b>{t(outcome.proximaAcao)}</b> <span className="text-xs text-gray-400">{t("→ coluna “")}{outcome.coluna}”</span></p>
 
               {(outcome.acao === 'agendar-ligacao' || outcome.acao === 'agendar-reuniao') && (
                 <div className="flex items-center gap-2 flex-wrap text-sm">
-                  <span className="text-gray-600">{outcome.acao === 'agendar-reuniao' ? 'Reunião em' : 'Ligar em'}</span>
+                  <span className="text-gray-600">{outcome.acao === 'agendar-reuniao' ? t("Reunião em") : t("Ligar em")}</span>
                   <input type="date" value={data} onChange={e => setData(e.target.value)} className="border border-gray-300 rounded px-2 py-1 text-sm" />
-                  <input type="text" value={hora} onChange={e => setHora(e.target.value)} placeholder="09:30 ou tarde" className="border border-gray-300 rounded px-2 py-1 text-sm w-32" />
+                  <input type="text" value={hora} onChange={e => setHora(e.target.value)} placeholder={t("09:30 ou tarde")} className="border border-gray-300 rounded px-2 py-1 text-sm w-32" />
                   {outcome.acao === 'agendar-reuniao' && data && (
                     <button
                       onClick={() => baixar(`reuniao-${lead.nome.replace(/\W+/g, '-')}.ics`, gerarIcs(`Reunião Dominant · ${lead.nome}`, data, hora, nota || texto.slice(0, 500)), 'text/calendar')}
                       className="text-xs px-3 py-1.5 rounded-lg bg-orange-100 text-orange-800 hover:bg-orange-200 font-medium"
                     >
-                      📅 Baixar compromisso (.ics)
+                      {t("📅 Baixar compromisso (.ics)")}
                     </button>
                   )}
                 </div>
@@ -309,17 +309,17 @@ export default function LiveCall({
 
               {outcome.acao === 'email' && (
                 <div className="space-y-1">
-                  <label className="text-xs text-gray-600">E-mail que o cliente passou (confira, a fala costuma errar):</label>
+                  <label className="text-xs text-gray-600">{t("E-mail que o cliente passou (confira, a fala costuma errar):")}</label>
                   <input
-                    type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="nome@empresa.com.br"
+                    type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder={t("nome@empresa.com.br")}
                     className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm"
                   />
-                  <p className="text-xs text-gray-400">Ao salvar, o lead entra na fila do <code>/emails</code> pra você receber o e-mail escrito sob medida. Follow-up em {config.followUpDias} dias.</p>
+                  <p className="text-xs text-gray-400">{t("Ao salvar, o lead entra na fila do")} <code>{t("/emails")}</code> {t("pra você receber o e-mail escrito sob medida. Follow-up em")} {config.followUpDias} {t("dias.")}</p>
                 </div>
               )}
 
               <input
-                type="text" value={nota} onChange={e => setNota(e.target.value)} placeholder="Nota rápida (quem atendeu, cargo, detalhe importante)"
+                type="text" value={nota} onChange={e => setNota(e.target.value)} placeholder={t("Nota rápida (quem atendeu, cargo, detalhe importante)")}
                 className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm"
               />
             </div>
@@ -327,10 +327,10 @@ export default function LiveCall({
 
           <div className="flex gap-2">
             <button onClick={salvar} disabled={!outcome || salvando} className="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700 disabled:opacity-40">
-              {salvando ? 'Salvando...' : 'Salvar ligação'}
+              {salvando ? t("Salvando...") : t("Salvar ligação")}
             </button>
             <button onClick={() => { setTexto(''); setLinhas([]); setOutcomeId(''); }} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900">
-              Descartar e gravar de novo
+              {t("Descartar e gravar de novo")}
             </button>
           </div>
         </div>

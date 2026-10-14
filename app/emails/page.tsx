@@ -1,4 +1,5 @@
 'use client';
+import { t } from '@/lib/i18n';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Lead, TipoEmail } from '@/lib/types';
@@ -33,7 +34,7 @@ function CopyButton({ text }: { text: string }) {
       onClick={() => { navigator.clipboard?.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1500); }}
       className="shrink-0 text-xs px-2 py-0.5 rounded bg-white border border-gray-200 hover:bg-gray-100 text-gray-500 transition-colors"
     >
-      {copied ? '✓' : 'copiar'}
+      {copied ? '✓' : t("copiar")}
     </button>
   );
 }
@@ -74,18 +75,18 @@ export default function EmailsPage() {
     navigator.clipboard?.writeText(emails);
   }
 
-  if (loading) return <div className="min-h-full py-20 flex items-center justify-center text-gray-400">Carregando...</div>;
+  if (loading) return <div className="min-h-full py-20 flex items-center justify-center text-gray-400">{t("Carregando...")}</div>;
 
   return (
     <div className="min-h-full">
       <div className="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-10">
         <div className="max-w-4xl mx-auto flex items-center gap-4">
-          <h1 className="text-lg font-bold text-gray-900">E-mails para Prospecção</h1>
-          <span className="text-sm text-gray-400">{rows.length} e-mails</span>
+          <h1 className="text-lg font-bold text-gray-900">{t("E-mails para Prospecção")}</h1>
+          <span className="text-sm text-gray-400">{rows.length} {t("e-mails")}</span>
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Buscar lead ou email..."
+            placeholder={t("Buscar lead ou email...")}
             className="ml-auto text-sm border border-gray-300 rounded-lg px-3 py-1.5 outline-none focus:border-blue-400 w-64"
           />
         </div>
@@ -100,14 +101,14 @@ export default function EmailsPage() {
             <div key={tier}>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <span className={`text-xs font-bold px-3 py-1 rounded-full border ${cfg.color}`}>{cfg.label}</span>
-                  <span className="text-xs text-gray-400">{tierRows.length} e-mails</span>
+                  <span className={`text-xs font-bold px-3 py-1 rounded-full border ${cfg.color}`}>{t(cfg.label)}</span>
+                  <span className="text-xs text-gray-400">{tierRows.length} {t("e-mails")}</span>
                 </div>
                 <button
                   onClick={() => copyAll(tier)}
                   className="text-xs px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
                 >
-                  Copiar todos
+                  {t("Copiar todos")}
                 </button>
               </div>
 
@@ -120,7 +121,7 @@ export default function EmailsPage() {
                       </Link>
                       <p className="text-xs text-gray-400 mt-0.5">{r.lead.localizacao} · {r.lead.categoria}</p>
                     </div>
-                    <span className={`text-xs font-semibold px-2 py-0.5 rounded shrink-0 ${cfg.badge}`}>{r.classificacao}</span>
+                    <span className={`text-xs font-semibold px-2 py-0.5 rounded shrink-0 ${cfg.badge}`}>{t(r.classificacao)}</span>
                     <span className="text-sm text-gray-700 select-all break-all">{r.endereco}</span>
                     <CopyButton text={r.endereco} />
                   </div>

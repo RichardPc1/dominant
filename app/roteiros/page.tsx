@@ -1,4 +1,5 @@
 'use client';
+import { t } from '@/lib/i18n';
 import { Suspense, useState, useRef, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ROTEIROS, ScriptItem, ScriptSection } from '@/lib/roteiros-data';
@@ -26,7 +27,7 @@ function CopyButton({ text }: { text: string }) {
       onClick={copy}
       className="ml-auto shrink-0 text-xs px-2 py-1 rounded bg-gray-100 hover:bg-gray-200 text-gray-500 transition-colors"
     >
-      {copied ? '✓ Copiado' : 'Copiar'}
+      {copied ? t("✓ Copiado") : t("Copiar")}
     </button>
   );
 }
@@ -116,10 +117,10 @@ function RoteirosConteudo() {
       <header className="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-10">
         <div className="max-w-screen-xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <h1 className="text-lg font-bold text-gray-900">Roteiros de Abordagem</h1>
+            <h1 className="text-lg font-bold text-gray-900">{t("Roteiros de Abordagem")}</h1>
           </div>
           <div className="flex items-center gap-3 text-xs text-gray-400">
-            <span>Método: Linha Reta (Jordan Belfort) + SPIN Selling (Thiago Concer)</span>
+            <span>{t("Método: Linha Reta (Jordan Belfort) + SPIN Selling (Thiago Concer)")}</span>
           </div>
         </div>
       </header>
@@ -127,7 +128,7 @@ function RoteirosConteudo() {
       <div className="max-w-screen-xl mx-auto px-6 py-6 flex gap-6">
         {/* Sidebar */}
         <aside className="w-56 shrink-0">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2 px-1">Categorias</p>
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2 px-1">{t("Categorias")}</p>
           <nav className="space-y-1">
             {ROTEIROS.map(r => (
               <button
@@ -145,11 +146,11 @@ function RoteirosConteudo() {
           </nav>
 
           <div className="mt-6 p-3 bg-amber-50 border border-amber-100 rounded-lg">
-            <p className="text-xs font-semibold text-amber-700 mb-1">Legenda</p>
+            <p className="text-xs font-semibold text-amber-700 mb-1">{t("Legenda")}</p>
             <div className="space-y-1 text-xs text-amber-700">
-              <div className="flex items-center gap-1.5"><span className="w-3 h-3 bg-gray-400 rounded-sm inline-block"/><span>Script (copiar)</span></div>
-              <div className="flex items-center gap-1.5"><span className="w-3 h-3 bg-blue-300 rounded-sm inline-block"/><span>Pergunta SPIN</span></div>
-              <div className="flex items-center gap-1.5"><span className="w-3 h-3 bg-red-200 rounded-sm inline-block"/><span>Atenção</span></div>
+              <div className="flex items-center gap-1.5"><span className="w-3 h-3 bg-gray-400 rounded-sm inline-block"/><span>{t("Script (copiar)")}</span></div>
+              <div className="flex items-center gap-1.5"><span className="w-3 h-3 bg-blue-300 rounded-sm inline-block"/><span>{t("Pergunta SPIN")}</span></div>
+              <div className="flex items-center gap-1.5"><span className="w-3 h-3 bg-red-200 rounded-sm inline-block"/><span>{t("Atenção")}</span></div>
             </div>
           </div>
         </aside>
@@ -169,9 +170,9 @@ function RoteirosConteudo() {
               </div>
             </div>
             <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-              <div><span className="font-medium text-gray-700">Canal:</span> {roteiro.canal}</div>
-              <div><span className="font-medium text-gray-700">Duração:</span> {roteiro.duracao}</div>
-              <div><span className="font-medium text-gray-700">Com quem falar:</span> {roteiro.alvo}</div>
+              <div><span className="font-medium text-gray-700">{t("Canal:")}</span> {roteiro.canal}</div>
+              <div><span className="font-medium text-gray-700">{t("Duração:")}</span> {roteiro.duracao}</div>
+              <div><span className="font-medium text-gray-700">{t("Com quem falar:")}</span> {roteiro.alvo}</div>
             </div>
           </div>
 
@@ -185,23 +186,23 @@ function RoteirosConteudo() {
           {/* Framework reminder */}
           <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="bg-white rounded-xl border border-gray-200 p-4">
-              <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Jordan Belfort — Linha Reta</p>
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">{t("Jordan Belfort — Linha Reta")}</p>
               <ul className="text-xs text-gray-600 space-y-1">
-                <li>⚡ 4 segundos: afiado, entusiasmado, especialista</li>
-                <li>🎯 3 certezas: produto, você, empresa</li>
-                <li>🔄 Loop: objeção → construir certeza → fechar</li>
-                <li>🩹 Reintroduza a dor antes do fechamento final</li>
-                <li>🎙️ 90% está na tonalidade, não nas palavras</li>
+                <li>{t("⚡ 4 segundos: afiado, entusiasmado, especialista")}</li>
+                <li>{t("🎯 3 certezas: produto, você, empresa")}</li>
+                <li>{t("🔄 Loop: objeção → construir certeza → fechar")}</li>
+                <li>{t("🩹 Reintroduza a dor antes do fechamento final")}</li>
+                <li>{t("🎙️ 90% está na tonalidade, não nas palavras")}</li>
               </ul>
             </div>
             <div className="bg-white rounded-xl border border-gray-200 p-4">
-              <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Thiago Concer — SPIN + Resiliência</p>
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">{t("Thiago Concer — SPIN + Resiliência")}</p>
               <ul className="text-xs text-gray-600 space-y-1">
-                <li>❓ Situação → Problema → Implicação → Necessidade</li>
-                <li>📋 Script é o mínimo obrigatório — não engessa, protege</li>
-                <li>💰 Objeção de preço: sempre pergunte "Por quê?"</li>
-                <li>🧠 O "não" é sobre a oportunidade, não sobre você</li>
-                <li>🚫 Não sofra compra — você conduz a conversa</li>
+                <li>{t("❓ Situação → Problema → Implicação → Necessidade")}</li>
+                <li>{t("📋 Script é o mínimo obrigatório — não engessa, protege")}</li>
+                <li>{t("💰 Objeção de preço: sempre pergunte \"Por quê?\"")}</li>
+                <li>{t("🧠 O \"não\" é sobre a oportunidade, não sobre você")}</li>
+                <li>{t("🚫 Não sofra compra — você conduz a conversa")}</li>
               </ul>
             </div>
           </div>

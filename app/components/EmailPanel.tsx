@@ -1,4 +1,5 @@
 'use client';
+import { t } from '@/lib/i18n';
 import { useState } from 'react';
 import { EmailRascunho, Lead } from '@/lib/types';
 import { somarDias } from '@/lib/outcomes';
@@ -76,24 +77,24 @@ export default function EmailPanel({
   return (
     <div className={`bg-white rounded-2xl border ${cor} p-6 space-y-3`}>
       <div className="flex items-center gap-2 flex-wrap">
-        <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">✉️ E-mail para {lead.nome}</h2>
+        <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t("✉️ E-mail para")} {lead.nome}</h2>
         <span className={`text-xs font-semibold px-2 py-0.5 rounded ${rasc.status === 'pronto' ? 'bg-emerald-100 text-emerald-800' : rasc.status === 'enviado' ? 'bg-gray-100 text-gray-600' : 'bg-yellow-100 text-yellow-800'}`}>
-          {rasc.status === 'pronto' ? 'rascunho pronto' : rasc.status === 'enviado' ? 'enviado' : 'aguardando redação'}
+          {rasc.status === 'pronto' ? t("rascunho pronto") : rasc.status === 'enviado' ? t("enviado") : t("aguardando redação")}
         </span>
         {rasc.status !== 'enviado' && (
           confirmReset ? (
             <span className="flex items-center gap-1 text-xs">
-              <span className="text-red-600">Apagar rascunho?</span>
-              <button onClick={resetarRascunho} className="px-2 py-0.5 bg-red-100 text-red-700 rounded hover:bg-red-200">Sim</button>
-              <button onClick={() => setConfirmReset(false)} className="px-2 py-0.5 text-gray-500 hover:text-gray-800">Não</button>
+              <span className="text-red-600">{t("Apagar rascunho?")}</span>
+              <button onClick={resetarRascunho} className="px-2 py-0.5 bg-red-100 text-red-700 rounded hover:bg-red-200">{t("Sim")}</button>
+              <button onClick={() => setConfirmReset(false)} className="px-2 py-0.5 text-gray-500 hover:text-gray-800">{t("Não")}</button>
             </span>
           ) : (
             <button
               onClick={() => setConfirmReset(true)}
               className="ml-auto text-xs text-gray-400 hover:text-red-500 transition-colors"
-              title="Apagar este rascunho para gerar um novo"
+              title={t("Apagar este rascunho para gerar um novo")}
             >
-              ↺ Novo rascunho
+              {t("↺ Novo rascunho")}
             </button>
           )
         )}
@@ -101,14 +102,13 @@ export default function EmailPanel({
 
       {rasc.status === 'pendente' && (
         <p className="text-sm bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-2 text-yellow-900">
-          O e-mail ainda não foi escrito. No Claude Code, rode <code className="bg-white px-1.5 py-0.5 rounded border">/emails</code> e
-          ele escreve um e-mail sob medida para este lead (nicho, conversa e contexto). Depois atualize esta página.
+          {t("O e-mail ainda não foi escrito. No Claude Code, rode")} <code className="bg-white px-1.5 py-0.5 rounded border">{t("/emails")}</code> {t("e ele escreve um e-mail sob medida para este lead (nicho, conversa e contexto). Depois atualize esta página.")}
         </p>
       )}
 
-      <input value={para} onChange={e => setPara(e.target.value)} placeholder="Para" className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm" />
-      <input value={assunto} onChange={e => setAssunto(e.target.value)} placeholder="Assunto" className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm" />
-      <textarea value={corpo} onChange={e => setCorpo(e.target.value)} rows={10} placeholder="Corpo do e-mail" className="w-full border border-gray-300 rounded px-2 py-2 text-sm" />
+      <input value={para} onChange={e => setPara(e.target.value)} placeholder={t("Para")} className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm" />
+      <input value={assunto} onChange={e => setAssunto(e.target.value)} placeholder={t("Assunto")} className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm" />
+      <textarea value={corpo} onChange={e => setCorpo(e.target.value)} rows={10} placeholder={t("Corpo do e-mail")} className="w-full border border-gray-300 rounded px-2 py-2 text-sm" />
 
       {/* Indicador de PDF para anexar */}
       <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
@@ -122,25 +122,25 @@ export default function EmailPanel({
           }}
           className="shrink-0 text-xs px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-500"
         >
-          {copiadoPdf ? '✓' : 'copiar caminho'}
+          {copiadoPdf ? '✓' : t("copiar caminho")}
         </button>
       </div>
 
       <div className="flex gap-2 flex-wrap items-center">
-        <button onClick={() => salvar({ emailRascunho: atual(rasc.status === 'pendente' && corpo ? 'pronto' : rasc.status) })} className="px-3 py-1.5 text-xs border border-gray-300 rounded-lg hover:bg-gray-50">Salvar edição</button>
+        <button onClick={() => salvar({ emailRascunho: atual(rasc.status === 'pendente' && corpo ? 'pronto' : rasc.status) })} className="px-3 py-1.5 text-xs border border-gray-300 rounded-lg hover:bg-gray-50">{t("Salvar edição")}</button>
         <button
           onClick={() => { navigator.clipboard?.writeText(`Assunto: ${assunto}\n\n${corpo}`); setCopiado(true); setTimeout(() => setCopiado(false), 1500); }}
           className="px-3 py-1.5 text-xs border border-gray-300 rounded-lg hover:bg-gray-50"
         >
-          {copiado ? '✓ copiado' : 'Copiar texto'}
+          {copiado ? t("✓ copiado") : t("Copiar texto")}
         </button>
-        {para && assunto && corpo && <a href={mailto} className="px-3 py-1.5 text-xs bg-emerald-600 text-white rounded-lg hover:bg-emerald-700">Abrir no e-mail</a>}
+        {para && assunto && corpo && <a href={mailto} className="px-3 py-1.5 text-xs bg-emerald-600 text-white rounded-lg hover:bg-emerald-700">{t("Abrir no e-mail")}</a>}
         {rasc.status !== 'enviado' && corpo && (
           <button onClick={marcarEnviado} className="px-3 py-1.5 text-xs bg-gray-900 text-white rounded-lg hover:bg-gray-700">
-            Marcar como enviado (follow-up em {followUpDias} dias)
+            {t("Marcar como enviado (follow-up em")} {followUpDias} {t("dias)")}
           </button>
         )}
-        {lead.followUpEm && <span className="text-xs text-gray-500">follow-up: {lead.followUpEm.split('-').reverse().join('/')}</span>}
+        {lead.followUpEm && <span className="text-xs text-gray-500">{t("follow-up:")} {lead.followUpEm.split('-').reverse().join('/')}</span>}
       </div>
     </div>
   );

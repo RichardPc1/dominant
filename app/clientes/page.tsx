@@ -1,4 +1,5 @@
 'use client';
+import { t } from '@/lib/i18n';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { EtapaFunil, Lead } from '@/lib/types';
@@ -17,7 +18,7 @@ function CopyBtn({ value }: { value: string }) {
       onClick={e => { e.stopPropagation(); navigator.clipboard?.writeText(value); setOk(true); setTimeout(() => setOk(false), 1200); }}
       className="shrink-0 text-[10px] px-1.5 py-0.5 rounded bg-gray-100 hover:bg-gray-200 text-gray-500"
     >
-      {ok ? '✓' : 'copiar'}
+      {ok ? '✓' : t("copiar")}
     </button>
   );
 }
@@ -57,7 +58,7 @@ function CardFunil({
         {cont.realizadas > 0 && <span className="rounded bg-emerald-100 text-emerald-800 px-1.5 py-0.5 font-semibold">✅ {cont.realizadas}</span>}
         {cont.faltou > 0 && <span className="rounded bg-red-100 text-red-700 px-1.5 py-0.5 font-semibold">❌ {cont.faltou}</span>}
         {cont.agendadas > 0 && <span className="rounded bg-blue-100 text-blue-800 px-1.5 py-0.5 font-semibold">📅 {cont.agendadas}</span>}
-        {cont.total === 0 && <span className="rounded bg-gray-100 text-gray-400 px-1.5 py-0.5">sem reunião</span>}
+        {cont.total === 0 && <span className="rounded bg-gray-100 text-gray-400 px-1.5 py-0.5">{t("sem reunião")}</span>}
       </div>
 
       {ult?.notas && (
@@ -85,9 +86,9 @@ function CardFunil({
           value={lead.etapaFunil}
           onChange={e => onMover(e.target.value as EtapaFunil)}
           className="w-full text-[11px] text-gray-500 border border-gray-200 rounded px-1.5 py-1 bg-white"
-          title="Mudar de fase"
+          title={t("Mudar de fase")}
         >
-          {ETAPAS.map(e => <option key={e.id} value={e.id}>{e.icone} {e.titulo}</option>)}
+          {ETAPAS.map(e => <option key={e.id} value={e.id}>{e.icone} {t(e.titulo)}</option>)}
         </select>
       </div>
     </div>
@@ -114,12 +115,12 @@ function ColunaFunil({
     >
       <div className="px-3 pt-3 pb-1 flex items-center gap-2.5">
         <span className={`grid place-items-center w-8 h-8 rounded-xl text-sm shadow-sm shrink-0 bg-gradient-to-br ${etapa.header}`}>{etapa.icone}</span>
-        <h2 className="text-sm font-bold text-gray-800 leading-tight min-w-0 flex-1 [overflow-wrap:anywhere]">{etapa.titulo}</h2>
+        <h2 className="text-sm font-bold text-gray-800 leading-tight min-w-0 flex-1 break-words">{t(etapa.titulo)}</h2>
         <span className="text-xs font-bold text-gray-600 bg-white rounded-full px-2 py-0.5 shadow-sm tabular">{leads.length}</span>
       </div>
-      <p className="px-3 pt-1 text-[11px] text-gray-500 leading-snug">{etapa.dica}</p>
-      <div className="p-2 space-y-2 min-h-[6rem] max-h-[70dvh] @6xl:max-h-[calc(100dvh-17rem)] overflow-y-auto">
-        {leads.length === 0 && <p className="text-xs text-gray-300 text-center py-6">vazio</p>}
+      <p className="px-3 pt-1 text-[11px] text-gray-500 leading-snug">{t(etapa.dica)}</p>
+      <div className="p-2 space-y-2 min-h-[6rem] max-h-[70dvh] @4xl:max-h-[calc(100dvh-17rem)] overflow-y-auto">
+        {leads.length === 0 && <p className="text-xs text-gray-300 text-center py-6">{t("vazio")}</p>}
         {leads.map(l => (
           <CardFunil key={l.id} lead={l} onAbrir={() => onAbrir(l)} onMover={e => onMover(l.id, e)} />
         ))}
@@ -166,8 +167,8 @@ function Modal({ lead, onClose, onPatch, onSair }: {
           <FunilCliente lead={lead} onPatch={onPatch} />
 
           <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-            <Link href={`/call/${lead.id}`} className="text-sm font-semibold text-indigo-600 hover:text-indigo-800">Abrir ficha completa →</Link>
-            <button onClick={onSair} className="text-xs text-gray-400 hover:text-red-500">Tirar do funil</button>
+            <Link href={`/call/${lead.id}`} className="text-sm font-semibold text-indigo-600 hover:text-indigo-800">{t("Abrir ficha completa →")}</Link>
+            <button onClick={onSair} className="text-xs text-gray-400 hover:text-red-500">{t("Tirar do funil")}</button>
           </div>
         </div>
       </div>
@@ -239,21 +240,21 @@ export default function ClientesPage() {
       <header className="px-4 sm:px-6 lg:px-8 pt-6 pb-2">
         <div className="flex items-center gap-3 flex-wrap">
           <div className="mr-2">
-            <h1 className="text-2xl font-bold tracking-tight text-gray-900">Clientes</h1>
-            <p className="text-sm text-gray-500 mt-0.5">Funil de fechamento · da POC ao contrato</p>
+            <h1 className="text-2xl font-bold tracking-tight text-gray-900">{t("Clientes")}</h1>
+            <p className="text-sm text-gray-500 mt-0.5">{t("Funil de fechamento · da POC ao contrato")}</p>
           </div>
 
           <div className="flex gap-1.5 text-xs font-semibold ml-auto flex-wrap">
-            {reunioesAtrasadas > 0 && <span className="bg-red-600 text-white rounded px-2 py-1">{reunioesAtrasadas} reunião atrasada</span>}
-            {reunioesHoje > 0 && <span className="bg-amber-400 text-amber-950 rounded px-2 py-1">{reunioesHoje} pra hoje</span>}
-            <span className="bg-indigo-100 text-indigo-800 rounded px-2 py-1">{ativos} em negociação</span>
-            <span className="bg-emerald-100 text-emerald-800 rounded px-2 py-1">{ganhos} cliente{ganhos !== 1 ? 's' : ''}</span>
+            {reunioesAtrasadas > 0 && <span className="bg-red-600 text-white rounded px-2 py-1">{reunioesAtrasadas} {t("reunião atrasada")}</span>}
+            {reunioesHoje > 0 && <span className="bg-amber-400 text-amber-950 rounded px-2 py-1">{reunioesHoje} {t("pra hoje")}</span>}
+            <span className="bg-indigo-100 text-indigo-800 rounded px-2 py-1">{ativos} {t("em negociação")}</span>
+            <span className="bg-emerald-100 text-emerald-800 rounded px-2 py-1">{ganhos} {t("cliente")}{ganhos !== 1 ? 's' : ''}</span>
           </div>
           <button
             onClick={() => setAddOpen(o => !o)}
             className="h-10 text-sm font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl px-4 shadow-md shadow-blue-600/25 hover:brightness-110"
           >
-            + Adicionar negócio
+            {t("+ Adicionar negócio")}
           </button>
         </div>
 
@@ -261,11 +262,11 @@ export default function ClientesPage() {
           <div className="surgir mt-3 rounded-2xl border border-gray-200 bg-white shadow-sm p-3">
             <input
               autoFocus type="text" value={buscaAdd} onChange={e => setBuscaAdd(e.target.value)}
-              placeholder="Buscar lead pra puxar pro funil (nome ou cidade)..."
+              placeholder={t("Buscar lead pra puxar pro funil (nome ou cidade)...")}
               className="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 outline-none focus:border-indigo-400"
             />
             <div className="mt-2 max-h-56 overflow-y-auto space-y-1">
-              {disponiveis.length === 0 && <p className="text-xs text-gray-400 py-2 text-center">nenhum lead encontrado</p>}
+              {disponiveis.length === 0 && <p className="text-xs text-gray-400 py-2 text-center">{t("nenhum lead encontrado")}</p>}
               {disponiveis.map(l => (
                 <button
                   key={l.id}
@@ -273,7 +274,7 @@ export default function ClientesPage() {
                   className="w-full flex items-center justify-between gap-2 text-left rounded-lg bg-white border border-gray-200 px-3 py-2 hover:border-indigo-300 hover:bg-indigo-50/40"
                 >
                   <span className="text-sm text-gray-800 truncate">{l.nome}<span className="text-gray-400"> · {l.categoria}{l.localizacao ? ` · ${l.localizacao}` : ''}</span></span>
-                  <span className="text-xs text-indigo-600 font-semibold shrink-0">+ entrar</span>
+                  <span className="text-xs text-indigo-600 font-semibold shrink-0">{t("+ entrar")}</span>
                 </button>
               ))}
             </div>
@@ -282,17 +283,17 @@ export default function ClientesPage() {
       </header>
 
       {loading ? (
-        <div className="py-20 text-center text-gray-400">Carregando...</div>
+        <div className="py-20 text-center text-gray-400">{t("Carregando...")}</div>
       ) : noFunil.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center text-center px-6 py-20">
           <p className="text-5xl mb-3">🏆</p>
-          <h2 className="text-lg font-bold text-gray-800">Seu funil de clientes está vazio</h2>
-          <p className="text-sm text-gray-500 mt-1 max-w-sm">Quando um lead avança pra reunião de POC, clique em <strong>+ Adicionar negócio</strong> e acompanhe cada fase e reunião aqui — sem tirar ele da coluna do kanban.</p>
-          <button onClick={() => setAddOpen(true)} className="mt-5 h-10 text-sm font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl px-5 shadow-md shadow-blue-600/25 hover:brightness-110">+ Adicionar primeiro negócio</button>
+          <h2 className="text-lg font-bold text-gray-800">{t("Seu funil de clientes está vazio")}</h2>
+          <p className="text-sm text-gray-500 mt-1 max-w-sm">{t("Quando um lead avança pra reunião de POC, clique em")} <strong>{t("+ Adicionar negócio")}</strong> {t("e acompanhe cada fase e reunião aqui — sem tirar ele da coluna do kanban.")}</p>
+          <button onClick={() => setAddOpen(true)} className="mt-5 h-10 text-sm font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl px-5 shadow-md shadow-blue-600/25 hover:brightness-110">{t("+ Adicionar primeiro negócio")}</button>
         </div>
       ) : (
         <div className="@container flex-1 px-4 sm:px-6 lg:px-8 py-4">
-          <div className="grid gap-3 grid-cols-1 @lg:grid-cols-2 @3xl:grid-cols-3 @6xl:grid-cols-6 items-start">
+          <div className="grid gap-3 grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 @4xl:grid-cols-6 items-start">
             {ETAPAS.map(e => (
               <ColunaFunil
                 key={e.id} etapa={e} leads={porEtapa[e.id]}

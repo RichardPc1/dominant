@@ -1,4 +1,5 @@
 'use client';
+import { t } from '@/lib/i18n';
 import { useState } from 'react';
 import { Lead, Reuniao, StatusReuniao, TipoReuniao } from '@/lib/types';
 import {
@@ -60,7 +61,7 @@ export default function FunilCliente({
     <div className="space-y-4">
       {/* Fase do funil */}
       <div>
-        <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-2">Fase do fechamento</p>
+        <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-2">{t("Fase do fechamento")}</p>
         <div className="flex flex-wrap gap-1.5">
           {ETAPAS.map(e => {
             const ativo = e.id === atual;
@@ -68,14 +69,14 @@ export default function FunilCliente({
               <button
                 key={e.id}
                 onClick={() => mudarEtapa(e.id)}
-                title={e.dica}
+                title={t(e.dica)}
                 className={`px-2.5 py-1 text-xs font-semibold rounded-lg border transition-colors ${
                   ativo
                     ? `${e.selo} border-transparent ring-2 ring-offset-1 ring-gray-300`
                     : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50'
                 }`}
               >
-                {e.icone} {e.titulo}
+                {e.icone} {t(e.titulo)}
               </button>
             );
           })}
@@ -85,11 +86,11 @@ export default function FunilCliente({
       {/* Resumo das reuniões */}
       <div className="flex flex-wrap gap-2 text-xs">
         <span className="inline-flex items-center gap-1 rounded-lg bg-gray-100 text-gray-600 px-2 py-1 font-medium">
-          🗓️ {cont.total} reuni{cont.total === 1 ? 'ão' : 'ões'}
+          🗓️ {t(cont.total === 1 ? '{0} reunião' : '{0} reuniões', { 0: cont.total })}
         </span>
-        {cont.realizadas > 0 && <span className="inline-flex items-center gap-1 rounded-lg bg-emerald-100 text-emerald-800 px-2 py-1 font-medium">✅ {cont.realizadas} feita{cont.realizadas > 1 ? 's' : ''}</span>}
-        {cont.faltou > 0 && <span className="inline-flex items-center gap-1 rounded-lg bg-red-100 text-red-700 px-2 py-1 font-medium">❌ {cont.faltou} faltou</span>}
-        {cont.agendadas > 0 && <span className="inline-flex items-center gap-1 rounded-lg bg-blue-100 text-blue-800 px-2 py-1 font-medium">📅 {cont.agendadas} agendada{cont.agendadas > 1 ? 's' : ''}</span>}
+        {cont.realizadas > 0 && <span className="inline-flex items-center gap-1 rounded-lg bg-emerald-100 text-emerald-800 px-2 py-1 font-medium">✅ {t(cont.realizadas > 1 ? '{0} feitas' : '{0} feita', { 0: cont.realizadas })}</span>}
+        {cont.faltou > 0 && <span className="inline-flex items-center gap-1 rounded-lg bg-red-100 text-red-700 px-2 py-1 font-medium">❌ {cont.faltou} {t("faltou")}</span>}
+        {cont.agendadas > 0 && <span className="inline-flex items-center gap-1 rounded-lg bg-blue-100 text-blue-800 px-2 py-1 font-medium">📅 {cont.agendadas} {t("agendada")}{cont.agendadas > 1 ? 's' : ''}</span>}
       </div>
 
       {/* Lista de reuniões */}
@@ -98,16 +99,16 @@ export default function FunilCliente({
           {[...reunioes].reverse().map(r => (
             <div key={r.id} className="rounded-xl border border-gray-100 bg-gray-50 p-3">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs font-semibold text-gray-700">{TIPO_REUNIAO_ICONE[r.tipo]} {r.tipo}</span>
+                <span className="text-xs font-semibold text-gray-700">{TIPO_REUNIAO_ICONE[r.tipo]} {t(r.tipo)}</span>
                 <span className="text-xs text-gray-400">{r.data.split('-').reverse().join('/')}{r.hora ? ` · ${r.hora}` : ''}</span>
                 <select
                   value={r.status}
                   onChange={e => mudarStatusReuniao(r.id, e.target.value as StatusReuniao)}
                   className={`ml-auto text-[11px] font-semibold rounded px-1.5 py-0.5 border-0 outline-none cursor-pointer ${STATUS_REUNIAO_COR[r.status]}`}
                 >
-                  {STATUS_REUNIAO.map(s => <option key={s} value={s}>{s}</option>)}
+                  {STATUS_REUNIAO.map(s => <option key={s} value={s}>{t(s)}</option>)}
                 </select>
-                <button onClick={() => remover(r.id)} className="text-[11px] text-gray-300 hover:text-red-500" title="Remover">✕</button>
+                <button onClick={() => remover(r.id)} className="text-[11px] text-gray-300 hover:text-red-500" title={t("Remover")}>✕</button>
               </div>
               {r.notas && <p className="text-sm text-gray-700 mt-1.5 whitespace-pre-line">{r.notas}</p>}
             </div>
@@ -121,18 +122,18 @@ export default function FunilCliente({
           onClick={() => setAberto(true)}
           className="w-full text-sm font-medium text-indigo-600 hover:bg-indigo-50 rounded-lg py-2 border border-dashed border-indigo-200"
         >
-          + Registrar reunião
+          {t("+ Registrar reunião")}
         </button>
       ) : (
         <div className="rounded-xl border border-gray-200 bg-white p-3 space-y-3">
           <div className="flex flex-wrap gap-1.5">
-            {TIPOS_REUNIAO.map(t => (
+            {TIPOS_REUNIAO.map(tp => (
               <button
-                key={t}
-                onClick={() => setTipo(t)}
-                className={`px-2.5 py-1 text-xs font-medium rounded-lg border transition-colors ${tipo === t ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-100'}`}
+                key={tp}
+                onClick={() => setTipo(tp)}
+                className={`px-2.5 py-1 text-xs font-medium rounded-lg border transition-colors ${tipo === tp ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-100'}`}
               >
-                {TIPO_REUNIAO_ICONE[t]} {t}
+                {TIPO_REUNIAO_ICONE[tp]} {t(tp)}
               </button>
             ))}
           </div>
@@ -140,24 +141,24 @@ export default function FunilCliente({
             <input type="date" value={data} onChange={e => setData(e.target.value)} className="text-sm border border-gray-300 rounded-lg px-2 py-1.5 outline-none focus:border-blue-400" />
             <input type="text" value={hora} onChange={e => setHora(e.target.value)} placeholder="14:30" className="w-24 text-sm border border-gray-300 rounded-lg px-2 py-1.5 outline-none focus:border-blue-400" />
             <select value={status} onChange={e => setStatus(e.target.value as StatusReuniao)} className="text-sm border border-gray-300 rounded-lg px-2 py-1.5 bg-white outline-none focus:border-blue-400">
-              {STATUS_REUNIAO.map(s => <option key={s} value={s}>{s}</option>)}
+              {STATUS_REUNIAO.map(s => <option key={s} value={s}>{t(s)}</option>)}
             </select>
           </div>
           <textarea
             value={nota} onChange={e => setNota(e.target.value)} rows={2}
-            placeholder="O que foi tratado, próximos passos, objeções..."
+            placeholder={t("O que foi tratado, próximos passos, objeções...")}
             className="w-full text-sm border border-gray-300 rounded-lg p-2.5 resize-none outline-none focus:border-blue-400"
           />
           <div className="flex gap-2">
-            <button onClick={registrar} className="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700">Salvar reunião</button>
-            <button onClick={() => setAberto(false)} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900">Cancelar</button>
+            <button onClick={registrar} className="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700">{t("Salvar reunião")}</button>
+            <button onClick={() => setAberto(false)} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900">{t("Cancelar")}</button>
           </div>
         </div>
       )}
 
       {atual && (
         <p className="text-[11px] text-gray-400">
-          Fase atual: <strong className="text-gray-600">{etapaDef(atual).icone} {etapaDef(atual).titulo}</strong> · isto não mexe no kanban
+          {t("Fase atual:")} <strong className="text-gray-600">{etapaDef(atual).icone} {etapaDef(atual).titulo}</strong> {t("· isto não mexe no kanban")}
         </p>
       )}
     </div>

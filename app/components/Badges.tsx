@@ -1,4 +1,5 @@
 'use client';
+import { t } from '@/lib/i18n';
 import { Categoria, Prioridade, Status } from '@/lib/types';
 
 export function PriorityBadge({ p }: { p: Prioridade }) {
@@ -30,7 +31,7 @@ export function StatusBadge({ s }: { s: Status }) {
   };
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${map[s] ?? 'bg-gray-100 text-gray-600'}`}>
-      {s}
+      {t(s)}
     </span>
   );
 }
@@ -48,7 +49,7 @@ export function CategoriaBadge({ c }: { c: Categoria }) {
   };
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium whitespace-nowrap ${map[c] ?? 'bg-gray-50 text-gray-600'}`}>
-      {c}
+      {t(c)}
     </span>
   );
 }

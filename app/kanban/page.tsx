@@ -1,4 +1,5 @@
 'use client';
+import { t } from '@/lib/i18n';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Coluna, Lead } from '@/lib/types';
@@ -25,7 +26,7 @@ function CopyBtn({ value }: { value: string }) {
       }}
       className="shrink-0 text-[10px] px-1.5 py-0.5 rounded bg-gray-100 hover:bg-gray-200 text-gray-500"
     >
-      {ok ? '✓' : 'copiar'}
+      {ok ? '✓' : t("copiar")}
     </button>
   );
 }
@@ -62,7 +63,7 @@ function Card({
         </div>
       )}
       <div className="flex items-start justify-between gap-2">
-        <Link href={`/call/${lead.id}`} className="min-w-0 text-sm font-semibold text-gray-900 hover:text-blue-600 leading-snug [overflow-wrap:anywhere]">
+        <Link href={`/call/${lead.id}`} className="min-w-0 text-sm font-semibold text-gray-900 hover:text-blue-600 leading-snug break-words">
           {lead.nome}
         </Link>
         <PriorityBadge p={lead.prioridade} />
@@ -74,11 +75,11 @@ function Card({
           <a href={`tel:${fone.replace(/\D/g, '')}`} className="text-sm font-medium text-blue-700 hover:underline whitespace-nowrap">📞 {fone}</a>
           <CopyBtn value={fone} />
           {linkWhatsApp(fone) && (
-            <a href={linkWhatsApp(fone)} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()} className="shrink-0 text-[10px] px-1.5 py-0.5 rounded bg-green-100 hover:bg-green-200 text-green-800 font-semibold">💬 WhatsApp</a>
+            <a href={linkWhatsApp(fone)} target="_blank" rel="noreferrer" onClick={e => e.stopPropagation()} className="shrink-0 text-[10px] px-1.5 py-0.5 rounded bg-green-100 hover:bg-green-200 text-green-800 font-semibold">{t("💬 WhatsApp")}</a>
           )}
         </div>
       ) : (
-        <p className="mt-1.5 text-xs text-orange-600">sem telefone cadastrado</p>
+        <p className="mt-1.5 text-xs text-orange-600">{t("sem telefone cadastrado")}</p>
       )}
 
       {email && (
@@ -90,18 +91,18 @@ function Card({
 
       {semResp >= 1 && coluna !== 'pausados' && (
         <p className={`mt-2 w-fit text-[11px] font-semibold rounded px-1.5 py-0.5 ${semResp >= 2 ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-800'}`}>
-          📵 {semResp} ligaç{semResp > 1 ? 'ões' : 'ão'} sem resposta{semResp >= 2 ? ' — tente por mensagem' : ''}
+          📵 {semResp} {t("ligaç")}{semResp > 1 ? t("ões") : t("ão")} {t("sem resposta")}{semResp >= 2 ? t(" — tente por mensagem") : ''}
         </p>
       )}
       {semResp >= MAX_SEM_RESPOSTA && coluna === 'pausados' && (
         <p className="mt-2 w-fit text-[11px] font-semibold rounded px-1.5 py-0.5 bg-gray-200 text-gray-700">
-          📵 {semResp} ligações sem resposta — fila esgotada
+          📵 {semResp} {t("ligações sem resposta — fila esgotada")}
         </p>
       )}
 
       {lead.emailRascunho && (
         <span className={`mt-2 block w-fit text-[11px] font-semibold rounded px-1.5 py-0.5 ${lead.emailRascunho.status === 'pronto' ? 'bg-emerald-100 text-emerald-800' : lead.emailRascunho.status === 'enviado' ? 'bg-gray-100 text-gray-600' : 'bg-yellow-100 text-yellow-800'}`}>
-          {lead.emailRascunho.status === 'pronto' ? '✉️ rascunho pronto pra enviar' : lead.emailRascunho.status === 'enviado' ? '✉️ enviado' : '✉️ aguardando /emails'}
+          {lead.emailRascunho.status === 'pronto' ? t("✉️ rascunho pronto pra enviar") : lead.emailRascunho.status === 'enviado' ? t("✉️ enviado") : t("✉️ aguardando /emails")}
         </span>
       )}
 
@@ -112,14 +113,14 @@ function Card({
       )}
 
       <div className="mt-2 flex items-center justify-between gap-x-2 gap-y-1 flex-wrap text-[11px] text-gray-400">
-        <span className="whitespace-nowrap">{nChamadas && ult ? `${nChamadas}× · últ. ${ult.data.slice(0, 5)} ${ult.hora}` : 'nunca ligado'}</span>
+        <span className="whitespace-nowrap">{nChamadas && ult ? t("{0}× · últ. {1} {2}", { 0: nChamadas, 1: ult.data.slice(0, 5), 2: ult.hora }) : t("nunca ligado")}</span>
         <select
           value={coluna}
           onChange={e => onMove(lead.id, e.target.value as Coluna)}
           className="text-[11px] text-gray-500 border border-gray-200 rounded px-1 py-0.5 bg-white max-w-28"
-          title="Mover para..."
+          title={t("Mover para...")}
         >
-          {COLUNAS.map(c => <option key={c.id} value={c.id}>{c.icone} {c.titulo}</option>)}
+          {COLUNAS.map(c => <option key={c.id} value={c.id}>{c.icone} {t(c.titulo)}</option>)}
         </select>
       </div>
 
@@ -127,20 +128,20 @@ function Card({
         <div className="mt-2">
           {!editando ? (
             <button onClick={() => setEditando(true)} className="text-[11px] text-blue-600 hover:underline">
-              📅 {lead.agendaData ? 'mudar data/hora' : 'marcar data/hora'}
+              📅 {lead.agendaData ? t("mudar data/hora") : t("marcar data/hora")}
             </button>
           ) : (
             <div className="flex items-center gap-1 flex-wrap">
               <input type="date" value={data} onChange={e => setData(e.target.value)} className="text-xs border border-gray-300 rounded px-1 py-0.5" />
               <input
-                type="text" value={hora} onChange={e => setHora(e.target.value)} placeholder="09:30 ou tarde"
+                type="text" value={hora} onChange={e => setHora(e.target.value)} placeholder={t("09:30 ou tarde")}
                 className="text-xs border border-gray-300 rounded px-1 py-0.5 w-24"
               />
               <button
                 onClick={() => { onAgenda(lead.id, data, hora); setEditando(false); }}
                 className="text-xs bg-blue-600 text-white rounded px-2 py-0.5"
               >
-                ok
+                {t("ok")}
               </button>
               <button onClick={() => setEditando(false)} className="text-xs text-gray-400">x</button>
             </div>
@@ -177,14 +178,14 @@ function ColunaBoard({
       }}
       className={`w-full flex flex-col rounded-2xl bg-slate-200/50 border transition-colors ${over === grupo.id ? 'border-blue-500 ring-4 ring-blue-100 bg-blue-50/60' : 'border-transparent'}`}
     >
-      <div className="px-3 pt-3 pb-1 flex items-center gap-2.5" title={grupo.dica}>
+      <div className="px-3 pt-3 pb-1 flex items-center gap-2.5" title={t(grupo.dica)}>
         <span className={`${grupo.header} grid place-items-center w-8 h-8 rounded-xl text-sm shadow-sm shrink-0`}>{grupo.icone}</span>
-        <h2 className="text-sm font-bold text-gray-800 leading-tight min-w-0 flex-1 [overflow-wrap:anywhere]">{grupo.titulo}</h2>
+        <h2 className="text-sm font-bold text-gray-800 leading-tight min-w-0 flex-1 break-words">{t(grupo.titulo)}</h2>
         <span className="text-xs font-bold text-gray-600 bg-white rounded-full px-2 py-0.5 shadow-sm tabular">{leads.length}</span>
       </div>
-      <p className="px-3 pt-1 text-[11px] text-gray-500 leading-snug">{grupo.dica}</p>
-      <div className="p-2 space-y-2 min-h-[5rem] max-h-[70dvh] @6xl:max-h-[calc(100dvh-17rem)] overflow-y-auto">
-        {leads.length === 0 && <p className="text-xs text-gray-300 text-center py-4">vazio</p>}
+      <p className="px-3 pt-1 text-[11px] text-gray-500 leading-snug">{t(grupo.dica)}</p>
+      <div className="p-2 space-y-2 min-h-[5rem] max-h-[70dvh] @4xl:max-h-[calc(100dvh-17rem)] overflow-y-auto">
+        {leads.length === 0 && <p className="text-xs text-gray-300 text-center py-4">{t("vazio")}</p>}
         {visiveis.map(l => (
           <Card key={l.id} lead={l} coluna={colunaDoLead.get(l.id)!} onMove={onMove} onAgenda={onAgenda} />
         ))}
@@ -193,7 +194,7 @@ function ColunaBoard({
             onClick={() => setMostrar(m => m + PASSO_FILA)}
             className="w-full text-xs text-blue-600 hover:bg-white rounded-lg py-2 border border-dashed border-gray-300"
           >
-            ver mais {Math.min(PASSO_FILA, leads.length - visiveis.length)} · faltam {leads.length - visiveis.length}
+            {t("ver mais")} {Math.min(PASSO_FILA, leads.length - visiveis.length)} {t("· faltam")} {leads.length - visiveis.length}
           </button>
         )}
       </div>
@@ -304,41 +305,41 @@ export default function KanbanPage() {
     <div className="min-h-full flex flex-col">
       <header className="px-4 sm:px-6 lg:px-8 pt-6 pb-2 flex items-center gap-3 flex-wrap">
         <div className="mr-2">
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900">Kanban</h1>
-          <p className="text-sm text-gray-500 mt-0.5">O trabalho do dia, coluna por coluna</p>
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900">{t("Kanban")}</h1>
+          <p className="text-sm text-gray-500 mt-0.5">{t("O trabalho do dia, coluna por coluna")}</p>
         </div>
         <div className="flex gap-2 text-xs font-semibold">
-          {atrasados > 0 && <span className="bg-red-600 text-white rounded px-2 py-1">{atrasados} atrasado{atrasados > 1 ? 's' : ''}</span>}
-          {hoje > 0 && <span className="bg-amber-400 text-amber-950 rounded px-2 py-1">{hoje} pra hoje</span>}
-          {amanha > 0 && <span className="bg-blue-600 text-white rounded px-2 py-1">{amanha} pra amanhã</span>}
+          {atrasados > 0 && <span className="bg-red-600 text-white rounded px-2 py-1">{t(atrasados > 1 ? '{0} atrasados' : '{0} atrasado', { 0: atrasados })}</span>}
+          {hoje > 0 && <span className="bg-amber-400 text-amber-950 rounded px-2 py-1">{hoje} {t("pra hoje")}</span>}
+          {amanha > 0 && <span className="bg-blue-600 text-white rounded px-2 py-1">{amanha} {t("pra amanhã")}</span>}
         </div>
         <select
           value={filtroLigacao} onChange={e => setFiltroLigacao(e.target.value as FiltroLigacao)}
           className={`ml-auto h-10 text-sm border rounded-xl px-3 outline-none bg-white shadow-sm ${filtroLigacao === 'todos' ? 'border-gray-200 text-gray-700' : 'border-blue-500 text-blue-700 font-semibold'}`}
-          title="Filtrar por ligação registrada"
+          title={t("Filtrar por ligação registrada")}
         >
-          <option value="todos">Todos os leads</option>
-          <option value="com">📞 Com ligação registrada</option>
-          <option value="sem">🆕 Sem ligação ainda</option>
+          <option value="todos">{t("Todos os leads")}</option>
+          <option value="com">{t("📞 Com ligação registrada")}</option>
+          <option value="sem">{t("🆕 Sem ligação ainda")}</option>
         </select>
         <button
           onClick={atualizarAgora} disabled={atualizando}
           className="h-10 text-sm border border-gray-200 rounded-xl px-3.5 bg-white hover:bg-gray-50 text-gray-700 shadow-sm disabled:opacity-60"
-          title={atualizadoEm ? `Atualizado às ${atualizadoEm}` : 'Atualizar'}
+          title={atualizadoEm ? t("Atualizado às {0}", { 0: atualizadoEm }) : t("Atualizar")}
         >
-          <span className={atualizando ? 'inline-block animate-spin' : 'inline-block'}>🔄</span> Atualizar{atualizadoEm && <span className="text-gray-400 text-xs"> · {atualizadoEm}</span>}
+          <span className={atualizando ? 'inline-block animate-spin' : 'inline-block'}>🔄</span> {t("Atualizar")}{atualizadoEm && <span className="text-gray-400 text-xs"> · {atualizadoEm}</span>}
         </button>
         <input
-          type="text" value={busca} onChange={e => setBusca(e.target.value)} placeholder="Buscar empresa..."
+          type="text" value={busca} onChange={e => setBusca(e.target.value)} placeholder={t("Buscar empresa...")}
           className="h-10 text-sm border border-gray-200 rounded-xl px-3 outline-none focus:border-blue-400 w-56 bg-white shadow-sm"
         />
       </header>
 
       {loading ? (
-        <div className="py-20 text-center text-gray-400">Carregando...</div>
+        <div className="py-20 text-center text-gray-400">{t("Carregando...")}</div>
       ) : (
         <div className="@container flex-1 px-4 sm:px-6 lg:px-8 py-4 space-y-4">
-          <div className="grid gap-3 grid-cols-1 @lg:grid-cols-2 @3xl:grid-cols-3 @6xl:grid-cols-6 items-start">
+          <div className="grid gap-3 grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 @4xl:grid-cols-6 items-start">
             {BOARD.map(g => <ColunaBoard key={g.id} grupo={g} leads={doGrupo(g)} {...propsComuns} />)}
           </div>
 
@@ -347,10 +348,10 @@ export default function KanbanPage() {
               onClick={() => setGavetaAberta(a => !a)}
               className="text-sm text-gray-600 hover:text-gray-900 border border-gray-200 bg-white rounded-xl px-3.5 py-2 shadow-sm"
             >
-              {gavetaAberta ? '▼' : '▶'} Fora de jogo ({foraDeJogo}) — {GAVETA.map(g => `${g.titulo} ${doGrupo(g).length}`).join(' · ')}
+              {gavetaAberta ? '▼' : '▶'} {t("Fora de jogo (")}{foraDeJogo}) — {GAVETA.map(g => `${t(g.titulo)} ${doGrupo(g).length}`).join(' · ')}
             </button>
             {gavetaAberta && (
-              <div className="grid gap-3 grid-cols-1 @lg:grid-cols-2 @3xl:grid-cols-3 mt-3 items-start">
+              <div className="grid gap-3 grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 @4xl:grid-cols-6 items-start mt-3">
                 {GAVETA.map(g => <ColunaBoard key={g.id} grupo={{ ...g, limite: 25 }} leads={doGrupo(g)} {...propsComuns} />)}
               </div>
             )}

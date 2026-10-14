@@ -1,4 +1,5 @@
 import { EtapaFunil, Lead, Reuniao, StatusReuniao, TipoReuniao } from './types';
+import { t } from './i18n';
 
 /**
  * Funil de clientes — camada paralela ao kanban (pós-prospecção).
@@ -137,11 +138,11 @@ export function chipProximaReuniao(lead: Lead): ChipReuniao | null {
   const [, m, dia] = r.data.split('-');
   const hora = r.hora ? ` ${r.hora}` : '';
   const dow = DIA_SEMANA[new Date(r.data + 'T00:00:00').getDay()] ?? '';
-  if (d < 0) return { texto: `ATRASADA · ${dia}/${m}${hora}`, classes: 'bg-red-600 text-white', urgencia: 0 };
-  if (d === 0) return { texto: `HOJE${hora}`, classes: 'bg-amber-400 text-amber-950', urgencia: 1 };
-  if (d === 1) return { texto: `AMANHÃ${hora}`, classes: 'bg-blue-600 text-white', urgencia: 2 };
-  if (d < 7) return { texto: `${dow.toUpperCase()} ${dia}/${m}${hora}`, classes: 'bg-sky-100 text-sky-800', urgencia: 3 };
-  return { texto: `${dow} ${dia}/${m}${hora}`, classes: 'bg-gray-100 text-gray-700', urgencia: 4 };
+  if (d < 0) return { texto: `${t('ATRASADA')} · ${dia}/${m}${hora}`, classes: 'bg-red-600 text-white', urgencia: 0 };
+  if (d === 0) return { texto: `${t('HOJE')}${hora}`, classes: 'bg-amber-400 text-amber-950', urgencia: 1 };
+  if (d === 1) return { texto: `${t('AMANHÃ')}${hora}`, classes: 'bg-blue-600 text-white', urgencia: 2 };
+  if (d < 7) return { texto: `${t(dow).toUpperCase()} ${dia}/${m}${hora}`, classes: 'bg-sky-100 text-sky-800', urgencia: 3 };
+  return { texto: `${t(dow)} ${dia}/${m}${hora}`, classes: 'bg-gray-100 text-gray-700', urgencia: 4 };
 }
 
 /** Ordena os cards dentro de uma coluna: próxima reunião primeiro, depois score. */
