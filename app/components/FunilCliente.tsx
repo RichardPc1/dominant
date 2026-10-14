@@ -33,20 +33,37 @@ export default function FunilCliente({
   const [hora, setHora] = useState('');
   const [status, setStatus] = useState<StatusReuniao>('Agendada');
   const [nota, setNota] = useState('');
+  /** id da reunião em edição; null = registrando uma nova */
+  const [editandoId, setEditandoId] = useState<string | null>(null);
 
   function mudarEtapa(e: Lead['etapaFunil']) {
     if (!e || e === atual) return;
     onPatch(patchParaEtapa(e));
   }
 
+  function limparFormulario() {
+    setAberto(false); setEditandoId(null);
+    setNota(''); setHora(''); setStatus('Agendada'); setTipo('Apresentação'); setData(hojeISO());
+  }
+
   function registrar() {
-    const r: Reuniao = {
-      id: Math.random().toString(36).slice(2),
-      tipo, data, hora: hora.trim() || undefined, status, notas: nota.trim(),
-      registradaEm: new Date().toISOString(),
-    };
-    onPatch({ reunioes: [...reunioes, r] });
-    setAberto(false); setNota(''); setHora(''); setStatus('Agendada'); setTipo('Apresentação'); setData(hojeISO());
+    if (editandoId) {
+      onPatch({ reunioes: reunioes.map(r => (r.id === editandoId ? { ...r, tipo, data, hora: hora.trim() || undefined, status, notas: nota.trim() } : r)) });
+    } else {
+      const r: Reuniao = {
+        id: Math.random().toString(36).slice(2),
+        tipo, data, hora: hora.trim() || undefined, status, notas: nota.trim(),
+        registradaEm: new Date().toISOString(),
+      };
+      onPatch({ reunioes: [...reunioes, r] });
+    }
+    limparFormulario();
+  }
+
+  function editar(r: Reuniao) {
+    setEditandoId(r.id);
+    setTipo(r.tipo); setData(r.data ?? ''); setHora(r.hora ?? ''); setStatus(r.status); setNota(r.notas ?? '');
+    setAberto(true);
   }
 
   function mudarStatusReuniao(id: string, novo: StatusReuniao) {
@@ -54,7 +71,9 @@ export default function FunilCliente({
   }
 
   function remover(id: string) {
+    if (!window.confirm(t('Remover esta reunião do histórico?'))) return;
     onPatch({ reunioes: reunioes.filter(r => r.id !== id) });
+    if (editandoId === id) limparFormulario();
   }
 
   return (
@@ -97,7 +116,7 @@ export default function FunilCliente({
       {reunioes.length > 0 && (
         <div className="space-y-2">
           {[...reunioes].reverse().map(r => (
-            <div key={r.id} className="rounded-xl border border-gray-100 bg-gray-50 p-3">
+            <div key={r.id} className={`rounded-xl border p-3 ${editandoId === r.id ? 'border-indigo-300 bg-indigo-50/60' : 'border-gray-100 bg-gray-50'}`}>
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-xs font-semibold text-gray-700">{TIPO_REUNIAO_ICONE[r.tipo]} {t(r.tipo)}</span>
                 <span className="text-xs text-gray-400">{r.data ? r.data.split('-').reverse().join('/') : t('data a confirmar')}{r.hora ? ` · ${r.hora}` : ''}</span>
@@ -108,6 +127,7 @@ export default function FunilCliente({
                 >
                   {STATUS_REUNIAO.map(s => <option key={s} value={s}>{t(s)}</option>)}
                 </select>
+                <button onClick={() => editar(r)} className="text-[11px] font-medium text-indigo-600 hover:underline">{t("editar")}</button>
                 <button onClick={() => remover(r.id)} className="text-[11px] text-gray-300 hover:text-red-500" title={t("Remover")}>✕</button>
               </div>
               {r.notas && <p className="text-sm text-gray-700 mt-1.5 whitespace-pre-line">{r.notas}</p>}
@@ -126,6 +146,7 @@ export default function FunilCliente({
         </button>
       ) : (
         <div className="rounded-xl border border-gray-200 bg-white p-3 space-y-3">
+          <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide">{editandoId ? t("Editando reunião") : t("Nova reunião")}<span className="ml-2 normal-case font-normal tracking-normal">{t("deixe a data vazia se ainda não foi confirmada")}</span></p>
           <div className="flex flex-wrap gap-1.5">
             {TIPOS_REUNIAO.map(tp => (
               <button
@@ -150,8 +171,8 @@ export default function FunilCliente({
             className="w-full text-sm border border-gray-300 rounded-lg p-2.5 resize-none outline-none focus:border-blue-400"
           />
           <div className="flex gap-2">
-            <button onClick={registrar} className="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700">{t("Salvar reunião")}</button>
-            <button onClick={() => setAberto(false)} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900">{t("Cancelar")}</button>
+            <button onClick={registrar} className="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700">{editandoId ? t("Salvar alterações") : t("Salvar reunião")}</button>
+            <button onClick={limparFormulario} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900">{t("Cancelar")}</button>
           </div>
         </div>
       )}

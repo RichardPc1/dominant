@@ -34,28 +34,28 @@ function CopyButton({ text }: { text: string }) {
 
 function ScriptItemRenderer({ item }: { item: ScriptItem }) {
   if (item.type === 'text' && item.text) {
-    return <p className="text-sm text-gray-700 leading-relaxed">{item.text}</p>;
+    return <p className="text-sm text-gray-700 leading-relaxed">{t(item.text)}</p>;
   }
 
   if (item.type === 'script' && item.text) {
     return (
       <div className="flex gap-2 items-start bg-gray-50 border-l-4 border-gray-400 rounded-r-lg p-3">
-        <p className="text-sm text-gray-800 leading-relaxed font-medium flex-1 italic">{item.text}</p>
-        <CopyButton text={item.text} />
+        <p className="text-sm text-gray-800 leading-relaxed font-medium flex-1 italic">{t(item.text)}</p>
+        <CopyButton text={t(item.text)} />
       </div>
     );
   }
 
   if (item.type === 'tip' && item.text) {
     return (
-      <div className="text-xs text-gray-500 font-medium pt-1">{item.text}</div>
+      <div className="text-xs text-gray-500 font-medium pt-1">{t(item.text)}</div>
     );
   }
 
   if (item.type === 'warning' && item.text) {
     return (
-      <div className="flex gap-2 bg-red-50 border border-red-200 rounded-lg p-3">
-        <p className="text-sm text-red-700 leading-relaxed">{item.text}</p>
+      <div className="flex gap-2 bg-red-50 border border-red-200 rounded-xl p-3">
+        <p className="text-sm text-red-700 leading-relaxed">{t(item.text)}</p>
       </div>
     );
   }
@@ -65,8 +65,8 @@ function ScriptItemRenderer({ item }: { item: ScriptItem }) {
       <ul className="space-y-2">
         {item.items.map((li, i) => (
           <li key={i} className="flex gap-2 items-start bg-gray-50 border-l-4 border-blue-300 rounded-r-lg p-3">
-            <p className="text-sm text-gray-800 italic flex-1">{li}</p>
-            <CopyButton text={li} />
+            <p className="text-sm text-gray-800 italic flex-1">{t(li)}</p>
+            <CopyButton text={t(li)} />
           </li>
         ))}
       </ul>
@@ -79,13 +79,13 @@ function ScriptItemRenderer({ item }: { item: ScriptItem }) {
 function SectionCard({ section }: { section: ScriptSection }) {
   const [open, setOpen] = useState(true);
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
       <button
         onClick={() => setOpen(o => !o)}
         className="w-full flex items-center gap-3 px-5 py-4 text-left hover:bg-gray-50 transition-colors"
       >
         <span className="text-lg">{section.icon}</span>
-        <span className="font-semibold text-gray-900 flex-1">{section.title}</span>
+        <span className="font-semibold text-gray-900 flex-1">{t(section.title)}</span>
         <span className="text-gray-400 text-sm">{open ? '▲' : '▼'}</span>
       </button>
       {open && (
@@ -114,10 +114,10 @@ function RoteirosConteudo() {
   return (
     <div className="min-h-full">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-10">
+      <header className="bg-white/85 backdrop-blur border-b border-gray-200 px-4 sm:px-6 lg:px-8 py-4 sticky top-0 z-10">
         <div className="max-w-screen-xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <h1 className="text-lg font-bold text-gray-900">{t("Roteiros de Abordagem")}</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-gray-900">{t("Roteiros de Abordagem")}</h1>
           </div>
           <div className="flex items-center gap-3 text-xs text-gray-400">
             <span>{t("Método: Linha Reta (Jordan Belfort) + SPIN Selling (Thiago Concer)")}</span>
@@ -134,18 +134,18 @@ function RoteirosConteudo() {
               <button
                 key={r.id}
                 onClick={() => setSelected(r.id)}
-                className={`w-full text-left px-3 py-2.5 rounded-lg text-sm transition-colors ${
+                className={`w-full text-left px-3 py-2.5 rounded-xl text-sm transition-colors ${
                   selected === r.id
                     ? 'bg-blue-600 text-white font-medium'
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
-                {r.categoria}
+                {t(r.categoria)}
               </button>
             ))}
           </nav>
 
-          <div className="mt-6 p-3 bg-amber-50 border border-amber-100 rounded-lg">
+          <div className="mt-6 p-3 bg-amber-50 border border-amber-100 rounded-xl">
             <p className="text-xs font-semibold text-amber-700 mb-1">{t("Legenda")}</p>
             <div className="space-y-1 text-xs text-amber-700">
               <div className="flex items-center gap-1.5"><span className="w-3 h-3 bg-gray-400 rounded-sm inline-block"/><span>{t("Script (copiar)")}</span></div>
@@ -163,16 +163,16 @@ function RoteirosConteudo() {
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <span className={`inline-flex items-center px-2.5 py-1 rounded text-xs font-semibold border ${CAT_COLORS[roteiro.categoria] ?? 'bg-gray-50 text-gray-600 border-gray-200'}`}>
-                    {roteiro.categoria}
+                    {t(roteiro.categoria)}
                   </span>
                 </div>
-                <h2 className="text-xl font-bold text-gray-900">{roteiro.tagline}</h2>
+                <h2 className="text-xl font-bold text-gray-900">{t(roteiro.tagline)}</h2>
               </div>
             </div>
             <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-              <div><span className="font-medium text-gray-700">{t("Canal:")}</span> {roteiro.canal}</div>
-              <div><span className="font-medium text-gray-700">{t("Duração:")}</span> {roteiro.duracao}</div>
-              <div><span className="font-medium text-gray-700">{t("Com quem falar:")}</span> {roteiro.alvo}</div>
+              <div><span className="font-medium text-gray-700">{t("Canal:")}</span> {t(roteiro.canal)}</div>
+              <div><span className="font-medium text-gray-700">{t("Duração:")}</span> {t(roteiro.duracao)}</div>
+              <div><span className="font-medium text-gray-700">{t("Com quem falar:")}</span> {t(roteiro.alvo)}</div>
             </div>
           </div>
 
@@ -185,7 +185,7 @@ function RoteirosConteudo() {
 
           {/* Framework reminder */}
           <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="bg-white rounded-xl border border-gray-200 p-4">
+            <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-4">
               <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">{t("Jordan Belfort — Linha Reta")}</p>
               <ul className="text-xs text-gray-600 space-y-1">
                 <li>{t("⚡ 4 segundos: afiado, entusiasmado, especialista")}</li>
@@ -195,7 +195,7 @@ function RoteirosConteudo() {
                 <li>{t("🎙️ 90% está na tonalidade, não nas palavras")}</li>
               </ul>
             </div>
-            <div className="bg-white rounded-xl border border-gray-200 p-4">
+            <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-4">
               <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">{t("Thiago Concer — SPIN + Resiliência")}</p>
               <ul className="text-xs text-gray-600 space-y-1">
                 <li>{t("❓ Situação → Problema → Implicação → Necessidade")}</li>

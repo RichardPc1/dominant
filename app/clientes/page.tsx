@@ -209,7 +209,16 @@ export default function ClientesPage() {
   }
 
   const mover = (id: string, etapa: EtapaFunil) => patch(id, patchParaEtapa(etapa));
-  const sair = (id: string) => { patch(id, patchSairDoFunil()); setAbertoId(null); };
+  const sair = (id: string) => {
+    const l = leads.find(x => x.id === id);
+    const n = (l?.reunioes ?? []).length;
+    const msg = n > 0
+      ? t('Tirar {0} do funil? As {1} reuniões registradas serão apagadas. O lead continua no kanban.', { 0: l?.nome, 1: n })
+      : t('Tirar {0} do funil? O lead continua no kanban.', { 0: l?.nome });
+    if (!window.confirm(msg)) return;
+    patch(id, patchSairDoFunil());
+    setAbertoId(null);
+  };
 
   const noFunil = useMemo(() => leads.filter(estaNoFunil), [leads]);
   const porEtapa = useMemo(() => {

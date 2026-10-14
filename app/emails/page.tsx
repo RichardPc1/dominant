@@ -79,15 +79,15 @@ export default function EmailsPage() {
 
   return (
     <div className="min-h-full">
-      <div className="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-10">
+      <div className="bg-white/85 backdrop-blur border-b border-gray-200 px-4 sm:px-6 lg:px-8 py-4 sticky top-0 z-10">
         <div className="max-w-4xl mx-auto flex items-center gap-4">
-          <h1 className="text-lg font-bold text-gray-900">{t("E-mails para Prospecção")}</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900">{t("E-mails para Prospecção")}</h1>
           <span className="text-sm text-gray-400">{rows.length} {t("e-mails")}</span>
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder={t("Buscar lead ou email...")}
-            className="ml-auto text-sm border border-gray-300 rounded-lg px-3 py-1.5 outline-none focus:border-blue-400 w-64"
+            className="ml-auto text-sm border border-gray-200 rounded-xl px-3 py-1.5 outline-none focus:border-blue-400 w-64"
           />
         </div>
       </div>
@@ -106,7 +106,7 @@ export default function EmailsPage() {
                 </div>
                 <button
                   onClick={() => copyAll(tier)}
-                  className="text-xs px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
+                  className="text-xs px-3 py-1.5 border border-gray-200 rounded-xl hover:bg-gray-100 text-gray-600 transition-colors"
                 >
                   {t("Copiar todos")}
                 </button>

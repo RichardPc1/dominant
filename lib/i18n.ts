@@ -1,4 +1,9 @@
-import { EN } from './i18n-en';
+import { EN as EN_BASE } from './i18n-en';
+import { EN_GUIA } from './i18n-en-guia';
+import { EN_ROTEIROS } from './i18n-en-roteiros';
+
+// a interface tem prioridade: se o mesmo texto existir nos roteiros/guia, vale a tradução da interface
+const EN: Record<string, string> = { ...EN_ROTEIROS, ...EN_GUIA, ...EN_BASE };
 
 export type Idioma = 'pt' | 'en';
 

@@ -29,31 +29,31 @@ export default function ConfigPage() {
     setTimeout(() => setMsg(''), 2500);
   }
 
-  const inp = 'border border-gray-300 rounded px-2 py-1 text-sm w-full';
+  const inp = 'border border-gray-200 rounded-lg px-2.5 py-1.5 text-sm w-full bg-white outline-none focus:border-blue-400';
 
   return (
     <div className="min-h-full">
-      <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center gap-4">
-        <h1 className="text-lg font-bold text-gray-900">{t("Classificação das ligações")}</h1>
+      <header className="bg-white/85 backdrop-blur border-b border-gray-200 px-4 sm:px-6 lg:px-8 py-4 sticky top-0 z-10 flex items-center gap-4 flex-wrap">
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900">{t("Classificação das ligações")}</h1>
         {msg && <span className="text-sm text-green-600 font-medium">{msg}</span>}
         <div className="ml-auto flex gap-2">
-          <button onClick={() => { setCfg(DEFAULT_CONFIG); salvar(DEFAULT_CONFIG); }} className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-gray-50">{t("Restaurar padrão")}</button>
-          <button onClick={() => salvar(cfg)} className="px-4 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold">{t("Salvar")}</button>
+          <button onClick={() => { setCfg(DEFAULT_CONFIG); salvar(DEFAULT_CONFIG); }} className="px-3 py-1.5 text-sm border border-gray-200 rounded-xl hover:bg-gray-50">{t("Restaurar padrão")}</button>
+          <button onClick={() => salvar(cfg)} className="px-4 py-1.5 text-sm bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-semibold">{t("Salvar")}</button>
         </div>
       </header>
       <main className="max-w-5xl mx-auto px-6 py-6 space-y-4">
         <p className="text-sm text-gray-600">
           {t("Ao terminar uma ligação, o sistema lê a transcrição, procura as frases de cada resultado (a ordem importa: em empate vence o de cima) e dispara a próxima ação. Tudo aqui é editável.")}
         </p>
-        <div className="bg-white border border-gray-200 rounded-xl p-4 flex items-center gap-3 text-sm">
+        <div className="bg-white border border-gray-200/80 rounded-2xl shadow-sm p-4 flex items-center gap-3 text-sm">
           {t("Follow-up de e-mail enviado, em")}
-          <input type="number" min={1} value={cfg.followUpDias} onChange={e => setCfg({ ...cfg, followUpDias: Number(e.target.value) || 1 })} className="border border-gray-300 rounded px-2 py-1 w-16" />
+          <input type="number" min={1} value={cfg.followUpDias} onChange={e => setCfg({ ...cfg, followUpDias: Number(e.target.value) || 1 })} className="border border-gray-200 rounded px-2 py-1 w-16" />
           {t("dias")}
         </div>
         {cfg.outcomes.map((o, i) => (
-          <div key={o.id} className="bg-white border border-gray-200 rounded-xl p-4 grid gap-3 sm:grid-cols-2">
+          <div key={o.id} className="bg-white border border-gray-200/80 rounded-2xl shadow-sm p-4 grid gap-3 sm:grid-cols-2">
             <div className="flex gap-2">
-              <input value={o.emoji} onChange={e => set(i, { emoji: e.target.value })} className="border border-gray-300 rounded px-2 py-1 text-sm w-14 text-center" />
+              <input value={o.emoji} onChange={e => set(i, { emoji: e.target.value })} className="border border-gray-200 rounded px-2 py-1 text-sm w-14 text-center" />
               <input value={o.label} onChange={e => set(i, { label: e.target.value })} className={inp} />
             </div>
             <input value={o.proximaAcao} onChange={e => set(i, { proximaAcao: e.target.value })} className={inp} placeholder={t("Próxima ação")} />
