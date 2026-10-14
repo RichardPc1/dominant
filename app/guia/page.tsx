@@ -320,14 +320,14 @@ export default function GuiaPage() {
           {/* O agente */}
           <Section id="agente" title={t("O agente de IA — como ele pesquisa")}>
             <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-5 space-y-4 text-sm text-gray-700">
-              <p>{t("O agente usa o modelo")} <strong>{t("GPT-5")}</strong> {t("da OpenAI com raciocínio e acesso a busca na web em tempo real. A cada rodada, ele:")}</p>
+              <p>{t("A pesquisa é feita pelo")} <strong>{t("Claude Code")}</strong>{t(", com o comando")} <code className="bg-gray-100 px-1 rounded">/rodada</code>{t(" e busca na web em tempo real — sem API paga. A cada rodada, ele:")}</p>
               <ol className="list-decimal list-inside space-y-2 ml-2">
-                <li>{t("Recebe a região e os segmentos que você escolheu")}</li>
+                <li>{t("Recebe as cidades, os segmentos e a quantidade de leads que você escolheu em \"Pedir rodada\"")}</li>
                 <li>{t("Faz buscas reais na web (sites de empresas, diretórios B2B, portais de associações, vagas de emprego)")}</li>
                 <li>{t("Qualifica cada empresa encontrada usando os critérios de score")}</li>
                 <li>{t("Verifica se a empresa já está no sistema para não duplicar")}</li>
                 <li>{t("Gera o CSV estruturado com todos os campos preenchidos")}</li>
-                <li>{t("Adiciona os leads novos automaticamente à tabela")}</li>
+                <li>{t("Grava os leads novos no arquivo de leads do projeto")}</li>
               </ol>
               <div className="bg-amber-50 border border-amber-100 rounded-xl p-3">
                 <p className="font-medium text-amber-800 mb-1">{t("Regras de qualidade que o agente segue:")}</p>
@@ -335,11 +335,11 @@ export default function GuiaPage() {
                   <li>{t("Não inventa nada — todo dado tem uma URL de fonte")}</li>
                   <li>{t("Diferencia \"Evidência:\" (visto na fonte) de \"Hipótese:\" (inferência)")}</li>
                   <li>{t("Respeita a LGPD — registra apenas dados públicos e institucionais, nunca CPF, celular pessoal ou e-mail pessoal")}</li>
-                  <li>{t("Meta: 10 leads por rodada, pelo menos 3 com Prioridade 1 ou 2")}</li>
+                  <li>{t("Meta: a quantidade pedida na rodada (padrão 10), pelo menos 3 com Prioridade 1 ou 2")}</li>
                   <li>{t("Busca telefone comercial e site institucional de cada empresa (quando não acha, marca para captura manual)")}</li>
                 </ul>
               </div>
-              <p className="text-gray-500 text-xs">{t("Os dados ficam salvos em")} <code className="bg-gray-100 px-1 rounded">{t("data/leads.json")}</code> {t("na sua máquina. Nada vai para servidores externos além da chamada à API do OpenAI.")}</p>
+              <p className="text-gray-500 text-xs">{t("Onde os dados ficam: no site publicado, os leads são guardados num banco de dados na nuvem (Redis, na Vercel). Rodando o sistema no seu computador, ficam no arquivo")} <code className="bg-gray-100 px-1 rounded">data/leads.json</code>{t(". O comando /rodada grava nesse arquivo local.")}</p>
             </div>
           </Section>
 
