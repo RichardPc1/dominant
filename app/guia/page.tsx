@@ -3,8 +3,11 @@ import { t } from '@/lib/i18n';
 
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
   return (
-    <section id={id} className="scroll-mt-24">
-      <h2 className="text-xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">{t(title)}</h2>
+    <section id={id} className="scroll-mt-6">
+      <h2 className="flex items-center gap-3 text-xl font-bold tracking-tight text-gray-900 mb-4">
+        <span className="tema-fixo w-1.5 h-6 rounded-full bg-gradient-to-b from-blue-600 to-indigo-600" />
+        {t(title)}
+      </h2>
       <div className="space-y-4">{children}</div>
     </section>
   );
@@ -12,10 +15,10 @@ function Section({ id, title, children }: { id: string; title: string; children:
 
 function Card({ title, badge, badgeColor, children }: { title: string; badge?: string; badgeColor?: string; children: React.ReactNode }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-5">
-      <div className="flex items-center gap-3 mb-3">
+    <div className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-5 hover:shadow-md transition-shadow">
+      <div className="flex items-center gap-3 mb-3 flex-wrap">
         {badge && (
-          <span className={`inline-flex items-center px-2.5 py-1 rounded text-xs font-semibold ${badgeColor}`}>
+          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${badgeColor}`}>
             {t(badge)}
           </span>
         )}
@@ -48,21 +51,25 @@ const NAV = [
 export default function GuiaPage() {
   return (
     <div className="min-h-full">
-      {/* Header */}
-      <header className="bg-white/85 backdrop-blur border-b border-gray-200 px-4 sm:px-6 lg:px-8 py-4 sticky top-0 z-10">
-        <div className="max-w-screen-lg mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold tracking-tight text-gray-900">{t("Guia completo do sistema")}</h1>
-          </div>
-        </div>
-      </header>
+      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900">{t("Guia completo do sistema")}</h1>
+        <p className="text-sm text-gray-500 mt-0.5">{t("O que a Dominant vende, como os leads são classificados e como usar o CRM")}</p>
+        <nav className="lg:hidden flex gap-2 overflow-x-auto mt-4 pb-1">
+          {NAV.map(n => (
+            <a key={n.id} href={`#${n.id}`} className="shrink-0 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-full px-3 py-1.5 shadow-sm">
+              {t(n.label)}
+            </a>
+          ))}
+        </nav>
+      </div>
 
-      <div className="max-w-screen-lg mx-auto px-6 py-8 flex gap-8">
+      <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex gap-8 items-start">
         {/* Sidebar nav */}
-        <aside className="hidden lg:block w-52 shrink-0">
-          <nav className="sticky top-24 space-y-1">
+        <aside className="hidden lg:block w-56 shrink-0 sticky top-6">
+          <nav className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-2 space-y-0.5">
+            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider px-3 pt-2 pb-1">{t("Nesta página")}</p>
             {NAV.map(n => (
-              <a key={n.id} href={`#${n.id}`} className="block text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-xl transition-colors">
+              <a key={n.id} href={`#${n.id}`} className="block text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 px-3 py-2 rounded-xl transition-colors">
                 {t(n.label)}
               </a>
             ))}
@@ -70,12 +77,12 @@ export default function GuiaPage() {
         </aside>
 
         {/* Content */}
-        <main className="flex-1 space-y-12 min-w-0">
+        <main className="flex-1 space-y-10 min-w-0">
 
           {/* O produto */}
           <Section id="produto" title={t("O produto: o que é o Coletor")}>
-            <div className="bg-blue-50 border border-blue-100 rounded-xl p-5 text-sm text-gray-700 space-y-4">
-              <p className="font-semibold text-blue-800">{t("A Dominant vende três soluções:")}</p>
+            <div className="bg-white border border-gray-200/80 shadow-sm rounded-2xl p-5 sm:p-6 text-sm text-gray-700 space-y-5 leading-relaxed">
+              <p className="font-semibold text-blue-700">{t("A Dominant vende três soluções:")}</p>
 
               <div className="border-l-4 border-blue-400 pl-4 space-y-1">
                 <p className="font-semibold text-gray-800">{t("1. Coletor — dados de chão de fábrica")}</p>
@@ -205,7 +212,7 @@ export default function GuiaPage() {
               </table>
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="bg-red-50 border border-red-200 rounded-xl p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="bg-red-100 text-red-700 text-xs font-bold px-2 py-0.5 rounded border border-red-200">P1</span>
@@ -250,8 +257,8 @@ export default function GuiaPage() {
                 { status: 'Parceiro ativo', color: 'bg-emerald-100 text-emerald-700', quem: 'Você', desc: 'Parceiro comercial ativo — ERP integrado, integrador revendendo ou fabricante embarcando o Coletor. Receita recorrente gerada.', quando: 'Contrato assinado e operação rodando.' },
                 { status: 'Fechado', color: 'bg-red-100 text-red-600', quem: 'Você', desc: 'Negociação encerrada sem sucesso — sem interesse, projeto cancelado, perdido para concorrente ou fora do perfil. Pode ser reaberto no futuro.', quando: 'Lead descartado ou perdido.' },
               ].map(s => (
-                <div key={s.status} className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-4 flex gap-4">
-                  <div className="flex flex-col items-center gap-1.5 pt-0.5 w-28 shrink-0">
+                <div key={s.status} className="bg-white rounded-2xl border border-gray-200/80 shadow-sm p-4 flex gap-4 flex-col sm:flex-row">
+                  <div className="flex sm:flex-col items-center sm:items-start gap-1.5 pt-0.5 sm:w-36 shrink-0">
                     <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${s.color}`}>{t(s.status)}</span>
                     <span className={`text-xs px-2 py-0.5 rounded font-medium ${s.quem === 'IA' ? 'bg-blue-50 text-blue-600' : 'bg-gray-100 text-gray-600'}`}>
                       {s.quem === 'IA' ? t("Define: IA") : t("Define: você")}
@@ -307,7 +314,7 @@ export default function GuiaPage() {
                 { step: '7', title: 'Exportar para relatório', desc: 'Use "Exportar CSV" para gerar a planilha com todos os campos. Útil para reuniões de pipeline ou para enviar ao time.' },
               ].map(s => (
                 <div key={s.step} className="flex gap-4 bg-white rounded-2xl border border-gray-200/80 shadow-sm p-4">
-                  <div className="w-8 h-8 rounded-full bg-blue-600 text-white text-sm font-bold flex items-center justify-center shrink-0">{s.step}</div>
+                  <div className="tema-fixo w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white text-sm font-bold flex items-center justify-center shrink-0 shadow-md shadow-blue-600/25">{s.step}</div>
                   <div>
                     <p className="font-semibold text-gray-900 mb-1">{t(s.title)}</p>
                     <p className="text-sm text-gray-600">{t(s.desc)}</p>
