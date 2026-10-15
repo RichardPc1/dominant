@@ -118,6 +118,61 @@ export interface Reuniao {
   registradaEm?: string;
 }
 
+// ---- Linha do tempo do cliente (timeline) -----------------------------------
+// A unidade de acompanhamento do funil deixou de ser só "reunião": agora é um
+// EVENTO. Reunião é um tipo de evento; convivem com tarefas, pendências e notas.
+// É isto que vira o alicerce das automações (alerta/e-mail) no futuro.
+
+export type TipoEvento =
+  | 'reuniao'      // encontro — tem rótulo/ícone livres + pauta estruturada
+  | 'tarefa'       // algo a fazer — tem dono (eu/cliente/ambos) e estado
+  | 'nota'         // atualização / registro do que rolou, sem estado
+  | 'marco';       // gerado pelo sistema (entrou no funil, mudou de fase, fechou)
+
+/** De quem é a bola numa tarefa/pendência. */
+export type Lado = 'eu' | 'cliente' | 'ambos';
+
+export type EstadoEvento = 'aberto' | 'feito' | 'cancelado';
+
+/** Template estruturado da reunião. */
+export interface PautaReuniao {
+  contexto?: string;
+  assunto?: string;
+  pendencias?: string;
+  /** Ações que saíram da reunião (podem virar tarefas na timeline). */
+  acoes?: string;
+}
+
+export interface Evento {
+  id: string;
+  tipo: TipoEvento;
+  /** Linha principal na timeline (título do cartão do evento). */
+  titulo: string;
+  /** Texto livre (usado por nota/tarefa). */
+  nota?: string;
+  /** Quando acontece/aconteceu (YYYY-MM-DD). Vazio = a confirmar. */
+  data?: string;
+  hora?: string;
+
+  // --- tarefa / pendência ---
+  lado?: Lado;
+  estado?: EstadoEvento;
+  /** Prazo da tarefa (YYYY-MM-DD) — futuro gatilho de alerta. */
+  prazo?: string;
+
+  // --- reunião ---
+  /** Nome livre do tipo de reunião (ex.: "Apresentação", "Alinhamento técnico"). */
+  rotulo?: string;
+  /** Emoji escolhido no seletor de ícones. */
+  icone?: string;
+  statusReuniao?: StatusReuniao;
+  pauta?: PautaReuniao;
+
+  // --- carimbos ---
+  criadoEm: string;
+  feitoEm?: string;
+}
+
 export interface Lead {
   id: string;
   nome: string;
@@ -162,8 +217,18 @@ export interface Lead {
    * Camada 100% paralela ao kanban: NUNCA deriva nem altera `coluna`/`status`.
    */
   etapaFunil?: EtapaFunil;
-  /** Histórico de reuniões do fechamento (POC, proposta, follow-up). */
+  /**
+   * Histórico de reuniões do fechamento (POC, proposta, follow-up).
+   * LEGADO: substituído por `timeline`. Mantido só para leitura/migração —
+   * `eventosDe(lead)` (lib/funil.ts) cai aqui quando `timeline` ainda não existe.
+   */
   reunioes?: Reuniao[];
+  /**
+   * Linha do tempo do cliente: reuniões, tarefas, pendências e notas num só
+   * fluxo. É o novo dono do acompanhamento do funil. Camada 100% paralela ao
+   * kanban: continua SEM tocar em `coluna`/`status`.
+   */
+  timeline?: Evento[];
   createdAt: string;
   updatedAt: string;
 }

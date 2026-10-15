@@ -4,10 +4,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { EtapaFunil, Lead } from '@/lib/types';
 import {
-  ETAPAS, chipProximaReuniao, compararNoFunil, contarReunioes, estaNoFunil,
-  etapaDef, patchParaEtapa, patchSairDoFunil, ultimaReuniao,
+  ETAPAS, chipProximaReuniao, compararNoFunil, contarReunioes, contarTarefas, estaNoFunil,
+  etapaDef, patchParaEtapa, patchSairDoFunil, previewEvento, ultimoEvento,
 } from '@/lib/funil';
 import FunilCliente from '../components/FunilCliente';
+import Icon from '../components/Icon';
 import { CategoriaBadge } from '../components/Badges';
 import { guardarLeadsEmCache, leadsEmCache } from '@/lib/leads-cache';
 
@@ -35,7 +36,9 @@ function CardFunil({
   const def = etapaDef(lead.etapaFunil!);
   const chip = chipProximaReuniao(lead);
   const cont = contarReunioes(lead);
-  const ult = ultimaReuniao(lead);
+  const ct = contarTarefas(lead);
+  const ult = ultimoEvento(lead);
+  const preview = ult ? previewEvento(ult) : '';
   const fone = soDigitos(lead.telefone);
   const email = lead.emails?.[0]?.endereco ?? '';
 
@@ -58,11 +61,15 @@ function CardFunil({
         {cont.realizadas > 0 && <span className="rounded bg-emerald-100 text-emerald-800 px-1.5 py-0.5 font-semibold">✅ {cont.realizadas}</span>}
         {cont.faltou > 0 && <span className="rounded bg-red-100 text-red-700 px-1.5 py-0.5 font-semibold">❌ {cont.faltou}</span>}
         {cont.agendadas > 0 && <span className="rounded bg-blue-100 text-blue-800 px-1.5 py-0.5 font-semibold">📅 {cont.agendadas}</span>}
-        {cont.total === 0 && <span className="rounded bg-gray-100 text-gray-400 px-1.5 py-0.5">{t("sem reunião")}</span>}
+        {ct.minhas > 0 && <span className="rounded bg-blue-100 text-blue-800 px-1.5 py-0.5 font-semibold">🙋 {ct.minhas}</span>}
+        {ct.doCliente > 0 && <span className="rounded bg-amber-100 text-amber-800 px-1.5 py-0.5 font-semibold">⏳ {ct.doCliente}</span>}
+        {cont.total === 0 && ct.total === 0 && <span className="rounded bg-gray-100 text-gray-400 px-1.5 py-0.5">{t("sem atividade")}</span>}
       </div>
 
-      {ult?.notas && (
-        <p className="mt-2 text-xs text-gray-600 bg-gray-50 border border-gray-100 rounded px-2 py-1 line-clamp-2">{ult.notas}</p>
+      {preview && (
+        <p className="mt-2 text-xs text-gray-600 bg-gray-50 border border-gray-100 rounded px-2 py-1 line-clamp-2">
+          <span className="mr-1">{ult?.icone || ''}</span>{preview}
+        </p>
       )}
 
       {(fone || email) && (
@@ -259,6 +266,13 @@ export default function ClientesPage() {
             <span className="bg-indigo-100 text-indigo-800 rounded px-2 py-1">{ativos} {t("em negociação")}</span>
             <span className="bg-emerald-100 text-emerald-800 rounded px-2 py-1">{ganhos} {t("cliente")}{ganhos !== 1 ? 's' : ''}</span>
           </div>
+          <Link
+            href="/clientes/mapa"
+            className="inline-flex items-center gap-2 h-10 text-sm font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-xl px-4 hover:bg-indigo-100"
+            title={t("Ver o mapa de clientes")}
+          >
+            <Icon name="mapa" className="w-4 h-4" /> {t("Mapa")}
+          </Link>
           <button
             onClick={() => setAddOpen(o => !o)}
             className="h-10 text-sm font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl px-4 shadow-md shadow-blue-600/25 hover:brightness-110"
