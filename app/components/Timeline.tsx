@@ -277,19 +277,31 @@ export default function Timeline({ lead, onPatch }: { lead: Lead; onPatch: (u: P
       {linha.length > 0 && (
         <ol className="relative space-y-3 pl-6">
           <span className="absolute left-[9px] top-1 bottom-1 w-px bg-gray-200" aria-hidden />
-          {linha.map(ev => (
-            <li key={ev.id} className="relative">
-              <span className="absolute -left-6 top-1 grid place-items-center w-[18px] h-[18px] rounded-full bg-white border border-gray-300 text-[10px] leading-none">{ev.icone || ICONE_FALLBACK[ev.tipo]}</span>
-              <ItemEvento
-                ev={ev}
-                onStatus={mudarStatusReuniao}
-                onToggle={alternarTarefa}
-                onEditar={() => editar(ev)}
-                onRemover={() => remover(ev.id)}
-                onAcaoTarefa={acaoVirarTarefa}
-              />
-            </li>
-          ))}
+          {linha.map(ev => {
+            const feito = ev.estado === 'feito';
+            return (
+              <li key={ev.id} className="relative">
+                {ev.tipo === 'tarefa' ? (
+                  <button
+                    onClick={() => alternarTarefa(ev.id)}
+                    title={feito ? t("Reabrir") : t("Concluir")}
+                    className={`absolute -left-6 top-0.5 grid place-items-center w-[18px] h-[18px] rounded-md border transition-colors ${feito ? 'bg-emerald-500 border-emerald-500 text-white' : 'bg-white border-gray-300 text-transparent hover:border-emerald-400 hover:text-emerald-300'}`}
+                  >
+                    <Check />
+                  </button>
+                ) : (
+                  <span className="absolute -left-6 top-1 grid place-items-center w-[18px] h-[18px] rounded-full bg-white border border-gray-300 text-[10px] leading-none">{ev.icone || ICONE_FALLBACK[ev.tipo]}</span>
+                )}
+                <ItemEvento
+                  ev={ev}
+                  onStatus={mudarStatusReuniao}
+                  onEditar={() => editar(ev)}
+                  onRemover={() => remover(ev.id)}
+                  onAcaoTarefa={acaoVirarTarefa}
+                />
+              </li>
+            );
+          })}
         </ol>
       )}
 
@@ -301,6 +313,14 @@ export default function Timeline({ lead, onPatch }: { lead: Lead; onPatch: (u: P
 }
 
 const ICONE_FALLBACK: Record<string, string> = { reuniao: '🤝', tarefa: '✅', nota: '📝', marco: '🏁' };
+
+function Check() {
+  return (
+    <svg viewBox="0 0 24 24" className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M20 6 9 17l-5-5" />
+    </svg>
+  );
+}
 
 function CampoTemplate({ rotulo, valor, onChange, placeholder }: { rotulo: string; valor: string; onChange: (v: string) => void; placeholder: string }) {
   return (
@@ -333,10 +353,9 @@ function Pauta({ rotulo, texto, podeVirarTarefa, onAcaoTarefa }: { rotulo: strin
   );
 }
 
-function ItemEvento({ ev, onStatus, onToggle, onEditar, onRemover, onAcaoTarefa }: {
+function ItemEvento({ ev, onStatus, onEditar, onRemover, onAcaoTarefa }: {
   ev: Evento;
   onStatus: (id: string, s: StatusReuniao) => void;
-  onToggle: (id: string) => void;
   onEditar: () => void;
   onRemover: () => void;
   onAcaoTarefa: (t: string) => void;
@@ -346,9 +365,6 @@ function ItemEvento({ ev, onStatus, onToggle, onEditar, onRemover, onAcaoTarefa 
   return (
     <div className={`rounded-xl border p-3 ${feito ? 'border-gray-100 bg-gray-50/60' : 'border-gray-200 bg-white'}`}>
       <div className="flex items-center gap-2 flex-wrap">
-        {ev.tipo === 'tarefa' && (
-          <button onClick={() => onToggle(ev.id)} title={feito ? t("Reabrir") : t("Concluir")} className={`shrink-0 grid place-items-center w-4 h-4 rounded border ${feito ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-gray-300 hover:border-emerald-400'}`}>{feito ? '✓' : ''}</button>
-        )}
         <span className={`text-sm font-semibold ${feito ? 'text-gray-400 line-through' : 'text-gray-800'}`}>
           {ev.rotulo || ev.titulo}
         </span>
