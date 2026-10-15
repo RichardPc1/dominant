@@ -2,37 +2,18 @@
 import { t } from '@/lib/i18n';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { EtapaFunil, Lead } from '@/lib/types';
 import {
   ETAPAS, chipProximaReuniao, compararNoFunil, contarReunioes, contarTarefas, estaNoFunil,
-  etapaDef, patchParaEtapa, patchSairDoFunil, previewEvento, ultimoEvento,
+  etapaDef, patchParaEtapa, previewEvento, ultimoEvento,
 } from '@/lib/funil';
-import FunilCliente from '../components/FunilCliente';
-import Icon from '../components/Icon';
-import { CategoriaBadge } from '../components/Badges';
+import Icon, { IconName } from '../components/Icon';
 import { guardarLeadsEmCache, leadsEmCache } from '@/lib/leads-cache';
-
-function CopyBtn({ value }: { value: string }) {
-  const [ok, setOk] = useState(false);
-  return (
-    <button
-      onClick={e => { e.stopPropagation(); navigator.clipboard?.writeText(value); setOk(true); setTimeout(() => setOk(false), 1200); }}
-      className="shrink-0 text-[10px] px-1.5 py-0.5 rounded bg-gray-100 hover:bg-gray-200 text-gray-500"
-    >
-      {ok ? '✓' : t("copiar")}
-    </button>
-  );
-}
 
 const soDigitos = (s: string) => (s || '').replace(/\D/g, '');
 
-function CardFunil({
-  lead, onAbrir, onMover,
-}: {
-  lead: Lead;
-  onAbrir: () => void;
-  onMover: (etapa: EtapaFunil) => void;
-}) {
+function CardFunil({ lead, onAbrir, onMover }: { lead: Lead; onAbrir: () => void; onMover: (etapa: EtapaFunil) => void }) {
   const def = etapaDef(lead.etapaFunil!);
   const chip = chipProximaReuniao(lead);
   const cont = contarReunioes(lead);
@@ -74,20 +55,11 @@ function CardFunil({
 
       {(fone || email) && (
         <div className="mt-2 space-y-1" onClick={e => e.stopPropagation()}>
-          {fone && (
-            <div className="flex items-center gap-1.5">
-              <a href={`tel:${fone}`} className="text-xs font-medium text-blue-700 hover:underline">📞 {lead.telefone}</a>
-            </div>
-          )}
-          {email && (
-            <div className="flex items-center gap-1.5">
-              <a href={`mailto:${email}`} className="text-xs font-medium text-emerald-700 hover:underline break-all">✉️ {email}</a>
-            </div>
-          )}
+          {fone && <a href={`tel:${fone}`} className="block text-xs font-medium text-blue-700 hover:underline">📞 {lead.telefone}</a>}
+          {email && <a href={`mailto:${email}`} className="block text-xs font-medium text-emerald-700 hover:underline break-all">✉️ {email}</a>}
         </div>
       )}
 
-      {/* mover de fase no toque (sem drag) */}
       <div className="mt-2" onClick={e => e.stopPropagation()}>
         <select
           value={lead.etapaFunil}
@@ -102,9 +74,7 @@ function CardFunil({
   );
 }
 
-function ColunaFunil({
-  etapa, leads, over, setOver, onDrop, onAbrir, onMover,
-}: {
+function ColunaFunil({ etapa, leads, over, setOver, onDrop, onAbrir, onMover }: {
   etapa: typeof ETAPAS[number];
   leads: Lead[];
   over: string | null;
@@ -136,60 +106,44 @@ function ColunaFunil({
   );
 }
 
-function Modal({ lead, onClose, onPatch, onSair }: {
-  lead: Lead; onClose: () => void; onPatch: (u: Partial<Lead>) => void; onSair: () => void;
-}) {
+function LinhaLista({ lead, onAbrir }: { lead: Lead; onAbrir: () => void }) {
+  const def = etapaDef(lead.etapaFunil!);
+  const chip = chipProximaReuniao(lead);
+  const cont = contarReunioes(lead);
+  const ct = contarTarefas(lead);
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center bg-slate-950/50 backdrop-blur-sm p-4 overflow-y-auto" onClick={onClose}>
-      <div className="surgir bg-white rounded-2xl shadow-2xl w-full max-w-lg my-8" onClick={e => e.stopPropagation()}>
-        <div className="flex items-start justify-between gap-3 p-5 border-b border-gray-100">
-          <div>
-            <h2 className="text-xl font-bold text-gray-900">{lead.nome}</h2>
-            <p className="text-sm text-gray-500 mt-0.5">{[lead.localizacao, lead.segmento].filter(Boolean).join(' · ')}</p>
-            <div className="mt-2"><CategoriaBadge c={lead.categoria} /></div>
-          </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-700 text-xl leading-none">✕</button>
-        </div>
-
-        <div className="p-5 space-y-4">
-          {/* contato rápido */}
-          {(lead.telefone || lead.emails?.[0]?.endereco || lead.contato) && (
-            <div className="rounded-xl bg-gray-50 border border-gray-100 p-3 space-y-1.5">
-              {lead.telefone && (
-                <div className="flex items-center gap-2 text-sm">
-                  <a href={`tel:${soDigitos(lead.telefone)}`} className="text-blue-700 font-medium hover:underline">📞 {lead.telefone}</a>
-                  <CopyBtn value={lead.telefone} />
-                </div>
-              )}
-              {lead.emails?.[0]?.endereco && (
-                <div className="flex items-center gap-2 text-sm">
-                  <a href={`mailto:${lead.emails[0].endereco}`} className="text-emerald-700 font-medium hover:underline break-all">✉️ {lead.emails[0].endereco}</a>
-                  <CopyBtn value={lead.emails[0].endereco} />
-                </div>
-              )}
-              {lead.contato && !lead.telefone && <p className="text-sm text-gray-600 whitespace-pre-line">{lead.contato}</p>}
-            </div>
-          )}
-
-          <FunilCliente lead={lead} onPatch={onPatch} />
-
-          <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-            <Link href={`/call/${lead.id}`} className="text-sm font-semibold text-indigo-600 hover:text-indigo-800">{t("Abrir ficha completa →")}</Link>
-            <button onClick={onSair} className="text-xs text-gray-400 hover:text-red-500">{t("Tirar do funil")}</button>
-          </div>
-        </div>
+    <button
+      onClick={onAbrir}
+      className={`w-full flex items-center gap-3 text-left bg-white border border-gray-200 border-l-4 ${def.faixa} rounded-xl px-3 py-2.5 hover:shadow-md hover:border-indigo-200 transition`}
+    >
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-semibold text-gray-900 truncate">{lead.nome}</p>
+        <p className="text-[11px] text-gray-400 truncate">{lead.categoria}{lead.localizacao ? ` · ${lead.localizacao}` : ''}</p>
       </div>
-    </div>
+      <span className={`hidden sm:inline-flex items-center gap-1 text-[11px] font-semibold rounded-lg px-2 py-1 shrink-0 ${def.selo}`}>{def.icone} {t(def.titulo)}</span>
+      {chip && <span className={`hidden md:inline-block rounded px-2 py-0.5 text-[10px] font-bold shrink-0 ${chip.classes}`}>🗓️ {chip.texto}</span>}
+      <div className="flex items-center gap-1 text-[10px] shrink-0">
+        {cont.total > 0 && <span className="rounded bg-gray-100 text-gray-600 px-1.5 py-0.5 font-semibold">🤝 {cont.total}</span>}
+        {ct.minhas > 0 && <span className="rounded bg-blue-100 text-blue-800 px-1.5 py-0.5 font-semibold">🙋 {ct.minhas}</span>}
+        {ct.doCliente > 0 && <span className="rounded bg-amber-100 text-amber-800 px-1.5 py-0.5 font-semibold">⏳ {ct.doCliente}</span>}
+      </div>
+      <span className="text-gray-300 shrink-0">›</span>
+    </button>
   );
 }
 
+type Vista = 'funil' | 'lista';
+
 export default function ClientesPage() {
+  const router = useRouter();
   const [leads, setLeads] = useState<Lead[]>(() => leadsEmCache() ?? []);
   const [loading, setLoading] = useState(() => !leadsEmCache());
   const [over, setOver] = useState<string | null>(null);
-  const [abertoId, setAbertoId] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
   const [buscaAdd, setBuscaAdd] = useState('');
+  const [vista, setVista] = useState<Vista>('funil');
+  const [busca, setBusca] = useState('');
+  const [filtroEtapa, setFiltroEtapa] = useState<EtapaFunil | 'todas'>('todas');
 
   const carregar = useCallback(async () => {
     try {
@@ -204,6 +158,8 @@ export default function ClientesPage() {
     carregar();
   }, [carregar]);
 
+  const abrir = (id: string) => router.push(`/clientes/${id}`);
+
   async function patch(id: string, updates: Partial<Lead>) {
     setLeads(prev => {
       const novo = prev.map(l => (l.id === id ? { ...l, ...updates } : l));
@@ -216,16 +172,6 @@ export default function ClientesPage() {
   }
 
   const mover = (id: string, etapa: EtapaFunil) => patch(id, patchParaEtapa(etapa));
-  const sair = (id: string) => {
-    const l = leads.find(x => x.id === id);
-    const n = (l?.reunioes ?? []).length;
-    const msg = n > 0
-      ? t('Tirar {0} do funil? As {1} reuniões registradas serão apagadas. O lead continua no kanban.', { 0: l?.nome, 1: n })
-      : t('Tirar {0} do funil? O lead continua no kanban.', { 0: l?.nome });
-    if (!window.confirm(msg)) return;
-    patch(id, patchSairDoFunil());
-    setAbertoId(null);
-  };
 
   const noFunil = useMemo(() => leads.filter(estaNoFunil), [leads]);
   const porEtapa = useMemo(() => {
@@ -234,6 +180,17 @@ export default function ClientesPage() {
     for (const e of ETAPAS) map[e.id].sort(compararNoFunil);
     return map;
   }, [noFunil]);
+
+  const lista = useMemo(() => {
+    const q = busca.trim().toLowerCase();
+    return noFunil
+      .filter(l => filtroEtapa === 'todas' || l.etapaFunil === filtroEtapa)
+      .filter(l => !q || l.nome.toLowerCase().includes(q) || (l.localizacao ?? '').toLowerCase().includes(q) || (l.segmento ?? '').toLowerCase().includes(q))
+      .sort((a, b) => {
+        const oa = ETAPAS.findIndex(e => e.id === a.etapaFunil), ob = ETAPAS.findIndex(e => e.id === b.etapaFunil);
+        return oa !== ob ? oa - ob : compararNoFunil(a, b);
+      });
+  }, [noFunil, busca, filtroEtapa]);
 
   const disponiveis = useMemo(() => {
     const q = buscaAdd.trim().toLowerCase();
@@ -248,8 +205,6 @@ export default function ClientesPage() {
   const ganhos = porEtapa['cliente'].length;
   const reunioesAtrasadas = noFunil.filter(l => chipProximaReuniao(l)?.urgencia === 0).length;
   const reunioesHoje = noFunil.filter(l => chipProximaReuniao(l)?.urgencia === 1).length;
-
-  const aberto = leads.find(l => l.id === abertoId) ?? null;
 
   return (
     <div className="min-h-full flex flex-col">
@@ -266,19 +221,28 @@ export default function ClientesPage() {
             <span className="bg-indigo-100 text-indigo-800 rounded px-2 py-1">{ativos} {t("em negociação")}</span>
             <span className="bg-emerald-100 text-emerald-800 rounded px-2 py-1">{ganhos} {t("cliente")}{ganhos !== 1 ? 's' : ''}</span>
           </div>
-          <Link
-            href="/clientes/mapa"
-            className="inline-flex items-center gap-2 h-10 text-sm font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-xl px-4 hover:bg-indigo-100"
-            title={t("Ver o mapa de clientes")}
-          >
-            <Icon name="mapa" className="w-4 h-4" /> {t("Mapa")}
-          </Link>
           <button
             onClick={() => setAddOpen(o => !o)}
             className="h-10 text-sm font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl px-4 shadow-md shadow-blue-600/25 hover:brightness-110"
           >
             {t("+ Adicionar negócio")}
           </button>
+        </div>
+
+        {/* abas de visão */}
+        <div className="mt-3 flex items-center gap-1 bg-slate-100 rounded-xl p-1 w-fit">
+          {([['funil', 'kanban', 'Funil'], ['lista', 'leads', 'Lista']] as [Vista, IconName, string][]).map(([v, icone, rotulo]) => (
+            <button
+              key={v}
+              onClick={() => setVista(v)}
+              className={`inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-sm font-semibold transition ${vista === v ? 'bg-white text-indigo-700 shadow-sm' : 'text-gray-500 hover:text-gray-800'}`}
+            >
+              <Icon name={icone} className="w-4 h-4" /> {t(rotulo)}
+            </button>
+          ))}
+          <Link href="/clientes/mapa" className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-sm font-semibold text-gray-500 hover:text-gray-800 transition">
+            <Icon name="mapa" className="w-4 h-4" /> {t("Mapa")}
+          </Link>
         </div>
 
         {addOpen && (
@@ -293,7 +257,7 @@ export default function ClientesPage() {
               {disponiveis.map(l => (
                 <button
                   key={l.id}
-                  onClick={() => { mover(l.id, 'poc-marcada'); setAddOpen(false); setBuscaAdd(''); setAbertoId(l.id); }}
+                  onClick={() => { mover(l.id, 'poc-marcada'); setAddOpen(false); setBuscaAdd(''); abrir(l.id); }}
                   className="w-full flex items-center justify-between gap-2 text-left rounded-lg bg-white border border-gray-200 px-3 py-2 hover:border-indigo-300 hover:bg-indigo-50/40"
                 >
                   <span className="text-sm text-gray-800 truncate">{l.nome}<span className="text-gray-400"> · {l.categoria}{l.localizacao ? ` · ${l.localizacao}` : ''}</span></span>
@@ -314,27 +278,39 @@ export default function ClientesPage() {
           <p className="text-sm text-gray-500 mt-1 max-w-sm">{t("Quando um lead avança pra reunião de POC, clique em")} <strong>{t("+ Adicionar negócio")}</strong> {t("e acompanhe cada fase e reunião aqui — sem tirar ele da coluna do kanban.")}</p>
           <button onClick={() => setAddOpen(true)} className="mt-5 h-10 text-sm font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl px-5 shadow-md shadow-blue-600/25 hover:brightness-110">{t("+ Adicionar primeiro negócio")}</button>
         </div>
-      ) : (
+      ) : vista === 'funil' ? (
         <div className="@container flex-1 px-4 sm:px-6 lg:px-8 py-4">
           <div className="grid gap-3 grid-cols-1 @md:grid-cols-2 @2xl:grid-cols-3 @4xl:grid-cols-6 items-start">
             {ETAPAS.map(e => (
               <ColunaFunil
                 key={e.id} etapa={e} leads={porEtapa[e.id]}
                 over={over} setOver={setOver}
-                onDrop={mover} onAbrir={l => setAbertoId(l.id)} onMover={mover}
+                onDrop={mover} onAbrir={l => abrir(l.id)} onMover={mover}
               />
             ))}
           </div>
         </div>
-      )}
-
-      {aberto && (
-        <Modal
-          lead={aberto}
-          onClose={() => setAbertoId(null)}
-          onPatch={u => patch(aberto.id, u)}
-          onSair={() => sair(aberto.id)}
-        />
+      ) : (
+        <div className="flex-1 px-4 sm:px-6 lg:px-8 py-4 max-w-4xl w-full mx-auto">
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+            <input
+              type="text" value={busca} onChange={e => setBusca(e.target.value)}
+              placeholder={t("Filtrar por nome, cidade ou segmento…")}
+              className="flex-1 min-w-[12rem] text-sm border border-gray-300 rounded-lg px-3 py-2 outline-none focus:border-indigo-400"
+            />
+          </div>
+          <div className="flex flex-wrap gap-1.5 mb-3">
+            <button onClick={() => setFiltroEtapa('todas')} className={`px-2.5 py-1 text-xs font-semibold rounded-lg border ${filtroEtapa === 'todas' ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'}`}>{t("Todas")} ({noFunil.length})</button>
+            {ETAPAS.map(e => (
+              <button key={e.id} onClick={() => setFiltroEtapa(e.id)} className={`px-2.5 py-1 text-xs font-semibold rounded-lg border ${filtroEtapa === e.id ? `${e.selo} border-transparent ring-2 ring-offset-1 ring-gray-300` : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'}`}>{e.icone} {t(e.titulo)} ({porEtapa[e.id].length})</button>
+            ))}
+          </div>
+          <div className="space-y-2">
+            {lista.length === 0 ? (
+              <p className="text-sm text-gray-400 text-center py-10">{t("Nenhum cliente com esse filtro.")}</p>
+            ) : lista.map(l => <LinhaLista key={l.id} lead={l} onAbrir={() => abrir(l.id)} />)}
+          </div>
+        </div>
       )}
     </div>
   );

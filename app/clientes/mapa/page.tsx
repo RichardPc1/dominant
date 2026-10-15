@@ -16,9 +16,10 @@ interface NodeT { id: string; kind: Kind; label: string; r: number; cor: string;
 interface LinkT { a: string; b: string }
 interface Pos { x: number; y: number; vx: number; vy: number }
 type Snap = Map<string, { x: number; y: number }>;
+interface View { k: number; tx: number; ty: number }
 
 const COR_SEGMENTO = '#94a3b8';
-const COR_CIDADE = '#67e8f9';
+const COR_CIDADE = '#22b8cf';
 
 export default function MapaClientesPage() {
   const [leads, setLeads] = useState<Lead[]>(() => leadsEmCache() ?? []);
@@ -26,7 +27,9 @@ export default function MapaClientesPage() {
   const [showSeg, setShowSeg] = useState(true);
   const [showCidade, setShowCidade] = useState(true);
   const [sel, setSel] = useState<string | null>(null);
+  const [hover, setHover] = useState<string | null>(null);
   const [snap, setSnap] = useState<Snap>(new Map());
+  const [view, setView] = useState<View>({ k: 1, tx: 0, ty: 0 });
 
   const carregar = useCallback(async () => {
     try {
@@ -47,15 +50,10 @@ export default function MapaClientesPage() {
     const links: LinkT[] = [];
     const segs = new Set<string>();
     const cidades = new Set<string>();
-
     for (const l of noFunil) {
       const n = eventosDe(l).length;
-      nodes.push({
-        id: `c:${l.id}`, kind: 'cliente', label: l.nome,
-        r: 14 + Math.min(n, 8) * 1.4, cor: etapaDef(l.etapaFunil!).cor, lead: l,
-      });
-      const seg = (l.segmento || '').trim();
-      const cid = (l.localizacao || '').trim();
+      nodes.push({ id: `c:${l.id}`, kind: 'cliente', label: l.nome, r: 15 + Math.min(n, 8) * 1.5, cor: etapaDef(l.etapaFunil!).cor, lead: l });
+      const seg = (l.segmento || '').trim(), cid = (l.localizacao || '').trim();
       if (showSeg && seg) { segs.add(seg); links.push({ a: `c:${l.id}`, b: `s:${seg}` }); }
       if (showCidade && cid) { cidades.add(cid); links.push({ a: `c:${l.id}`, b: `l:${cid}` }); }
     }
@@ -64,10 +62,25 @@ export default function MapaClientesPage() {
     return { nodes, links };
   }, [noFunil, showSeg, showCidade]);
 
+  // vizinhança (1 salto) de um nó — pra acender/apagar no hover e na seleção
+  const vizinhosDe = useCallback((nodeId: string | null): Set<string> | null => {
+    if (!nodeId) return null;
+    const set = new Set<string>([nodeId]);
+    for (const l of graph.links) {
+      if (l.a === nodeId) set.add(l.b);
+      if (l.b === nodeId) set.add(l.a);
+    }
+    return set;
+  }, [graph.links]);
+
+  const foco = hover ?? (sel ? `c:${sel}` : null);
+  const aceso = useMemo(() => vizinhosDe(foco), [vizinhosDe, foco]);
+
   // --- simulação de forças (física no ref; snapshot no estado pra renderizar) ---
   const pos = useRef<Map<string, Pos>>(new Map());
   const dragId = useRef<string | null>(null);
   const moved = useRef(false);
+  const pan = useRef<{ x: number; y: number } | null>(null);
   const reheat = useRef<() => void>(() => {});
   const running = useRef(false);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -96,7 +109,7 @@ export default function MapaClientesPage() {
           const b = P.get(nodes[j].id)!;
           const dx = a.x - b.x, dy = a.y - b.y;
           const d2 = Math.max(dx * dx + dy * dy, 0.01), d = Math.sqrt(d2);
-          const rep = (7000 / d2) * alpha;
+          const rep = (7200 / d2) * alpha;
           const fx = (dx / d) * rep, fy = (dy / d) * rep;
           a.vx += fx; a.vy += fy; b.vx -= fx; b.vy -= fy;
         }
@@ -133,7 +146,8 @@ export default function MapaClientesPage() {
     return () => { stopped = true; cancelAnimationFrame(raf); running.current = false; };
   }, [graph, publicar]);
 
-  function toSvg(e: React.PointerEvent): { x: number; y: number } {
+  // coordenadas do ponteiro no espaço do viewBox
+  function toVB(e: React.PointerEvent | React.WheelEvent): { x: number; y: number } {
     const svg = svgRef.current;
     if (!svg) return { x: 0, y: 0 };
     const pt = svg.createSVGPoint();
@@ -143,21 +157,16 @@ export default function MapaClientesPage() {
     const r = pt.matrixTransform(m.inverse());
     return { x: r.x, y: r.y };
   }
+  // viewBox → espaço do grafo (desfaz o transform do grupo)
+  const vbParaGrupo = (p: { x: number; y: number }, v: View) => ({ x: (p.x - v.tx) / v.k, y: (p.y - v.ty) / v.k });
 
-  const vizinhos = useMemo(() => {
-    if (!sel) return null;
-    const cid = `c:${sel}`;
-    const set = new Set<string>([cid]);
-    for (const l of graph.links) {
-      if (l.a === cid) set.add(l.b);
-      if (l.b === cid) set.add(l.a);
-    }
-    for (const l of graph.links) {
-      if (set.has(l.a)) set.add(l.b);
-      if (set.has(l.b)) set.add(l.a);
-    }
-    return set;
-  }, [sel, graph.links]);
+  function zoomEm(fator: number, cx: number, cy: number) {
+    setView(v => {
+      const k = Math.max(0.4, Math.min(3, v.k * fator));
+      const g = vbParaGrupo({ x: cx, y: cy }, v);
+      return { k, tx: cx - g.x * k, ty: cy - g.y * k };
+    });
+  }
 
   const leadSel = sel ? noFunil.find(l => l.id === sel) ?? null : null;
 
@@ -169,10 +178,10 @@ export default function MapaClientesPage() {
           <p className="text-sm text-gray-500 mt-0.5">{t("Clientes do funil ligados pelo que têm em comum")}</p>
         </div>
         <div className="ml-auto flex items-center gap-2 flex-wrap">
-          <label className="flex items-center gap-1.5 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-lg px-2.5 py-1.5">
+          <label className="flex items-center gap-1.5 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 cursor-pointer">
             <input type="checkbox" checked={showSeg} onChange={e => setShowSeg(e.target.checked)} /> <span className="inline-block w-2.5 h-2.5 rounded-full" style={{ background: COR_SEGMENTO }} /> {t("Segmento")}
           </label>
-          <label className="flex items-center gap-1.5 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-lg px-2.5 py-1.5">
+          <label className="flex items-center gap-1.5 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 cursor-pointer">
             <input type="checkbox" checked={showCidade} onChange={e => setShowCidade(e.target.checked)} /> <span className="inline-block w-2.5 h-2.5 rounded-full" style={{ background: COR_CIDADE }} /> {t("Cidade")}
           </label>
           <Link href="/clientes" className="inline-flex items-center gap-2 h-9 text-sm font-semibold text-gray-700 bg-white border border-gray-200 rounded-lg px-3 hover:bg-gray-50">
@@ -192,61 +201,95 @@ export default function MapaClientesPage() {
         </div>
       ) : (
         <div className="flex-1 px-4 sm:px-6 lg:px-8 py-4 flex flex-col lg:flex-row gap-4">
-          <div className="flex-1 rounded-2xl border border-gray-200 bg-white overflow-hidden relative">
+          <div className="flex-1 rounded-2xl border border-gray-200 bg-[var(--color-gray-50)] overflow-hidden relative">
             <svg
               ref={svgRef}
               viewBox={`0 0 ${W} ${H}`}
               preserveAspectRatio="xMidYMid meet"
               className="w-full touch-none select-none"
-              style={{ height: '72vh' }}
-              onPointerMove={e => {
-                if (!dragId.current) return;
-                const { x, y } = toSvg(e);
-                const p = pos.current.get(dragId.current);
-                if (p) { p.x = x; p.y = y; p.vx = 0; p.vy = 0; }
-                moved.current = true; reheat.current(); publicar(graph.nodes);
-              }}
-              onPointerUp={() => {
-                const id = dragId.current;
-                if (id && !moved.current) {
-                  const n = graph.nodes.find(x => x.id === id);
-                  if (n?.kind === 'cliente' && n.lead) setSel(n.lead.id);
-                  else setSel(null);
+              style={{ height: '74vh' }}
+              onWheel={e => { const p = toVB(e); zoomEm(e.deltaY < 0 ? 1.12 : 0.89, p.x, p.y); }}
+              onPointerDown={e => {
+                if (e.target === e.currentTarget) {
+                  pan.current = toVB(e); moved.current = false;
+                  svgRef.current?.setPointerCapture(e.pointerId);
                 }
-                dragId.current = null;
               }}
-              onPointerLeave={() => { dragId.current = null; }}
-              onPointerDown={e => { if (e.target === e.currentTarget) setSel(null); }}
+              onPointerMove={e => {
+                if (dragId.current) {
+                  const g = vbParaGrupo(toVB(e), view);
+                  const p = pos.current.get(dragId.current);
+                  if (p) { p.x = g.x; p.y = g.y; p.vx = 0; p.vy = 0; }
+                  moved.current = true; reheat.current(); publicar(graph.nodes);
+                } else if (pan.current) {
+                  const n = toVB(e);
+                  const dx = n.x - pan.current.x, dy = n.y - pan.current.y;
+                  pan.current = n; moved.current = true;
+                  setView(v => ({ ...v, tx: v.tx + dx, ty: v.ty + dy }));
+                }
+              }}
+              onPointerUp={e => {
+                if (dragId.current && !moved.current) {
+                  const nd = graph.nodes.find(x => x.id === dragId.current);
+                  setSel(nd?.kind === 'cliente' && nd.lead ? nd.lead.id : null);
+                } else if (pan.current && !moved.current) {
+                  setSel(null);
+                }
+                dragId.current = null; pan.current = null;
+                svgRef.current?.releasePointerCapture?.(e.pointerId);
+              }}
             >
-              {/* arestas */}
-              {graph.links.map((l, i) => {
-                const a = snap.get(l.a), b = snap.get(l.b);
-                if (!a || !b) return null;
-                const aceso = !vizinhos || (vizinhos.has(l.a) && vizinhos.has(l.b));
-                return <line key={i} x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={aceso ? '#cbd5e1' : '#eef2f6'} strokeWidth={aceso ? 1.4 : 1} />;
-              })}
-              {/* nós */}
-              {graph.nodes.map(n => {
-                const p = snap.get(n.id);
-                if (!p) return null;
-                const aceso = !vizinhos || vizinhos.has(n.id);
-                const selecionado = n.kind === 'cliente' && n.lead?.id === sel;
-                return (
-                  <g key={n.id} transform={`translate(${p.x},${p.y})`} style={{ cursor: 'pointer', opacity: aceso ? 1 : 0.25 }}
-                     onPointerDown={e => { e.stopPropagation(); dragId.current = n.id; moved.current = false; }}>
-                    <circle r={n.r} fill={n.cor} stroke={selecionado ? '#111827' : '#ffffff'} strokeWidth={selecionado ? 3 : 2} />
-                    <text
-                      y={n.r + (n.kind === 'cliente' ? 14 : 12)} textAnchor="middle"
-                      fontSize={n.kind === 'cliente' ? 13 : 11}
-                      fontWeight={n.kind === 'cliente' ? 700 : 500}
-                      fill={n.kind === 'cliente' ? '#1f2937' : '#64748b'}
+              <defs>
+                <filter id="sombra" x="-40%" y="-40%" width="180%" height="180%">
+                  <feDropShadow dx="0" dy="1.5" stdDeviation="2" floodColor="#0f172a" floodOpacity="0.22" />
+                </filter>
+              </defs>
+
+              <g transform={`translate(${view.tx},${view.ty}) scale(${view.k})`}>
+                {/* arestas */}
+                {graph.links.map((l, i) => {
+                  const a = snap.get(l.a), b = snap.get(l.b);
+                  if (!a || !b) return null;
+                  const on = !aceso || (aceso.has(l.a) && aceso.has(l.b));
+                  return <line key={i} x1={a.x} y1={a.y} x2={b.x} y2={b.y} className={on ? 'stroke-gray-300' : 'stroke-gray-200'} strokeWidth={on ? 1.6 : 1} style={{ transition: 'stroke 0.2s, opacity 0.2s', opacity: on ? 1 : 0.4 }} />;
+                })}
+                {/* nós */}
+                {graph.nodes.map(n => {
+                  const p = snap.get(n.id);
+                  if (!p) return null;
+                  const on = !aceso || aceso.has(n.id);
+                  const cliente = n.kind === 'cliente';
+                  const selecionado = cliente && n.lead?.id === sel;
+                  return (
+                    <g
+                      key={n.id} transform={`translate(${p.x},${p.y})`}
+                      style={{ cursor: 'pointer', opacity: on ? 1 : 0.2, transition: 'opacity 0.2s' }}
+                      onPointerDown={e => { e.stopPropagation(); dragId.current = n.id; moved.current = false; svgRef.current?.setPointerCapture(e.pointerId); }}
+                      onPointerEnter={() => setHover(n.id)}
+                      onPointerLeave={() => setHover(h => (h === n.id ? null : h))}
                     >
-                      {n.label.length > 22 ? n.label.slice(0, 21) + '…' : n.label}
-                    </text>
-                  </g>
-                );
-              })}
+                      {selecionado && <circle r={n.r + 6} fill="none" className="stroke-indigo-400" strokeWidth={2} style={{ opacity: 0.6 }} />}
+                      <circle r={n.r} fill={n.cor} className="stroke-white" strokeWidth={cliente ? 2.5 : 1.5} filter={cliente ? 'url(#sombra)' : undefined} />
+                      <text
+                        y={n.r + (cliente ? 15 : 13)} textAnchor="middle"
+                        fontSize={cliente ? 13 : 11} fontWeight={cliente ? 700 : 500}
+                        className={cliente ? 'fill-gray-800' : 'fill-gray-500'}
+                        stroke="var(--color-gray-50)" strokeWidth={3} paintOrder="stroke" strokeLinejoin="round"
+                      >
+                        {n.label.length > 24 ? n.label.slice(0, 23) + '…' : n.label}
+                      </text>
+                    </g>
+                  );
+                })}
+              </g>
             </svg>
+
+            {/* controles de zoom */}
+            <div className="absolute top-3 right-3 flex flex-col gap-1">
+              <button onClick={() => zoomEm(1.2, W / 2, H / 2)} className="grid place-items-center w-8 h-8 rounded-lg bg-white border border-gray-200 text-gray-600 shadow-sm hover:bg-gray-50 text-lg leading-none">+</button>
+              <button onClick={() => zoomEm(0.83, W / 2, H / 2)} className="grid place-items-center w-8 h-8 rounded-lg bg-white border border-gray-200 text-gray-600 shadow-sm hover:bg-gray-50 text-lg leading-none">−</button>
+              <button onClick={() => setView({ k: 1, tx: 0, ty: 0 })} title={t("Centralizar")} className="grid place-items-center w-8 h-8 rounded-lg bg-white border border-gray-200 text-gray-600 shadow-sm hover:bg-gray-50"><Icon name="alvo" className="w-4 h-4" /></button>
+            </div>
 
             {/* legenda das fases */}
             <div className="absolute bottom-3 left-3 flex flex-wrap gap-x-3 gap-y-1 bg-white/90 backdrop-blur border border-gray-100 rounded-lg px-2.5 py-1.5 text-[11px] text-gray-600 max-w-[85%]">
@@ -260,7 +303,7 @@ export default function MapaClientesPage() {
           <aside className="lg:w-72 shrink-0">
             {leadSel ? <PainelCliente lead={leadSel} /> : (
               <div className="rounded-2xl border border-dashed border-gray-200 bg-white p-5 text-center text-sm text-gray-400">
-                {t("Clique num cliente pra ver os detalhes. Arraste os nós pra organizar o mapa.")}
+                {t("Clique num cliente pra ver os detalhes. Arraste os nós, a roda dá zoom e o fundo arrasta o mapa.")}
               </div>
             )}
           </aside>
@@ -276,20 +319,23 @@ function PainelCliente({ lead }: { lead: Lead }) {
   const ct = contarTarefas(lead);
   const chip = chipProximaReuniao(lead);
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm space-y-3 lg:sticky lg:top-4">
-      <div>
-        <h3 className="text-lg font-bold text-gray-900 leading-tight">{lead.nome}</h3>
-        <p className="text-xs text-gray-400 mt-0.5">{[lead.segmento, lead.localizacao].filter(Boolean).join(' · ')}</p>
+    <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden lg:sticky lg:top-4">
+      <div className="h-1.5" style={{ background: def.cor }} />
+      <div className="p-4 space-y-3">
+        <div>
+          <h3 className="text-lg font-bold text-gray-900 leading-tight">{lead.nome}</h3>
+          <p className="text-xs text-gray-400 mt-0.5">{[lead.segmento, lead.localizacao].filter(Boolean).join(' · ')}</p>
+        </div>
+        <span className={`inline-flex items-center gap-1 text-xs font-semibold rounded-lg px-2 py-1 ${def.selo}`}>{def.icone} {t(def.titulo)}</span>
+        {chip && <div className={`inline-block rounded px-2 py-0.5 text-[11px] font-bold ${chip.classes}`}>🗓️ {chip.texto}</div>}
+        <div className="flex flex-wrap gap-1.5 text-[11px]">
+          <span className="rounded bg-gray-100 text-gray-600 px-1.5 py-0.5 font-semibold">🤝 {cr.total}</span>
+          {cr.realizadas > 0 && <span className="rounded bg-emerald-100 text-emerald-800 px-1.5 py-0.5 font-semibold">✅ {cr.realizadas}</span>}
+          {ct.minhas > 0 && <span className="rounded bg-blue-100 text-blue-800 px-1.5 py-0.5 font-semibold">🙋 {ct.minhas}</span>}
+          {ct.doCliente > 0 && <span className="rounded bg-amber-100 text-amber-800 px-1.5 py-0.5 font-semibold">⏳ {ct.doCliente}</span>}
+        </div>
+        <Link href={`/clientes/${lead.id}`} className="block text-center text-sm font-semibold text-white bg-indigo-600 rounded-lg py-2 hover:bg-indigo-700">{t("Abrir cliente →")}</Link>
       </div>
-      <span className={`inline-flex items-center gap-1 text-xs font-semibold rounded-lg px-2 py-1 ${def.selo}`}>{def.icone} {t(def.titulo)}</span>
-      {chip && <div className={`inline-block rounded px-2 py-0.5 text-[11px] font-bold ${chip.classes}`}>🗓️ {chip.texto}</div>}
-      <div className="flex flex-wrap gap-1.5 text-[11px]">
-        <span className="rounded bg-gray-100 text-gray-600 px-1.5 py-0.5 font-semibold">🤝 {cr.total}</span>
-        {cr.realizadas > 0 && <span className="rounded bg-emerald-100 text-emerald-800 px-1.5 py-0.5 font-semibold">✅ {cr.realizadas}</span>}
-        {ct.minhas > 0 && <span className="rounded bg-blue-100 text-blue-800 px-1.5 py-0.5 font-semibold">🙋 {ct.minhas}</span>}
-        {ct.doCliente > 0 && <span className="rounded bg-amber-100 text-amber-800 px-1.5 py-0.5 font-semibold">⏳ {ct.doCliente}</span>}
-      </div>
-      <Link href={`/call/${lead.id}`} className="block text-center text-sm font-semibold text-white bg-indigo-600 rounded-lg py-2 hover:bg-indigo-700">{t("Abrir ficha completa →")}</Link>
     </div>
   );
 }
